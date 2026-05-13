@@ -1,48 +1,69 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Image from "next/image";
+import { useRef, useEffect } from "react";
 import Link from "next/link";
 
 export function Hero() {
-  const [scrollY, setScrollY] = useState(0);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const deco1Ref = useRef<HTMLDivElement>(null);
+  const deco2Ref = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const ticking = useRef(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrollY(window.scrollY);
+      if (!ticking.current) {
+        requestAnimationFrame(() => {
+          const scrollY = window.scrollY;
+          const opacity = Math.max(0, 1 - scrollY / 700);
+          const translate = scrollY * 0.4;
+          const scale = Math.max(0.8, 1 - scrollY / 2000);
+
+          if (contentRef.current) {
+            contentRef.current.style.opacity = String(opacity);
+            contentRef.current.style.transform = `translateY(${translate}px) scale(${scale})`;
+          }
+          if (deco1Ref.current) {
+            deco1Ref.current.style.transform = `translateY(${scrollY * 0.2}px)`;
+          }
+          if (deco2Ref.current) {
+            deco2Ref.current.style.transform = `translateY(${scrollY * 0.3}px)`;
+          }
+          if (scrollRef.current) {
+            scrollRef.current.style.opacity = String(Math.max(0, 1 - scrollY / 300));
+          }
+
+          ticking.current = false;
+        });
+        ticking.current = true;
+      }
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Calculate parallax and fade effects
-  const opacity = Math.max(0, 1 - scrollY / 700);
-  const transform = scrollY * 0.4;
-  const scale = Math.max(0.8, 1 - scrollY / 2000);
-
   return (
     <section className="relative min-h-screen overflow-hidden bg-gradient-to-br from-rose-50 via-pink-50 to-blush-50">
-      {/* Decorative Elements - Parallax */}
+      {/* Decorative Elements */}
       <div
-        className="absolute top-20 right-20 w-96 h-96 bg-gradient-to-br from-rose-200/30 to-pink-200/30 rounded-full blur-3xl transition-transform duration-100 ease-out"
-        style={{ transform: `translateY(${scrollY * 0.2}px)` }}
+        ref={deco1Ref}
+        className="absolute top-20 right-20 w-96 h-96 bg-gradient-to-br from-rose-200/30 to-pink-200/30 rounded-full blur-3xl"
+        style={{ willChange: "transform" }}
       />
       <div
-        className="absolute bottom-40 left-20 w-72 h-72 bg-gradient-to-tr from-blush-200/30 to-rose-200/30 rounded-full blur-3xl transition-transform duration-100 ease-out"
-        style={{ transform: `translateY(${scrollY * 0.3}px)` }}
+        ref={deco2Ref}
+        className="absolute bottom-40 left-20 w-72 h-72 bg-gradient-to-tr from-blush-200/30 to-rose-200/30 rounded-full blur-3xl"
+        style={{ willChange: "transform" }}
       />
 
       {/* Main Content */}
       <div className="container relative z-10">
         <div className="min-h-screen flex items-center justify-center py-20">
           <div
+            ref={contentRef}
             className="max-w-6xl mx-auto text-center"
-            style={{
-              opacity,
-              transform: `translateY(${transform}px) scale(${scale})`,
-              transition: 'opacity 0.1s ease-out, transform 0.1s ease-out'
-            }}
+            style={{ willChange: "transform, opacity" }}
           >
             {/* Badge */}
             <div className="flex justify-center mb-8 fade-in">
@@ -89,8 +110,9 @@ export function Hero() {
 
       {/* Scroll Indicator */}
       <div
+        ref={scrollRef}
         className="absolute -bottom-20 left-1/2 transform -translate-x-1/2 animate-bounce"
-        style={{ opacity: Math.max(0, 1 - scrollY / 300) }}
+        style={{ willChange: "opacity" }}
       >
         <div className="flex flex-col items-center text-rose-400">
           <span className="text-xs tracking-widest mb-2 font-medium">SCROLL</span>
