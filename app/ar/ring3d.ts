@@ -19,6 +19,13 @@ const finishes: Record<RingFinish, { metal: number; gem: number }> = {
   rose: { metal: 0xd99a91, gem: 0xffeee9 },
 };
 
+function smoothAngle(current: number, target: number, amount: number) {
+  let difference = target - current;
+  while (difference > Math.PI) difference -= Math.PI * 2;
+  while (difference < -Math.PI) difference += Math.PI * 2;
+  return current + difference * amount;
+}
+
 function createRingModel() {
   const group = new THREE.Group();
   group.rotation.order = "YXZ";
@@ -92,11 +99,73 @@ function createRingModel() {
   return group;
 }
 
+function createTryOnModel(metal: THREE.MeshStandardMaterial, gemMaterial: THREE.MeshPhysicalMaterial) {
+  const group = new THREE.Group();
+  group.rotation.order = "YXZ";
+
+  // Only the near half is rendered, so the band appears to wrap around the
+  // finger instead of floating across the skin.
+  const frontBand = new THREE.Mesh(
+    new THREE.TorusGeometry(1.03, 0.13, 28, 96, Math.PI),
+    metal,
+  );
+  frontBand.rotation.z = Math.PI;
+  frontBand.scale.y = 0.34;
+  frontBand.position.z = 0.08;
+  group.add(frontBand);
+
+  const gallery = new THREE.Mesh(new THREE.CylinderGeometry(0.48, 0.62, 0.3, 48, 1, true), metal);
+  gallery.scale.set(0.76, 1, 1);
+  gallery.rotation.x = Math.PI / 2;
+  gallery.position.z = 0.14;
+  group.add(gallery);
+
+  const setting = new THREE.Mesh(new THREE.TorusGeometry(0.63, 0.085, 24, 96), metal);
+  setting.scale.set(0.74, 1.02, 1);
+  setting.position.z = 0.26;
+  group.add(setting);
+
+  const gemstone = new THREE.Mesh(new THREE.IcosahedronGeometry(0.63, 2), gemMaterial);
+  gemstone.scale.set(0.72, 1.02, 0.38);
+  gemstone.position.z = 0.5;
+  gemstone.rotation.z = Math.PI / 10;
+  group.add(gemstone);
+
+  const prongGeometry = new THREE.CapsuleGeometry(0.075, 0.22, 7, 14);
+  const prongs: Array<[number, number, number, number]> = [
+    [-0.4, -0.39, 0.46, 0.42],
+    [0.4, -0.39, 0.46, -0.42],
+    [-0.4, 0.39, 0.46, -0.42],
+    [0.4, 0.39, 0.46, 0.42],
+  ];
+  prongs.forEach(([x, y, z, rotation]) => {
+    const prong = new THREE.Mesh(prongGeometry, metal);
+    prong.position.set(x, y, z);
+    prong.rotation.z = rotation;
+    group.add(prong);
+  });
+
+  const shoulderGeometry = new THREE.SphereGeometry(0.22, 28, 16);
+  [-1, 1].forEach((direction) => {
+    const shoulder = new THREE.Mesh(shoulderGeometry, metal);
+    shoulder.scale.set(1.75, 0.52, 0.68);
+    shoulder.position.set(direction * 0.63, -0.17, 0.15);
+    shoulder.rotation.z = direction * 0.2;
+    group.add(shoulder);
+  });
+
+  return group;
+}
+
 export class Ring3DRenderer {
   private renderer: THREE.WebGLRenderer;
   private scene = new THREE.Scene();
   private camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
   private ring = createRingModel();
+  private tryOnRing = createTryOnModel(
+    this.ring.userData.metal as THREE.MeshStandardMaterial,
+    this.ring.userData.gem as THREE.MeshPhysicalMaterial,
+  );
   private clock = new THREE.Clock();
   private width = 0;
   private height = 0;
@@ -118,6 +187,8 @@ export class Ring3DRenderer {
     this.camera.position.set(0, 0, 9);
     this.camera.lookAt(0, 0, 0);
     this.scene.add(this.ring);
+    this.scene.add(this.tryOnRing);
+    this.tryOnRing.visible = false;
 
     const pmrem = new THREE.PMREMGenerator(this.renderer);
     this.scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
@@ -145,7 +216,7 @@ export class Ring3DRenderer {
     gem.roughness = finish === "onyx" ? 0.12 : 0.04;
   }
 
-  render(pose: RingPose) {
+  render(pose: RingPose, variant: "inspect" | "try-on" = "inspect") {
     const canvas = this.renderer.domElement;
     const width = canvas.clientWidth;
     const height = canvas.clientHeight;
@@ -161,14 +232,17 @@ export class Ring3DRenderer {
     const visibleHalfWidth = visibleHalfHeight * this.camera.aspect;
     const normalizedX = (pose.x / Math.max(1, width)) * 2 - 1;
     const normalizedY = (pose.y / Math.max(1, height)) * 2 - 1;
-    this.ring.position.x += (normalizedX * visibleHalfWidth - this.ring.position.x) * 0.28;
-    this.ring.position.y += (-normalizedY * visibleHalfHeight - this.ring.position.y) * 0.28;
-    this.ring.position.z = 0;
-    this.ring.rotation.x += (pose.rotationX - this.ring.rotation.x) * 0.2;
-    this.ring.rotation.y += (pose.rotationY - this.ring.rotation.y) * 0.2;
-    this.ring.rotation.z += (pose.rotationZ - this.ring.rotation.z) * 0.2;
-    const pulse = pose.grabbed ? 1.04 + Math.sin(this.clock.elapsedTime * 7) * 0.015 : 1;
-    this.ring.scale.setScalar(pose.scale * pulse);
+    const activeRing = variant === "try-on" ? this.tryOnRing : this.ring;
+    this.ring.visible = variant === "inspect";
+    this.tryOnRing.visible = variant === "try-on";
+    activeRing.position.x += (normalizedX * visibleHalfWidth - activeRing.position.x) * 0.38;
+    activeRing.position.y += (-normalizedY * visibleHalfHeight - activeRing.position.y) * 0.38;
+    activeRing.position.z = 0;
+    activeRing.rotation.x = smoothAngle(activeRing.rotation.x, pose.rotationX, 0.28);
+    activeRing.rotation.y = smoothAngle(activeRing.rotation.y, pose.rotationY, 0.28);
+    activeRing.rotation.z = smoothAngle(activeRing.rotation.z, pose.rotationZ, 0.34);
+    const pulse = variant === "inspect" && pose.grabbed ? 1.04 + Math.sin(this.clock.elapsedTime * 7) * 0.015 : 1;
+    activeRing.scale.setScalar(pose.scale * pulse);
     this.renderer.render(this.scene, this.camera);
   }
 
@@ -178,6 +252,9 @@ export class Ring3DRenderer {
 
   dispose() {
     this.ring.traverse((object) => {
+      if (object instanceof THREE.Mesh) object.geometry.dispose();
+    });
+    this.tryOnRing.traverse((object) => {
       if (object instanceof THREE.Mesh) object.geometry.dispose();
     });
     (this.ring.userData.metal as THREE.Material).dispose();
