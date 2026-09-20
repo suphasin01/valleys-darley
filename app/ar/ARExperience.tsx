@@ -3,6 +3,7 @@
 import Link from "next/link";
 import NextImage from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Ring3DRenderer, type RingFinish, type RingPose } from "./ring3d";
 
 type CameraFacing = "environment" | "user";
 type ExperienceState = "intro" | "loading" | "live" | "error";
@@ -13,6 +14,9 @@ type Point = { x: number; y: number; z?: number };
 type InspectTransform = {
   x: number;
   y: number;
+  rotationX: number;
+  rotationY: number;
+  rotationZ: number;
   rotation: number;
   flipScale: number;
   grabbed: boolean;
@@ -219,16 +223,111 @@ function drawInspectableRing(
   return pinching;
 }
 
+function smoothAngle(current: number, target: number, amount: number) {
+  let difference = target - current;
+  while (difference > Math.PI) difference -= Math.PI * 2;
+  while (difference < -Math.PI) difference += Math.PI * 2;
+  return current + difference * amount;
+}
+
+function updateInspectPose(
+  landmarks: Point[] | undefined,
+  worldLandmarks: Point[] | undefined,
+  canvas: HTMLCanvasElement,
+  videoWidth: number,
+  videoHeight: number,
+  scale: number,
+  offsetX: number,
+  offsetY: number,
+  mirrored: boolean,
+  pixelRatio: number,
+  size: number,
+  transform: InspectTransform,
+): { pose: RingPose; pinching: boolean } {
+  const mapPoint = (point: Point) => ({
+    x: (offsetX + (mirrored ? 1 - point.x : point.x) * videoWidth * scale) / pixelRatio,
+    y: (offsetY + point.y * videoHeight * scale) / pixelRatio,
+  });
+
+  if (!transform.initialized) {
+    transform.x = canvas.clientWidth / 2;
+    transform.y = canvas.clientHeight * 0.43;
+    transform.initialized = true;
+  }
+
+  let pinching = false;
+  if (landmarks) {
+    const thumb = mapPoint(landmarks[4]);
+    const indexTip = mapPoint(landmarks[8]);
+    const wristScreen = mapPoint(landmarks[0]);
+    const middleTip = mapPoint(landmarks[12]);
+    const indexMcp = mapPoint(landmarks[5]);
+    const pinkyMcp = mapPoint(landmarks[17]);
+    const palmWidth = Math.max(1, Math.hypot(indexMcp.x - pinkyMcp.x, indexMcp.y - pinkyMcp.y));
+    const pinchDistance = Math.hypot(thumb.x - indexTip.x, thumb.y - indexTip.y) / palmWidth;
+    pinching = transform.grabbed ? pinchDistance < 0.44 : pinchDistance < 0.3;
+    transform.grabbed = pinching;
+
+    if (pinching) {
+      const pinchX = (thumb.x + indexTip.x) / 2;
+      const pinchY = (thumb.y + indexTip.y) / 2;
+      transform.x += (pinchX - transform.x) * 0.34;
+      transform.y += (pinchY - transform.y) * 0.34;
+
+      const roll = Math.atan2(middleTip.y - wristScreen.y, middleTip.x - wristScreen.x) + Math.PI / 2;
+      transform.rotationZ = smoothAngle(transform.rotationZ, roll, 0.2);
+
+      const orientation = worldLandmarks || landmarks;
+      const wrist = orientation[0];
+      const index = orientation[5];
+      const pinky = orientation[17];
+      const ux = index.x - wrist.x;
+      const uy = index.y - wrist.y;
+      const uz = (index.z || 0) - (wrist.z || 0);
+      const vx = pinky.x - wrist.x;
+      const vy = pinky.y - wrist.y;
+      const vz = (pinky.z || 0) - (wrist.z || 0);
+      const nx = uy * vz - uz * vy;
+      const ny = uz * vx - ux * vz;
+      const nz = ux * vy - uy * vx;
+      const yaw = Math.atan2(nx, nz);
+      const pitch = Math.atan2(-ny, Math.hypot(nx, nz));
+      transform.rotationY = smoothAngle(transform.rotationY, mirrored ? -yaw : yaw, 0.19);
+      transform.rotationX = smoothAngle(transform.rotationX, pitch, 0.19);
+    }
+  } else {
+    transform.grabbed = false;
+  }
+
+  if (!pinching) transform.rotationY += 0.006;
+
+  return {
+    pinching,
+    pose: {
+      x: transform.x,
+      y: transform.y,
+      rotationX: transform.rotationX,
+      rotationY: transform.rotationY,
+      rotationZ: transform.rotationZ,
+      scale: size * 0.78,
+      grabbed: pinching,
+    },
+  };
+}
+
 export default function ARExperience() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const threeCanvasRef = useRef<HTMLCanvasElement>(null);
+  const ring3DRef = useRef<Ring3DRenderer | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const detectorRef = useRef<{ detectForVideo: (video: HTMLVideoElement, timestamp: number) => { landmarks: Point[][] }; close: () => void } | null>(null);
+  const detectorRef = useRef<{ detectForVideo: (video: HTMLVideoElement, timestamp: number) => { landmarks: Point[][]; worldLandmarks?: Point[][] }; close: () => void } | null>(null);
   const ringImageRef = useRef<HTMLImageElement | null>(null);
   const ringBackImageRef = useRef<HTMLImageElement | null>(null);
   const frameRef = useRef<number | null>(null);
   const lastVideoTimeRef = useRef(-1);
   const latestLandmarksRef = useRef<Point[][]>([]);
+  const latestWorldLandmarksRef = useRef<Point[][]>([]);
   const facingRef = useRef<CameraFacing>("environment");
   const styleRef = useRef(ringStyles[0]);
   const ringSizeRef = useRef(1);
@@ -237,6 +336,9 @@ export default function ARExperience() {
   const inspectTransformRef = useRef<InspectTransform>({
     x: 0,
     y: 0,
+    rotationX: -0.25,
+    rotationY: 0.35,
+    rotationZ: 0,
     rotation: 0,
     flipScale: 1,
     grabbed: false,
@@ -258,6 +360,7 @@ export default function ARExperience() {
 
   useEffect(() => {
     styleRef.current = ringStyles[styleIndex];
+    ring3DRef.current?.setFinish(ringStyles[styleIndex].id as RingFinish);
   }, [styleIndex]);
 
   useEffect(() => {
@@ -268,9 +371,21 @@ export default function ARExperience() {
     modeRef.current = mode;
     inspectTransformRef.current.grabbed = false;
     inspectTransformRef.current.frontSign = 0;
+    if (mode === "try-on") ring3DRef.current?.clear();
     gestureStateRef.current = handFound ? "ready" : "searching";
     setGestureState(handFound ? "ready" : "searching");
   }, [mode, handFound]);
+
+  useEffect(() => {
+    if (state !== "live" || !threeCanvasRef.current) return;
+    const renderer = new Ring3DRenderer(threeCanvasRef.current);
+    ring3DRef.current = renderer;
+    renderer.setFinish(styleRef.current.id as RingFinish);
+    return () => {
+      renderer.dispose();
+      if (ring3DRef.current === renderer) ring3DRef.current = null;
+    };
+  }, [state]);
 
   useEffect(() => {
     const image = new window.Image();
@@ -333,17 +448,20 @@ export default function ARExperience() {
 
     if (detectorRef.current && video.currentTime !== lastVideoTimeRef.current) {
       lastVideoTimeRef.current = video.currentTime;
-      latestLandmarksRef.current = detectorRef.current.detectForVideo(video, performance.now()).landmarks;
+      const detection = detectorRef.current.detectForVideo(video, performance.now());
+      latestLandmarksRef.current = detection.landmarks;
+      latestWorldLandmarksRef.current = detection.worldLandmarks || [];
       setHandFound(latestLandmarksRef.current.length > 0);
     }
 
     const hand = latestLandmarksRef.current[0];
     if (modeRef.current === "try-on" && hand) {
       drawRing(context, hand, videoWidth, videoHeight, coverScale, offsetX, offsetY, mirrored, styleRef.current, ringSizeRef.current, ringImageRef.current);
+      ring3DRef.current?.clear();
     } else if (modeRef.current === "inspect") {
-      const pinching = drawInspectableRing(
-        context,
+      const { pose, pinching } = updateInspectPose(
         hand,
+        latestWorldLandmarksRef.current[0],
         canvas,
         videoWidth,
         videoHeight,
@@ -351,12 +469,11 @@ export default function ARExperience() {
         offsetX,
         offsetY,
         mirrored,
-        styleRef.current,
+        pixelRatio,
         ringSizeRef.current,
-        ringImageRef.current,
-        ringBackImageRef.current,
         inspectTransformRef.current,
       );
+      ring3DRef.current?.render(pose);
       const nextGestureState: GestureState = !hand ? "searching" : pinching ? "grabbed" : "ready";
       if (nextGestureState !== gestureStateRef.current) {
         gestureStateRef.current = nextGestureState;
@@ -446,6 +563,10 @@ export default function ARExperience() {
   const capture = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+    const context = canvas.getContext("2d");
+    if (modeRef.current === "inspect" && context && threeCanvasRef.current) {
+      context.drawImage(threeCanvasRef.current, 0, 0, canvas.width, canvas.height);
+    }
     canvas.toBlob((blob) => {
       if (!blob) return;
       const url = URL.createObjectURL(blob);
@@ -466,6 +587,7 @@ export default function ARExperience() {
     <div className="fixed inset-0 z-[100] overflow-hidden bg-[#dededb] text-white">
       <video ref={videoRef} className="hidden" playsInline muted />
       <canvas ref={canvasRef} className={`h-full w-full transition-opacity duration-700 ${state === "live" ? "opacity-100" : "opacity-0"}`} />
+      <canvas ref={threeCanvasRef} className={`pointer-events-none absolute inset-0 h-full w-full transition-opacity duration-300 ${state === "live" && mode === "inspect" ? "opacity-100" : "opacity-0"}`} />
 
       {state !== "live" && (
         <div className="absolute inset-0 overflow-hidden bg-[#e7e7e4] text-[#151515]">
@@ -530,7 +652,7 @@ export default function ARExperience() {
               ? handFound ? "พบมือแล้ว—ขยับเพื่อดูทุกมุม" : "วางหลังมือให้อยู่กลางภาพ"
               : gestureState === "grabbed"
                 ? "หยิบแล้ว—ขยับและเอียงมือเพื่อพลิกดู"
-                : handFound ? "จีบนิ้วโป้งกับนิ้วชี้เพื่อหยิบ" : "ยื่นมือเข้ากล้องเพื่อเริ่มหยิบ"}
+                : handFound ? "จีบนิ้วเพื่อหยิบ แล้วหมุนข้อมือดูรอบ 360°" : "ยื่นมือเข้ากล้องเพื่อเริ่มหยิบ"}
           </div>
 
           <div className="pointer-events-auto mx-auto w-full max-w-md rounded-[28px] border border-white/20 bg-black/35 p-3 shadow-2xl backdrop-blur-xl">
