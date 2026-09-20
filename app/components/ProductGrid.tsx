@@ -94,7 +94,7 @@ export function ProductGrid() {
           {products.map((product) => (
             <Link
               key={product.id}
-              href={`/product/${product.id}`}
+              href={`/ar?product=${product.id}`}
               className="group block"
             >
               <div className="card overflow-hidden">
@@ -121,7 +121,7 @@ export function ProductGrid() {
                   {/* Quick View Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-center pb-6">
                     <span className="bg-white text-gray-900 px-6 py-3 text-sm font-semibold tracking-wider uppercase rounded-full shadow-lg">
-                      Quick View
+                      Try in AR
                     </span>
                   </div>
                 </div>

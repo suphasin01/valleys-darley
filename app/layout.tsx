@@ -15,6 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://valleys-darley.vercel.app"),
   title: "Valley's Darley - Handmade Jewelry | Silver Edition 2025",
   description: "Enter the world of endless possibilities. Handmade sterling silver jewelry crafted with passion in Bangkok. Discover unique pieces that tell your story.",
 };
@@ -25,7 +26,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="th">
       <head>
       </head>
       <body

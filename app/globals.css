@@ -16,12 +16,21 @@
     font-feature-settings: 'liga' 1, 'calt' 1;
   }
 
+  button, a, input {
+    -webkit-tap-highlight-color: transparent;
+  }
+
   /* Smooth text rendering */
   p, h1, h2, h3, h4, h5, h6 {
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+}
+
+.safe-area {
+  padding-top: max(1.25rem, env(safe-area-inset-top));
+  padding-bottom: max(2rem, env(safe-area-inset-bottom));
 }
 
 @layer components {
