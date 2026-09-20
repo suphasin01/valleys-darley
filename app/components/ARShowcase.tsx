@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 
@@ -61,11 +62,17 @@ export function ARShowcase() {
           <div className="absolute inset-[18%] rounded-full border border-dashed border-black/15 animate-[spin_28s_linear_infinite]" />
 
           <div className="relative h-[380px] w-[310px] sm:h-[510px] sm:w-[420px]">
-            <div className="absolute left-1/2 top-1/2 h-40 w-64 -translate-x-1/2 -translate-y-1/2 -rotate-12 rounded-[48%] border-[22px] border-[#c7c8ca] shadow-[inset_10px_8px_20px_rgba(255,255,255,.95),inset_-12px_-10px_24px_rgba(0,0,0,.22),0_35px_55px_rgba(0,0,0,.18)] sm:h-56 sm:w-[350px] sm:border-[30px]" />
-            <div className="absolute left-[47%] top-[22%] h-24 w-24 rotate-[32deg] bg-[linear-gradient(145deg,#fff_5%,#9b9da0_38%,#f6f6f6_63%,#777_100%)] shadow-[0_22px_35px_rgba(0,0,0,.25)] [clip-path:polygon(50%_0%,90%_20%,100%_65%,50%_100%,0_65%,10%_20%)] sm:h-32 sm:w-32">
-              <div className="absolute inset-[17%] bg-[linear-gradient(145deg,#eefcff,#87949f_45%,#fcffff_70%)] opacity-90 [clip-path:polygon(50%_0%,100%_36%,82%_100%,18%_100%,0_36%)]" />
+            <div className="absolute inset-[4%] rotate-[18deg] drop-shadow-[0_42px_28px_rgba(0,0,0,.24)] transition-transform duration-700 hover:rotate-[12deg] hover:scale-[1.03]">
+              <Image
+                src="/images/ar-ring-silver-v2.png"
+                alt="Valley's Darley sterling silver ring"
+                fill
+                priority
+                className="object-contain"
+                sizes="(max-width: 640px) 310px, 420px"
+              />
             </div>
-            <Sparkle className="absolute right-[5%] top-[19%] h-12 w-12 text-white drop-shadow-lg sm:h-16 sm:w-16" />
+            <Sparkle className="absolute right-[9%] top-[19%] h-12 w-12 text-white drop-shadow-lg sm:h-16 sm:w-16" />
             <Sparkle className="absolute bottom-[20%] left-[7%] h-7 w-7 text-white/80" />
           </div>
 

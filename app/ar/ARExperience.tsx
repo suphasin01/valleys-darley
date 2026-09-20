@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import NextImage from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 type CameraFacing = "environment" | "user";
@@ -25,6 +26,7 @@ function drawRing(
   mirrored: boolean,
   style: (typeof ringStyles)[number],
   size: number,
+  ringImage: HTMLImageElement | null,
 ) {
   const mapPoint = (point: Point) => ({
     x: offsetX + (mirrored ? 1 - point.x : point.x) * videoWidth * scale,
@@ -36,18 +38,34 @@ function drawRing(
   const palmIndex = mapPoint(landmarks[5]);
   const palmPinky = mapPoint(landmarks[17]);
   const palmWidth = Math.hypot(palmIndex.x - palmPinky.x, palmIndex.y - palmPinky.y);
-  const width = Math.max(25, palmWidth * 0.28 * size);
-  const height = width * 0.38;
-  const x = base.x * 0.56 + joint.x * 0.44;
-  const y = base.y * 0.56 + joint.y * 0.44;
+  const width = Math.max(56, palmWidth * 0.62 * size);
+  const height = width * 1.05;
+  const x = base.x * 0.5 + joint.x * 0.5;
+  const y = base.y * 0.5 + joint.y * 0.5;
   const fingerAngle = Math.atan2(joint.y - base.y, joint.x - base.x);
 
   context.save();
   context.translate(x, y);
-  context.rotate(fingerAngle + Math.PI / 2);
+  context.rotate(fingerAngle - Math.PI / 2);
+
+  if (ringImage?.complete && ringImage.naturalWidth > 0) {
+    context.shadowColor = "rgba(0, 0, 0, .28)";
+    context.shadowBlur = width * 0.09;
+    context.shadowOffsetY = width * 0.04;
+    context.filter = style.id === "onyx"
+      ? "brightness(.62) contrast(1.3) saturate(.35)"
+      : style.id === "rose"
+        ? "sepia(.34) saturate(1.55) hue-rotate(315deg) brightness(.98)"
+        : "none";
+    context.drawImage(ringImage, -width / 2, -height / 2, width, height);
+    context.restore();
+    return;
+  }
+
+  context.rotate(Math.PI / 2);
   context.shadowColor = "rgba(0, 0, 0, .34)";
-  context.shadowBlur = width * 0.18;
-  context.shadowOffsetY = width * 0.08;
+  context.shadowBlur = width * 0.08;
+  context.shadowOffsetY = width * 0.04;
 
   const metal = context.createLinearGradient(-width / 2, 0, width / 2, 0);
   metal.addColorStop(0, "#5f6164");
@@ -57,12 +75,12 @@ function drawRing(
   metal.addColorStop(1, "#55575a");
 
   context.beginPath();
-  context.ellipse(0, 0, width / 2, height / 2, 0, 0, Math.PI * 2);
-  context.lineWidth = Math.max(5, width * 0.14);
+  context.ellipse(0, 0, width * 0.22, height * 0.12, 0, 0, Math.PI * 2);
+  context.lineWidth = Math.max(5, width * 0.05);
   context.strokeStyle = metal;
   context.stroke();
 
-  const gemSize = width * 0.33;
+  const gemSize = width * 0.16;
   context.shadowColor = "rgba(255,255,255,.8)";
   context.shadowBlur = gemSize * 0.7;
   context.beginPath();
@@ -70,7 +88,7 @@ function drawRing(
     const angle = (Math.PI * 2 * index) / 8 - Math.PI / 8;
     const radius = index % 2 ? gemSize * 0.38 : gemSize * 0.52;
     const gemX = Math.cos(angle) * radius;
-    const gemY = -height * 0.62 + Math.sin(angle) * radius;
+    const gemY = -height * 0.15 + Math.sin(angle) * radius;
     if (index === 0) context.moveTo(gemX, gemY);
     else context.lineTo(gemX, gemY);
   }
@@ -92,6 +110,7 @@ export default function ARExperience() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const detectorRef = useRef<{ detectForVideo: (video: HTMLVideoElement, timestamp: number) => { landmarks: Point[][] }; close: () => void } | null>(null);
+  const ringImageRef = useRef<HTMLImageElement | null>(null);
   const frameRef = useRef<number | null>(null);
   const lastVideoTimeRef = useRef(-1);
   const latestLandmarksRef = useRef<Point[][]>([]);
@@ -116,6 +135,13 @@ export default function ARExperience() {
   useEffect(() => {
     ringSizeRef.current = ringSize;
   }, [ringSize]);
+
+  useEffect(() => {
+    const image = new window.Image();
+    image.decoding = "async";
+    image.src = "/images/ar-ring-silver-v2.png";
+    ringImageRef.current = image;
+  }, []);
 
   const stopCamera = useCallback(() => {
     if (frameRef.current) cancelAnimationFrame(frameRef.current);
@@ -172,7 +198,7 @@ export default function ARExperience() {
 
     const hand = latestLandmarksRef.current[0];
     if (hand) {
-      drawRing(context, hand, videoWidth, videoHeight, coverScale, offsetX, offsetY, mirrored, styleRef.current, ringSizeRef.current);
+      drawRing(context, hand, videoWidth, videoHeight, coverScale, offsetX, offsetY, mirrored, styleRef.current, ringSizeRef.current, ringImageRef.current);
     }
 
     frameRef.current = requestAnimationFrame(renderFrame);
@@ -280,7 +306,9 @@ export default function ARExperience() {
 
       {state !== "live" && (
         <div className="absolute inset-0 overflow-hidden bg-[#e7e7e4] text-[#151515]">
-          <div className="absolute left-1/2 top-[43%] h-56 w-80 -translate-x-1/2 -translate-y-1/2 -rotate-12 rounded-[48%] border-[26px] border-[#c4c5c6] opacity-70 shadow-[inset_10px_8px_20px_white,inset_-12px_-10px_24px_rgba(0,0,0,.22),0_35px_55px_rgba(0,0,0,.18)]" />
+          <div className="absolute left-1/2 top-[43%] h-[430px] w-[410px] -translate-x-1/2 -translate-y-1/2 rotate-[18deg] opacity-55 drop-shadow-[0_35px_35px_rgba(0,0,0,.22)]">
+            <NextImage src="/images/ar-ring-silver-v2.png" alt="" fill priority className="object-contain" sizes="410px" />
+          </div>
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_42%,transparent_0,transparent_15%,rgba(231,231,228,.6)_45%,#e7e7e4_72%)]" />
           <div className="relative flex h-full flex-col px-5 pb-8 pt-5 safe-area">
             <div className="flex items-center justify-between">
