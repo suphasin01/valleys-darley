@@ -6,8 +6,19 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 type CameraFacing = "environment" | "user";
 type ExperienceState = "intro" | "loading" | "live" | "error";
+type ARMode = "try-on" | "inspect";
+type GestureState = "searching" | "ready" | "grabbed";
 
 type Point = { x: number; y: number; z?: number };
+type InspectTransform = {
+  x: number;
+  y: number;
+  rotation: number;
+  flipScale: number;
+  grabbed: boolean;
+  initialized: boolean;
+  frontSign: number;
+};
 
 const ringStyles = [
   { id: "silver", name: "Sterling", color: "#e9ecef", gem: "#e8fbff" },
@@ -105,24 +116,141 @@ function drawRing(
   context.restore();
 }
 
+function clamp(value: number, minimum: number, maximum: number) {
+  return Math.min(maximum, Math.max(minimum, value));
+}
+
+function drawInspectableRing(
+  context: CanvasRenderingContext2D,
+  landmarks: Point[] | undefined,
+  canvas: HTMLCanvasElement,
+  videoWidth: number,
+  videoHeight: number,
+  scale: number,
+  offsetX: number,
+  offsetY: number,
+  mirrored: boolean,
+  style: (typeof ringStyles)[number],
+  size: number,
+  frontImage: HTMLImageElement | null,
+  backImage: HTMLImageElement | null,
+  transform: InspectTransform,
+) {
+  const mapPoint = (point: Point) => ({
+    x: offsetX + (mirrored ? 1 - point.x : point.x) * videoWidth * scale,
+    y: offsetY + point.y * videoHeight * scale,
+  });
+
+  if (!transform.initialized) {
+    transform.x = canvas.width / 2;
+    transform.y = canvas.height * 0.43;
+    transform.initialized = true;
+  }
+
+  let pinching = false;
+  let showingBack = false;
+
+  if (landmarks) {
+    const thumb = mapPoint(landmarks[4]);
+    const indexTip = mapPoint(landmarks[8]);
+    const wrist = mapPoint(landmarks[0]);
+    const middleMcp = mapPoint(landmarks[9]);
+    const middleTip = mapPoint(landmarks[12]);
+    const indexMcp = mapPoint(landmarks[5]);
+    const pinkyMcp = mapPoint(landmarks[17]);
+    const palmWidth = Math.max(1, Math.hypot(indexMcp.x - pinkyMcp.x, indexMcp.y - pinkyMcp.y));
+    const pinchDistance = Math.hypot(thumb.x - indexTip.x, thumb.y - indexTip.y) / palmWidth;
+    pinching = transform.grabbed ? pinchDistance < 0.43 : pinchDistance < 0.3;
+    transform.grabbed = pinching;
+
+    if (pinching) {
+      const pinchX = (thumb.x + indexTip.x) / 2;
+      const pinchY = (thumb.y + indexTip.y) / 2;
+      transform.x += (pinchX - transform.x) * 0.32;
+      transform.y += (pinchY - transform.y) * 0.32;
+
+      const targetRotation = Math.atan2(middleTip.y - wrist.y, middleTip.x - wrist.x) + Math.PI / 2;
+      let rotationDelta = targetRotation - transform.rotation;
+      while (rotationDelta > Math.PI) rotationDelta -= Math.PI * 2;
+      while (rotationDelta < -Math.PI) rotationDelta += Math.PI * 2;
+      transform.rotation += rotationDelta * 0.2;
+
+      const orientedArea = (indexMcp.x - wrist.x) * (pinkyMcp.y - wrist.y)
+        - (indexMcp.y - wrist.y) * (pinkyMcp.x - wrist.x);
+      const areaSign = Math.sign(orientedArea) || 1;
+      if (!transform.frontSign) transform.frontSign = areaSign;
+      showingBack = areaSign !== transform.frontSign;
+
+      const palmLength = Math.max(1, Math.hypot(middleMcp.x - wrist.x, middleMcp.y - wrist.y));
+      const openness = clamp(palmWidth / (palmLength * 1.25), 0.08, 1);
+      const targetFlip = (showingBack ? -1 : 1) * openness;
+      transform.flipScale += (targetFlip - transform.flipScale) * 0.22;
+    }
+
+    context.save();
+    context.strokeStyle = pinching ? "rgba(255,255,255,.95)" : "rgba(255,255,255,.48)";
+    context.lineWidth = Math.max(2, canvas.width * 0.0025);
+    context.setLineDash(pinching ? [] : [8, 8]);
+    context.beginPath();
+    context.arc((thumb.x + indexTip.x) / 2, (thumb.y + indexTip.y) / 2, pinching ? 22 : 30, 0, Math.PI * 2);
+    context.stroke();
+    context.restore();
+  }
+
+  const baseSize = Math.min(canvas.width * 0.5, canvas.height * 0.34) * size;
+  const image = transform.flipScale < 0 ? backImage : frontImage;
+  if (image?.complete && image.naturalWidth > 0) {
+    context.save();
+    context.translate(transform.x, transform.y);
+    context.rotate(transform.rotation);
+    context.scale(Math.max(0.08, Math.abs(transform.flipScale)), 1);
+    context.shadowColor = transform.grabbed ? "rgba(255,255,255,.48)" : "rgba(0,0,0,.34)";
+    context.shadowBlur = transform.grabbed ? baseSize * 0.16 : baseSize * 0.1;
+    context.shadowOffsetY = baseSize * 0.05;
+    context.filter = style.id === "onyx"
+      ? "brightness(.62) contrast(1.3) saturate(.35)"
+      : style.id === "rose"
+        ? "sepia(.34) saturate(1.55) hue-rotate(315deg) brightness(.98)"
+        : "none";
+    context.drawImage(image, -baseSize / 2, -baseSize * 0.525, baseSize, baseSize * 1.05);
+    context.restore();
+  }
+
+  return pinching;
+}
+
 export default function ARExperience() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const detectorRef = useRef<{ detectForVideo: (video: HTMLVideoElement, timestamp: number) => { landmarks: Point[][] }; close: () => void } | null>(null);
   const ringImageRef = useRef<HTMLImageElement | null>(null);
+  const ringBackImageRef = useRef<HTMLImageElement | null>(null);
   const frameRef = useRef<number | null>(null);
   const lastVideoTimeRef = useRef(-1);
   const latestLandmarksRef = useRef<Point[][]>([]);
   const facingRef = useRef<CameraFacing>("environment");
   const styleRef = useRef(ringStyles[0]);
   const ringSizeRef = useRef(1);
+  const modeRef = useRef<ARMode>("try-on");
+  const gestureStateRef = useRef<GestureState>("searching");
+  const inspectTransformRef = useRef<InspectTransform>({
+    x: 0,
+    y: 0,
+    rotation: 0,
+    flipScale: 1,
+    grabbed: false,
+    initialized: false,
+    frontSign: 0,
+  });
   const [state, setState] = useState<ExperienceState>("intro");
   const [error, setError] = useState("");
   const [facing, setFacing] = useState<CameraFacing>("environment");
   const [styleIndex, setStyleIndex] = useState(0);
   const [ringSize, setRingSize] = useState(1);
   const [handFound, setHandFound] = useState(false);
+  const [mode, setMode] = useState<ARMode>("try-on");
+  const [gestureState, setGestureState] = useState<GestureState>("searching");
 
   useEffect(() => {
     facingRef.current = facing;
@@ -137,10 +265,23 @@ export default function ARExperience() {
   }, [ringSize]);
 
   useEffect(() => {
+    modeRef.current = mode;
+    inspectTransformRef.current.grabbed = false;
+    inspectTransformRef.current.frontSign = 0;
+    gestureStateRef.current = handFound ? "ready" : "searching";
+    setGestureState(handFound ? "ready" : "searching");
+  }, [mode, handFound]);
+
+  useEffect(() => {
     const image = new window.Image();
     image.decoding = "async";
     image.src = "/images/ar-ring-silver-v2.png";
     ringImageRef.current = image;
+
+    const backImage = new window.Image();
+    backImage.decoding = "async";
+    backImage.src = "/images/ar-ring-silver-back-v2.png";
+    ringBackImageRef.current = backImage;
   }, []);
 
   const stopCamera = useCallback(() => {
@@ -197,8 +338,30 @@ export default function ARExperience() {
     }
 
     const hand = latestLandmarksRef.current[0];
-    if (hand) {
+    if (modeRef.current === "try-on" && hand) {
       drawRing(context, hand, videoWidth, videoHeight, coverScale, offsetX, offsetY, mirrored, styleRef.current, ringSizeRef.current, ringImageRef.current);
+    } else if (modeRef.current === "inspect") {
+      const pinching = drawInspectableRing(
+        context,
+        hand,
+        canvas,
+        videoWidth,
+        videoHeight,
+        coverScale,
+        offsetX,
+        offsetY,
+        mirrored,
+        styleRef.current,
+        ringSizeRef.current,
+        ringImageRef.current,
+        ringBackImageRef.current,
+        inspectTransformRef.current,
+      );
+      const nextGestureState: GestureState = !hand ? "searching" : pinching ? "grabbed" : "ready";
+      if (nextGestureState !== gestureStateRef.current) {
+        gestureStateRef.current = nextGestureState;
+        setGestureState(nextGestureState);
+      }
     }
 
     frameRef.current = requestAnimationFrame(renderFrame);
@@ -318,7 +481,7 @@ export default function ARExperience() {
             <div className="mx-auto my-auto max-w-sm text-center">
               <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.32em] text-black/45">Virtual try-on</p>
               <h1 className="text-5xl font-semibold leading-[0.9] tracking-[-0.065em]">Your hand.<br /><span className="font-serif font-normal italic text-black/55">Our craft.</span></h1>
-              <p className="mx-auto mt-6 max-w-xs text-sm leading-6 text-black/55">หันกล้องไปที่หลังมือ กางนิ้วเล็กน้อย แล้วระบบจะลองสวมแหวนให้คุณแบบเรียลไทม์</p>
+              <p className="mx-auto mt-6 max-w-xs text-sm leading-6 text-black/55">ลองสวมบนมือ หรือจีบนิ้วเพื่อหยิบ ขยับ หมุน และพลิกดูตัวเรือนได้แบบเรียลไทม์</p>
               {error && <p role="alert" className="mt-5 rounded-2xl bg-red-50/90 p-4 text-xs leading-5 text-red-700">{error}</p>}
             </div>
             <div className="mx-auto w-full max-w-sm">
@@ -338,14 +501,36 @@ export default function ARExperience() {
 
       {state === "live" && (
         <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-4 pb-6 text-white [text-shadow:0_1px_12px_rgba(0,0,0,.45)]">
-          <div className="flex items-start justify-between">
-            <Link href="/" className="pointer-events-auto rounded-full bg-black/35 px-4 py-2 text-xs font-bold backdrop-blur-md">Valley&apos;s Darley</Link>
-            <button type="button" onClick={switchCamera} aria-label="สลับกล้อง" className="pointer-events-auto grid h-11 w-11 place-items-center rounded-full bg-black/35 text-xl backdrop-blur-md">↻</button>
+          <div>
+            <div className="flex items-start justify-between">
+              <Link href="/" className="pointer-events-auto rounded-full bg-black/35 px-4 py-2 text-xs font-bold backdrop-blur-md">Valley&apos;s Darley</Link>
+              <button type="button" onClick={switchCamera} aria-label="สลับกล้อง" className="pointer-events-auto grid h-11 w-11 place-items-center rounded-full bg-black/35 text-xl backdrop-blur-md">↻</button>
+            </div>
+            <div className="pointer-events-auto mx-auto mt-3 flex w-fit rounded-full border border-white/20 bg-black/35 p-1 backdrop-blur-xl">
+              <button
+                type="button"
+                onClick={() => setMode("try-on")}
+                className={`rounded-full px-5 py-2 text-[11px] font-medium transition ${mode === "try-on" ? "bg-white text-black [text-shadow:none]" : "text-white"}`}
+              >
+                ลองสวม
+              </button>
+              <button
+                type="button"
+                onClick={() => setMode("inspect")}
+                className={`rounded-full px-5 py-2 text-[11px] font-medium transition ${mode === "inspect" ? "bg-white text-black [text-shadow:none]" : "text-white"}`}
+              >
+                หยิบดู
+              </button>
+            </div>
           </div>
 
           <div className="self-center rounded-full bg-black/30 px-4 py-2 text-[11px] font-medium backdrop-blur-md">
-            <span className={`mr-2 inline-block h-2 w-2 rounded-full ${handFound ? "bg-emerald-400" : "bg-amber-300 animate-pulse"}`} />
-            {handFound ? "พบมือแล้ว—ขยับเพื่อดูทุกมุม" : "วางหลังมือให้อยู่กลางภาพ"}
+            <span className={`mr-2 inline-block h-2 w-2 rounded-full ${gestureState === "grabbed" ? "bg-sky-300" : handFound ? "bg-emerald-400" : "bg-amber-300 animate-pulse"}`} />
+            {mode === "try-on"
+              ? handFound ? "พบมือแล้ว—ขยับเพื่อดูทุกมุม" : "วางหลังมือให้อยู่กลางภาพ"
+              : gestureState === "grabbed"
+                ? "หยิบแล้ว—ขยับและเอียงมือเพื่อพลิกดู"
+                : handFound ? "จีบนิ้วโป้งกับนิ้วชี้เพื่อหยิบ" : "ยื่นมือเข้ากล้องเพื่อเริ่มหยิบ"}
           </div>
 
           <div className="pointer-events-auto mx-auto w-full max-w-md rounded-[28px] border border-white/20 bg-black/35 p-3 shadow-2xl backdrop-blur-xl">
