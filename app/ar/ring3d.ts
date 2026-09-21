@@ -105,15 +105,15 @@ function createTryOnModel(metal: THREE.MeshStandardMaterial, gemMaterial: THREE.
   const group = new THREE.Group();
   group.rotation.order = "YXZ";
 
-  // Only the near half is rendered, so the band appears to wrap around the
-  // finger instead of floating across the skin.
+  // The band curves through depth around the finger axis. Only its camera-side
+  // half is rendered so the hidden portion does not paint over the skin.
   const frontBand = new THREE.Mesh(
-    new THREE.TorusGeometry(1.03, 0.13, 28, 96, Math.PI),
+    new THREE.TorusGeometry(0.9, 0.12, 28, 96, Math.PI),
     metal,
   );
-  frontBand.rotation.z = Math.PI;
-  frontBand.scale.y = 0.34;
-  frontBand.position.z = 0.08;
+  frontBand.rotation.x = -Math.PI / 2;
+  frontBand.scale.y = 0.48;
+  frontBand.position.z = 0.02;
   group.add(frontBand);
 
   const gallery = new THREE.Mesh(new THREE.CylinderGeometry(0.48, 0.62, 0.3, 48, 1, true), metal);
@@ -151,8 +151,8 @@ function createTryOnModel(metal: THREE.MeshStandardMaterial, gemMaterial: THREE.
   [-1, 1].forEach((direction) => {
     const shoulder = new THREE.Mesh(shoulderGeometry, metal);
     shoulder.scale.set(1.75, 0.52, 0.68);
-    shoulder.position.set(direction * 0.63, -0.17, 0.15);
-    shoulder.rotation.z = direction * 0.2;
+    shoulder.position.set(direction * 0.57, -0.12, 0.2);
+    shoulder.rotation.z = direction * 0.28;
     group.add(shoulder);
   });
 

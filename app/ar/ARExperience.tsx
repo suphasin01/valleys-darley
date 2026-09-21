@@ -10,6 +10,7 @@ type CameraFacing = "environment" | "user";
 type ExperienceState = "intro" | "loading" | "live" | "error";
 type ARMode = "try-on" | "inspect";
 type GestureState = "searching" | "ready" | "grabbed";
+type TryOnFinger = "index" | "middle" | "ring" | "pinky";
 
 type Point = { x: number; y: number; z?: number };
 type InspectTransform = {
@@ -32,6 +33,19 @@ const ringStyles = [
   { id: "silver", name: "Sterling", color: "#e9ecef", gem: "#e8fbff" },
   { id: "onyx", name: "Onyx", color: "#6e7175", gem: "#18191b" },
   { id: "rose", name: "Rose", color: "#e4aaa1", gem: "#fff2ef" },
+];
+
+const fingerOptions: Array<{
+  id: TryOnFinger;
+  label: string;
+  base: number;
+  joint: number;
+  neighbours: number[];
+}> = [
+  { id: "index", label: "ชี้", base: 5, joint: 6, neighbours: [9] },
+  { id: "middle", label: "กลาง", base: 9, joint: 10, neighbours: [5, 13] },
+  { id: "ring", label: "นาง", base: 13, joint: 14, neighbours: [9, 17] },
+  { id: "pinky", label: "ก้อย", base: 17, joint: 18, neighbours: [13] },
 ];
 
 function drawRing(
@@ -253,19 +267,26 @@ function getTryOnPose(
   mirrored: boolean,
   pixelRatio: number,
   size: number,
+  selectedFinger: TryOnFinger,
 ): RingPose {
   const mapPoint = (point: Point) => ({
     x: (offsetX + (mirrored ? 1 - point.x : point.x) * videoWidth * scale) / pixelRatio,
     y: (offsetY + point.y * videoHeight * scale) / pixelRatio,
   });
-  const base = mapPoint(landmarks[13]);
-  const joint = mapPoint(landmarks[14]);
-  const middleBase = mapPoint(landmarks[9]);
-  const pinkyBase = mapPoint(landmarks[17]);
-  const centerSpacingA = Math.hypot(base.x - middleBase.x, base.y - middleBase.y) * 0.82;
-  const centerSpacingB = Math.hypot(base.x - pinkyBase.x, base.y - pinkyBase.y) * 0.88;
+  const finger = fingerOptions.find((option) => option.id === selectedFinger) || fingerOptions[2];
+  const base = mapPoint(landmarks[finger.base]);
+  const joint = mapPoint(landmarks[finger.joint]);
+  const neighbourSpacing = finger.neighbours.reduce((total, landmarkIndex) => {
+    const neighbour = mapPoint(landmarks[landmarkIndex]);
+    return total + Math.hypot(base.x - neighbour.x, base.y - neighbour.y);
+  }, 0) / finger.neighbours.length;
+  const palmIndex = mapPoint(landmarks[5]);
+  const palmPinky = mapPoint(landmarks[17]);
+  const palmWidth = Math.hypot(palmIndex.x - palmPinky.x, palmIndex.y - palmPinky.y);
+  const centerSpacing = neighbourSpacing * 0.82;
   const boneEstimate = Math.hypot(base.x - joint.x, base.y - joint.y) * 0.68;
-  const estimates = [centerSpacingA, centerSpacingB, boneEstimate].sort((a, b) => a - b);
+  const palmEstimate = palmWidth * (selectedFinger === "pinky" ? 0.19 : 0.23);
+  const estimates = [centerSpacing, boneEstimate, palmEstimate].sort((a, b) => a - b);
   const fingerWidth = estimates[1];
   const orientation = worldLandmarks || landmarks;
   const toScenePoint = (point: Point) => new Vector3(
@@ -273,8 +294,8 @@ function getTryOnPose(
     -point.y,
     -(point.z || 0),
   );
-  const ringBase = toScenePoint(orientation[13]);
-  const ringJoint = toScenePoint(orientation[14]);
+  const ringBase = toScenePoint(orientation[finger.base]);
+  const ringJoint = toScenePoint(orientation[finger.joint]);
   const middleKnuckle = toScenePoint(orientation[9]);
   const pinkyKnuckle = toScenePoint(orientation[17]);
   const fingerAxis = ringJoint.sub(ringBase).normalize();
@@ -436,6 +457,7 @@ export default function ARExperience() {
   const facingRef = useRef<CameraFacing>("environment");
   const styleRef = useRef(ringStyles[0]);
   const ringSizeRef = useRef(1);
+  const selectedFingerRef = useRef<TryOnFinger>("ring");
   const modeRef = useRef<ARMode>("try-on");
   const gestureStateRef = useRef<GestureState>("searching");
   const inspectTransformRef = useRef<InspectTransform>({
@@ -458,6 +480,7 @@ export default function ARExperience() {
   const [facing, setFacing] = useState<CameraFacing>("environment");
   const [styleIndex, setStyleIndex] = useState(0);
   const [ringSize, setRingSize] = useState(1);
+  const [selectedFinger, setSelectedFinger] = useState<TryOnFinger>("ring");
   const [handFound, setHandFound] = useState(false);
   const [mode, setMode] = useState<ARMode>("try-on");
   const [gestureState, setGestureState] = useState<GestureState>("searching");
@@ -474,6 +497,10 @@ export default function ARExperience() {
   useEffect(() => {
     ringSizeRef.current = ringSize;
   }, [ringSize]);
+
+  useEffect(() => {
+    selectedFingerRef.current = selectedFinger;
+  }, [selectedFinger]);
 
   useEffect(() => {
     modeRef.current = mode;
@@ -563,6 +590,7 @@ export default function ARExperience() {
         mirrored,
         pixelRatio,
         ringSizeRef.current,
+        selectedFingerRef.current,
       );
       ring3DRef.current?.render(pose, "try-on");
     } else if (modeRef.current === "try-on") {
@@ -765,6 +793,24 @@ export default function ARExperience() {
           </div>
 
           <div className="pointer-events-auto mx-auto w-full max-w-md rounded-[28px] border border-white/20 bg-black/35 p-3 shadow-2xl backdrop-blur-xl">
+            {mode === "try-on" && (
+              <div className="mb-2 flex items-center gap-2 rounded-full bg-black/20 p-1">
+                <span className="pl-2 text-[9px] font-medium uppercase tracking-[0.15em] text-white/65">นิ้ว</span>
+                <div className="grid flex-1 grid-cols-4 gap-1">
+                  {fingerOptions.map((finger) => (
+                    <button
+                      type="button"
+                      key={finger.id}
+                      onClick={() => setSelectedFinger(finger.id)}
+                      aria-pressed={selectedFinger === finger.id}
+                      className={`rounded-full px-2 py-2 text-[10px] font-medium transition ${selectedFinger === finger.id ? "bg-white text-black [text-shadow:none]" : "text-white/80 hover:bg-white/10"}`}
+                    >
+                      {finger.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
             <div className="flex items-center gap-2">
               <div className="flex flex-1 gap-2">
                 {ringStyles.map((ringStyle, index) => (
