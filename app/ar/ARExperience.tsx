@@ -3,6 +3,7 @@
 import Link from "next/link";
 import NextImage from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Matrix4, Quaternion, Vector3 } from "three";
 import { Ring3DRenderer, type RingFinish, type RingPose } from "./ring3d";
 
 type CameraFacing = "environment" | "user";
@@ -257,16 +258,43 @@ function getTryOnPose(
   const estimates = [centerSpacingA, centerSpacingB, boneEstimate].sort((a, b) => a - b);
   const fingerWidth = estimates[1];
   const orientation = worldLandmarks || landmarks;
-  const fingerDepth = ((orientation[14].z || 0) - (orientation[13].z || 0)) * 7;
-  const acrossDepth = ((orientation[17].z || 0) - (orientation[5].z || 0)) * 5;
-  const fingerAngle = Math.atan2(joint.y - base.y, joint.x - base.x);
+  const toScenePoint = (point: Point) => new Vector3(
+    (mirrored ? -1 : 1) * point.x,
+    -point.y,
+    -(point.z || 0),
+  );
+  const ringBase = toScenePoint(orientation[13]);
+  const ringJoint = toScenePoint(orientation[14]);
+  const middleKnuckle = toScenePoint(orientation[9]);
+  const pinkyKnuckle = toScenePoint(orientation[17]);
+  const fingerAxis = ringJoint.sub(ringBase).normalize();
+  const handAcross = pinkyKnuckle.sub(middleKnuckle);
+
+  // Project the across-hand direction onto the plane perpendicular to the
+  // finger. Together these axes describe the full 3D pose of the ring finger.
+  const acrossAxis = handAcross
+    .addScaledVector(fingerAxis, -handAcross.dot(fingerAxis))
+    .normalize();
+  const surfaceNormal = acrossAxis.clone().cross(fingerAxis).normalize();
+
+  // The try-on model represents the visible upper half of the ring, so keep
+  // its gemstone on the camera-facing side while retaining its hand tilt.
+  if (surfaceNormal.z < 0) {
+    acrossAxis.multiplyScalar(-1);
+    surfaceNormal.multiplyScalar(-1);
+  }
+
+  const ringOrientation = new Quaternion().setFromRotationMatrix(
+    new Matrix4().makeBasis(acrossAxis, fingerAxis, surfaceNormal),
+  );
 
   return {
     x: base.x * 0.72 + joint.x * 0.28,
     y: base.y * 0.72 + joint.y * 0.28,
-    rotationX: clamp(-fingerDepth, -0.78, 0.78),
-    rotationY: clamp(mirrored ? -acrossDepth : acrossDepth, -0.72, 0.72),
-    rotationZ: fingerAngle + Math.PI / 2,
+    rotationX: 0,
+    rotationY: 0,
+    rotationZ: 0,
+    quaternion: [ringOrientation.x, ringOrientation.y, ringOrientation.z, ringOrientation.w],
     scale: 1,
     targetWidth: clamp(fingerWidth * 1.22 * size, 54, canvas.clientWidth * 0.28),
     grabbed: false,

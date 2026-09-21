@@ -9,6 +9,7 @@ export type RingPose = {
   rotationX: number;
   rotationY: number;
   rotationZ: number;
+  quaternion?: [number, number, number, number];
   scale: number;
   targetWidth?: number;
   grabbed: boolean;
@@ -240,9 +241,23 @@ export class Ring3DRenderer {
     activeRing.position.x += (normalizedX * visibleHalfWidth - activeRing.position.x) * 0.38;
     activeRing.position.y += (-normalizedY * visibleHalfHeight - activeRing.position.y) * 0.38;
     activeRing.position.z = 0;
-    activeRing.rotation.x = smoothAngle(activeRing.rotation.x, pose.rotationX, 0.28);
-    activeRing.rotation.y = smoothAngle(activeRing.rotation.y, pose.rotationY, 0.28);
-    activeRing.rotation.z = smoothAngle(activeRing.rotation.z, pose.rotationZ, 0.34);
+    if (pose.quaternion) {
+      const targetQuaternion = new THREE.Quaternion(...pose.quaternion);
+      if (activeRing.quaternion.dot(targetQuaternion) < 0) {
+        targetQuaternion.set(
+          -targetQuaternion.x,
+          -targetQuaternion.y,
+          -targetQuaternion.z,
+          -targetQuaternion.w,
+        );
+      }
+      if (activeWasVisible) activeRing.quaternion.slerp(targetQuaternion, 0.34);
+      else activeRing.quaternion.copy(targetQuaternion);
+    } else {
+      activeRing.rotation.x = smoothAngle(activeRing.rotation.x, pose.rotationX, 0.28);
+      activeRing.rotation.y = smoothAngle(activeRing.rotation.y, pose.rotationY, 0.28);
+      activeRing.rotation.z = smoothAngle(activeRing.rotation.z, pose.rotationZ, 0.34);
+    }
     const pulse = variant === "inspect" && pose.grabbed ? 1.04 + Math.sin(this.clock.elapsedTime * 7) * 0.015 : 1;
     const targetScale = pose.targetWidth
       ? ((pose.targetWidth / Math.max(1, width)) * visibleHalfWidth * 2) / 2.2
