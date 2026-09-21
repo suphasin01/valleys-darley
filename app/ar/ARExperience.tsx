@@ -23,6 +23,9 @@ type InspectTransform = {
   grabbed: boolean;
   initialized: boolean;
   frontSign: number;
+  grabYaw: number;
+  grabPitch: number;
+  grabRoll: number;
 };
 
 const ringStyles = [
@@ -231,6 +234,13 @@ function smoothAngle(current: number, target: number, amount: number) {
   return current + difference * amount;
 }
 
+function normalizeAngle(angle: number) {
+  let normalized = angle;
+  while (normalized > Math.PI) normalized -= Math.PI * 2;
+  while (normalized < -Math.PI) normalized += Math.PI * 2;
+  return normalized;
+}
+
 function getTryOnPose(
   landmarks: Point[],
   worldLandmarks: Point[] | undefined,
@@ -336,8 +346,8 @@ function updateInspectPose(
     const pinkyMcp = mapPoint(landmarks[17]);
     const palmWidth = Math.max(1, Math.hypot(indexMcp.x - pinkyMcp.x, indexMcp.y - pinkyMcp.y));
     const pinchDistance = Math.hypot(thumb.x - indexTip.x, thumb.y - indexTip.y) / palmWidth;
-    pinching = transform.grabbed ? pinchDistance < 0.44 : pinchDistance < 0.3;
-    transform.grabbed = pinching;
+    const wasGrabbed = transform.grabbed;
+    pinching = wasGrabbed ? pinchDistance < 0.44 : pinchDistance < 0.3;
 
     if (pinching) {
       const pinchX = (thumb.x + indexTip.x) / 2;
@@ -346,8 +356,6 @@ function updateInspectPose(
       transform.y += (pinchY - transform.y) * 0.34;
 
       const roll = Math.atan2(middleTip.y - wristScreen.y, middleTip.x - wristScreen.x) + Math.PI / 2;
-      transform.rotationZ = smoothAngle(transform.rotationZ, roll, 0.2);
-
       const orientation = worldLandmarks || landmarks;
       const wrist = orientation[0];
       const index = orientation[5];
@@ -363,9 +371,36 @@ function updateInspectPose(
       const nz = ux * vy - uy * vx;
       const yaw = Math.atan2(nx, nz);
       const pitch = Math.atan2(-ny, Math.hypot(nx, nz));
-      transform.rotationY = smoothAngle(transform.rotationY, mirrored ? -yaw : yaw, 0.19);
-      transform.rotationX = smoothAngle(transform.rotationX, pitch, 0.19);
+      const displayedYaw = mirrored ? -yaw : yaw;
+
+      if (!wasGrabbed) {
+        // A simple pinch always picks the ring up facing the camera. Hand
+        // rotation after this moment is applied relative to that front view.
+        transform.grabYaw = displayedYaw;
+        transform.grabPitch = pitch;
+        transform.grabRoll = roll;
+        transform.rotationX = 0;
+        transform.rotationY = 0;
+        transform.rotationZ = 0;
+      } else {
+        transform.rotationY = smoothAngle(
+          transform.rotationY,
+          normalizeAngle(displayedYaw - transform.grabYaw),
+          0.22,
+        );
+        transform.rotationX = smoothAngle(
+          transform.rotationX,
+          normalizeAngle(pitch - transform.grabPitch),
+          0.22,
+        );
+        transform.rotationZ = smoothAngle(
+          transform.rotationZ,
+          normalizeAngle(roll - transform.grabRoll),
+          0.22,
+        );
+      }
     }
+    transform.grabbed = pinching;
   } else {
     transform.grabbed = false;
   }
@@ -413,6 +448,9 @@ export default function ARExperience() {
     grabbed: false,
     initialized: false,
     frontSign: 0,
+    grabYaw: 0,
+    grabPitch: 0,
+    grabRoll: 0,
   });
   const [state, setState] = useState<ExperienceState>("intro");
   const [error, setError] = useState("");
