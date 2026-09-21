@@ -238,8 +238,10 @@ export class Ring3DRenderer {
     const activeWasVisible = activeRing.visible;
     this.ring.visible = variant === "inspect";
     this.tryOnRing.visible = variant === "try-on";
-    activeRing.position.x += (normalizedX * visibleHalfWidth - activeRing.position.x) * 0.38;
-    activeRing.position.y += (-normalizedY * visibleHalfHeight - activeRing.position.y) * 0.38;
+    // Hand landmarks already contain temporal filtering. A quicker visual
+    // response prevents the ring from visibly sliding off a moving finger.
+    activeRing.position.x += (normalizedX * visibleHalfWidth - activeRing.position.x) * 0.68;
+    activeRing.position.y += (-normalizedY * visibleHalfHeight - activeRing.position.y) * 0.68;
     activeRing.position.z = 0;
     if (pose.quaternion) {
       const targetQuaternion = new THREE.Quaternion(...pose.quaternion);
@@ -251,7 +253,7 @@ export class Ring3DRenderer {
           -targetQuaternion.w,
         );
       }
-      if (activeWasVisible) activeRing.quaternion.slerp(targetQuaternion, 0.34);
+      if (activeWasVisible) activeRing.quaternion.slerp(targetQuaternion, 0.48);
       else activeRing.quaternion.copy(targetQuaternion);
     } else {
       activeRing.rotation.x = smoothAngle(activeRing.rotation.x, pose.rotationX, 0.28);
@@ -263,7 +265,7 @@ export class Ring3DRenderer {
       ? ((pose.targetWidth / Math.max(1, width)) * visibleHalfWidth * 2) / 2.2
       : pose.scale;
     const smoothedScale = activeWasVisible
-      ? activeRing.scale.x + (targetScale * pulse - activeRing.scale.x) * 0.28
+      ? activeRing.scale.x + (targetScale * pulse - activeRing.scale.x) * 0.42
       : targetScale * pulse;
     activeRing.scale.setScalar(smoothedScale);
     this.renderer.render(this.scene, this.camera);

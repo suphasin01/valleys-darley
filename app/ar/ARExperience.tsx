@@ -299,14 +299,15 @@ function getTryOnPose(
   );
 
   return {
-    x: base.x * 0.72 + joint.x * 0.28,
-    y: base.y * 0.72 + joint.y * 0.28,
+    // Sit on the proximal phalanx rather than over the web between fingers.
+    x: base.x * 0.58 + joint.x * 0.42,
+    y: base.y * 0.58 + joint.y * 0.42,
     rotationX: 0,
     rotationY: 0,
     rotationZ: 0,
     quaternion: [ringOrientation.x, ringOrientation.y, ringOrientation.z, ringOrientation.w],
     scale: 1,
-    targetWidth: clamp(fingerWidth * 1.22 * size, 54, canvas.clientWidth * 0.28),
+    targetWidth: clamp(fingerWidth * 1.08 * size, 30, canvas.clientWidth * 0.22),
     grabbed: false,
   };
 }
