@@ -11,6 +11,7 @@ type ExperienceState = "intro" | "loading" | "live" | "error";
 type ARMode = "try-on" | "inspect";
 type GestureState = "searching" | "ready" | "grabbed";
 type TryOnFinger = "index" | "middle" | "ring" | "pinky";
+type Handedness = "Left" | "Right";
 
 type Point = { x: number; y: number; z?: number };
 type InspectTransform = {
@@ -268,6 +269,7 @@ function getTryOnPose(
   pixelRatio: number,
   size: number,
   selectedFinger: TryOnFinger,
+  handedness: Handedness | undefined,
 ): RingPose {
   const mapPoint = (point: Point) => ({
     x: (offsetX + (mirrored ? 1 - point.x : point.x) * videoWidth * scale) / pixelRatio,
@@ -306,17 +308,18 @@ function getTryOnPose(
   const acrossAxis = handAcross
     .addScaledVector(fingerAxis, -handAcross.dot(fingerAxis))
     .normalize();
-  const surfaceNormal = acrossAxis.clone().cross(fingerAxis).normalize();
-
-  // The try-on model represents the visible upper half of the ring, so keep
-  // its gemstone on the camera-facing side while retaining its hand tilt.
-  if (surfaceNormal.z < 0) {
-    acrossAxis.multiplyScalar(-1);
-    surfaceNormal.multiplyScalar(-1);
-  }
+  // Across x finger points out of the palm for a right hand and out of the
+  // back for a left hand. Normalize that anatomical difference so local +Z
+  // always means the gemstone/dorsal side of the selected finger.
+  const dorsalNormal = acrossAxis
+    .clone()
+    .cross(fingerAxis)
+    .normalize()
+    .multiplyScalar(handedness === "Left" ? 1 : -1);
+  const dorsalAcross = fingerAxis.clone().cross(dorsalNormal).normalize();
 
   const ringOrientation = new Quaternion().setFromRotationMatrix(
-    new Matrix4().makeBasis(acrossAxis, fingerAxis, surfaceNormal),
+    new Matrix4().makeBasis(dorsalAcross, fingerAxis, dorsalNormal),
   );
 
   return {
@@ -327,6 +330,7 @@ function getTryOnPose(
     rotationY: 0,
     rotationZ: 0,
     quaternion: [ringOrientation.x, ringOrientation.y, ringOrientation.z, ringOrientation.w],
+    showFace: dorsalNormal.z > -0.12,
     scale: 1,
     targetWidth: clamp(fingerWidth * 1.08 * size, 30, canvas.clientWidth * 0.22),
     grabbed: false,
@@ -449,11 +453,12 @@ export default function ARExperience() {
   const threeCanvasRef = useRef<HTMLCanvasElement>(null);
   const ring3DRef = useRef<Ring3DRenderer | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const detectorRef = useRef<{ detectForVideo: (video: HTMLVideoElement, timestamp: number) => { landmarks: Point[][]; worldLandmarks?: Point[][] }; close: () => void } | null>(null);
+  const detectorRef = useRef<{ detectForVideo: (video: HTMLVideoElement, timestamp: number) => { landmarks: Point[][]; worldLandmarks?: Point[][]; handedness?: Array<Array<{ categoryName?: string }>>; handednesses?: Array<Array<{ categoryName?: string }>> }; close: () => void } | null>(null);
   const frameRef = useRef<number | null>(null);
   const lastVideoTimeRef = useRef(-1);
   const latestLandmarksRef = useRef<Point[][]>([]);
   const latestWorldLandmarksRef = useRef<Point[][]>([]);
+  const latestHandednessRef = useRef<Handedness | undefined>(undefined);
   const facingRef = useRef<CameraFacing>("environment");
   const styleRef = useRef(ringStyles[0]);
   const ringSizeRef = useRef(1);
@@ -573,6 +578,10 @@ export default function ARExperience() {
       const detection = detectorRef.current.detectForVideo(video, performance.now());
       latestLandmarksRef.current = detection.landmarks;
       latestWorldLandmarksRef.current = detection.worldLandmarks || [];
+      const categoryName = (detection.handedness || detection.handednesses)?.[0]?.[0]?.categoryName;
+      latestHandednessRef.current = categoryName === "Left" || categoryName === "Right"
+        ? categoryName
+        : undefined;
       setHandFound(latestLandmarksRef.current.length > 0);
     }
 
@@ -591,6 +600,7 @@ export default function ARExperience() {
         pixelRatio,
         ringSizeRef.current,
         selectedFingerRef.current,
+        latestHandednessRef.current,
       );
       ring3DRef.current?.render(pose, "try-on");
     } else if (modeRef.current === "try-on") {

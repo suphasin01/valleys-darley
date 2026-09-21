@@ -10,6 +10,7 @@ export type RingPose = {
   rotationY: number;
   rotationZ: number;
   quaternion?: [number, number, number, number];
+  showFace?: boolean;
   scale: number;
   targetWidth?: number;
   grabbed: boolean;
@@ -114,23 +115,33 @@ function createTryOnModel(metal: THREE.MeshStandardMaterial, gemMaterial: THREE.
   frontBand.rotation.x = -Math.PI / 2;
   frontBand.scale.y = 0.48;
   frontBand.position.z = 0.02;
+  frontBand.userData.tryOnSurface = "face";
   group.add(frontBand);
+
+  const palmBand = frontBand.clone();
+  palmBand.rotation.x = Math.PI / 2;
+  palmBand.position.z = -0.02;
+  palmBand.userData.tryOnSurface = "palm";
+  group.add(palmBand);
 
   const gallery = new THREE.Mesh(new THREE.CylinderGeometry(0.48, 0.62, 0.3, 48, 1, true), metal);
   gallery.scale.set(0.76, 1, 1);
   gallery.rotation.x = Math.PI / 2;
   gallery.position.z = 0.14;
+  gallery.userData.tryOnSurface = "face";
   group.add(gallery);
 
   const setting = new THREE.Mesh(new THREE.TorusGeometry(0.63, 0.085, 24, 96), metal);
   setting.scale.set(0.74, 1.02, 1);
   setting.position.z = 0.26;
+  setting.userData.tryOnSurface = "face";
   group.add(setting);
 
   const gemstone = new THREE.Mesh(new THREE.IcosahedronGeometry(0.63, 2), gemMaterial);
   gemstone.scale.set(0.72, 1.02, 0.38);
   gemstone.position.z = 0.5;
   gemstone.rotation.z = Math.PI / 10;
+  gemstone.userData.tryOnSurface = "face";
   group.add(gemstone);
 
   const prongGeometry = new THREE.CapsuleGeometry(0.075, 0.22, 7, 14);
@@ -144,6 +155,7 @@ function createTryOnModel(metal: THREE.MeshStandardMaterial, gemMaterial: THREE.
     const prong = new THREE.Mesh(prongGeometry, metal);
     prong.position.set(x, y, z);
     prong.rotation.z = rotation;
+    prong.userData.tryOnSurface = "face";
     group.add(prong);
   });
 
@@ -153,6 +165,7 @@ function createTryOnModel(metal: THREE.MeshStandardMaterial, gemMaterial: THREE.
     shoulder.scale.set(1.75, 0.52, 0.68);
     shoulder.position.set(direction * 0.57, -0.12, 0.2);
     shoulder.rotation.z = direction * 0.28;
+    shoulder.userData.tryOnSurface = "face";
     group.add(shoulder);
   });
 
@@ -238,6 +251,14 @@ export class Ring3DRenderer {
     const activeWasVisible = activeRing.visible;
     this.ring.visible = variant === "inspect";
     this.tryOnRing.visible = variant === "try-on";
+    if (variant === "try-on") {
+      const showFace = pose.showFace !== false;
+      this.tryOnRing.traverse((object) => {
+        const surface = object.userData.tryOnSurface;
+        if (surface === "face") object.visible = showFace;
+        if (surface === "palm") object.visible = !showFace;
+      });
+    }
     // Hand landmarks already contain temporal filtering. A quicker visual
     // response prevents the ring from visibly sliding off a moving finger.
     activeRing.position.x += (normalizedX * visibleHalfWidth - activeRing.position.x) * 0.68;
