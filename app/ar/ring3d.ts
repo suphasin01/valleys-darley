@@ -10,6 +10,7 @@ export type RingPose = {
   rotationY: number;
   rotationZ: number;
   scale: number;
+  targetWidth?: number;
   grabbed: boolean;
 };
 
@@ -233,6 +234,7 @@ export class Ring3DRenderer {
     const normalizedX = (pose.x / Math.max(1, width)) * 2 - 1;
     const normalizedY = (pose.y / Math.max(1, height)) * 2 - 1;
     const activeRing = variant === "try-on" ? this.tryOnRing : this.ring;
+    const activeWasVisible = activeRing.visible;
     this.ring.visible = variant === "inspect";
     this.tryOnRing.visible = variant === "try-on";
     activeRing.position.x += (normalizedX * visibleHalfWidth - activeRing.position.x) * 0.38;
@@ -242,7 +244,13 @@ export class Ring3DRenderer {
     activeRing.rotation.y = smoothAngle(activeRing.rotation.y, pose.rotationY, 0.28);
     activeRing.rotation.z = smoothAngle(activeRing.rotation.z, pose.rotationZ, 0.34);
     const pulse = variant === "inspect" && pose.grabbed ? 1.04 + Math.sin(this.clock.elapsedTime * 7) * 0.015 : 1;
-    activeRing.scale.setScalar(pose.scale * pulse);
+    const targetScale = pose.targetWidth
+      ? ((pose.targetWidth / Math.max(1, width)) * visibleHalfWidth * 2) / 2.2
+      : pose.scale;
+    const smoothedScale = activeWasVisible
+      ? activeRing.scale.x + (targetScale * pulse - activeRing.scale.x) * 0.28
+      : targetScale * pulse;
+    activeRing.scale.setScalar(smoothedScale);
     this.renderer.render(this.scene, this.camera);
   }
 

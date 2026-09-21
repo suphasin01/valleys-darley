@@ -249,21 +249,26 @@ function getTryOnPose(
   });
   const base = mapPoint(landmarks[13]);
   const joint = mapPoint(landmarks[14]);
-  const palmIndex = mapPoint(landmarks[5]);
-  const palmPinky = mapPoint(landmarks[17]);
-  const palmWidth = Math.hypot(palmIndex.x - palmPinky.x, palmIndex.y - palmPinky.y);
+  const middleBase = mapPoint(landmarks[9]);
+  const pinkyBase = mapPoint(landmarks[17]);
+  const centerSpacingA = Math.hypot(base.x - middleBase.x, base.y - middleBase.y) * 0.82;
+  const centerSpacingB = Math.hypot(base.x - pinkyBase.x, base.y - pinkyBase.y) * 0.88;
+  const boneEstimate = Math.hypot(base.x - joint.x, base.y - joint.y) * 0.68;
+  const estimates = [centerSpacingA, centerSpacingB, boneEstimate].sort((a, b) => a - b);
+  const fingerWidth = estimates[1];
   const orientation = worldLandmarks || landmarks;
   const fingerDepth = ((orientation[14].z || 0) - (orientation[13].z || 0)) * 7;
   const acrossDepth = ((orientation[17].z || 0) - (orientation[5].z || 0)) * 5;
   const fingerAngle = Math.atan2(joint.y - base.y, joint.x - base.x);
 
   return {
-    x: base.x * 0.58 + joint.x * 0.42,
-    y: base.y * 0.58 + joint.y * 0.42,
+    x: base.x * 0.72 + joint.x * 0.28,
+    y: base.y * 0.72 + joint.y * 0.28,
     rotationX: clamp(-fingerDepth, -0.78, 0.78),
     rotationY: clamp(mirrored ? -acrossDepth : acrossDepth, -0.72, 0.72),
     rotationZ: fingerAngle + Math.PI / 2,
-    scale: clamp((palmWidth / Math.max(1, canvas.clientWidth)) * 0.7 * size, 0.16, 0.44),
+    scale: 1,
+    targetWidth: clamp(fingerWidth * 1.22 * size, 54, canvas.clientWidth * 0.28),
     grabbed: false,
   };
 }
