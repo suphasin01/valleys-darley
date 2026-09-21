@@ -23,7 +23,7 @@ export function Header() {
       }`}
     >
       <nav className="container">
-        <div className="flex items-center justify-center h-16 md:h-20">
+        <div className="relative flex items-center justify-between h-16 md:h-20">
           {/* Centered Logo Only */}
           <Link
             href="/"
@@ -31,6 +31,7 @@ export function Header() {
           >
             Valley&apos;s Darley
           </Link>
+          <Link href="/account" className="rounded-full border border-black/15 bg-white/70 px-4 py-2 text-xs font-medium hover:bg-white">สมาชิก / เข้าสู่ระบบ</Link>
         </div>
       </nav>
     </header>
