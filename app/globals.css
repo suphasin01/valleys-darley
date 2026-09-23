@@ -12,7 +12,7 @@
   }
 
   body {
-    @apply bg-rose-50 text-gray-900 antialiased;
+    @apply bg-[#fffefa] text-gray-900 antialiased;
     font-feature-settings: 'liga' 1, 'calt' 1;
   }
 
@@ -26,6 +26,13 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+}
+
+.brand-script {
+  font-family: "Snell Roundhand", "Apple Chancery", "URW Chancery L", cursive;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.055em;
 }
 
 .safe-area {
@@ -119,13 +126,5 @@
 @media (max-width: 768px) {
   .container {
     @apply px-4;
-  }
-
-  h1 {
-    @apply text-4xl sm:text-5xl;
-  }
-
-  h2 {
-    @apply text-3xl sm:text-4xl;
   }
 }
