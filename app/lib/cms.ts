@@ -1,6 +1,7 @@
 import { list, put } from "@vercel/blob";
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import type { Locale } from "./i18n";
 
 export type CmsProduct = { id: string; name: string; image: string; link: string; published: boolean };
 export type CmsContent = {
@@ -9,6 +10,12 @@ export type CmsContent = {
   customMade: { heading: string; body: string; cta: string };
   contact: { heading: string; body: string; cta: string; url: string };
   products: CmsProduct[];
+  th: {
+    home: { heading: string; emphasis: string; ending: string; intro: string; storyHeading: string; storyBody: string };
+    customMade: { heading: string; body: string; cta: string };
+    contact: { heading: string; body: string; cta: string };
+    products: Record<string, string>;
+  };
   updatedAt: string;
 };
 
@@ -41,8 +48,32 @@ export const defaultCmsContent: CmsContent = {
     { id: "pearl-chain", name: "Pink Infusion Pearl Chain", image: "/images/product-closeup-4.png", link: "/contact", published: true },
     { id: "pearl-keepsake", name: "Darling Pearl Keepsake", image: "/images/collection-overview.png", link: "/contact", published: true },
   ],
+  th: {
+    home: {
+      heading: "ของแทนใจแห่ง", emphasis: "ความมหัศจรรย์", ending: "และความรัก",
+      intro: "Valley’s Darling คือส่วนหนึ่งของจินตนาการ เป็นโลกใบเล็กที่เรารักและอยากแบ่งปันให้คุณ ที่นี่ทุกความเป็นไปได้เริ่มต้นได้เสมอ",
+      storyHeading: "โลกใบเล็กที่สร้างมาเพื่อคุณ", storyBody: "เครื่องประดับทำมือจากกรุงเทพฯ ทุกชิ้นเริ่มจากความรู้สึก ก่อนกลายเป็นสิ่งที่คุณเก็บไว้ใกล้ตัว",
+    },
+    customMade: { heading: "สั่งทำพิเศษ", body: "เครื่องประดับที่ออกแบบตามความชอบของคุณ ไม่จำกัดอยู่กับรูปแบบสำเร็จรูป\n\nเลือกสี ขนาด หรือสลักชื่อบนชิ้นงานได้", cta: "เริ่มออกแบบ" },
+    contact: { heading: "พบชิ้นที่ใช่สำหรับคุณ", body: "บอกเราเกี่ยวกับเครื่องประดับที่คุณตามหา ขนาด วัสดุ และเรื่องราวที่อยากให้ชิ้นงานถ่ายทอด", cta: "ติดต่อเรา" },
+    products: {
+      "ribbon-earring": "ต่างหูริบบิ้นประดับอัญมณี", "heart-locket": "สร้อยล็อกเก็ตหัวใจระบาย",
+      "swirl-bow": "สร้อยโบว์เกลียวคลาสสิก", "pearl-ring": "แหวนมุกโรเซ็ตริบบิ้น",
+      "pearl-chain": "สร้อยมุกพิงก์อินฟิวชัน", "pearl-keepsake": "เครื่องประดับมุกดาร์ลิง",
+    },
+  },
   updatedAt: "",
 };
+
+export function localizedContent(content: CmsContent, locale: Locale) {
+  return locale === 'th' ? {
+    ...content,
+    home: { ...content.home, ...content.th.home },
+    customMade: { ...content.customMade, ...content.th.customMade },
+    contact: { ...content.contact, ...content.th.contact },
+    products: content.products.map(product => ({ ...product, name: content.th.products[product.id] || product.name })),
+  } : content;
+}
 
 const localFile = path.join(process.cwd(), "data", "cms-content.json");
 
@@ -55,6 +86,12 @@ function normalize(value: Partial<CmsContent>): CmsContent {
     customMade: { ...defaultCmsContent.customMade, ...value.customMade },
     contact: { ...defaultCmsContent.contact, ...value.contact },
     products: Array.isArray(value.products) ? value.products.slice(0, 100) : defaultCmsContent.products,
+    th: {
+      home: { ...defaultCmsContent.th.home, ...value.th?.home },
+      customMade: { ...defaultCmsContent.th.customMade, ...value.th?.customMade },
+      contact: { ...defaultCmsContent.th.contact, ...value.th?.contact },
+      products: { ...defaultCmsContent.th.products, ...value.th?.products },
+    },
   };
 }
 

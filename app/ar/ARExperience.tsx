@@ -5,6 +5,8 @@ import NextImage from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Matrix4, Quaternion, Vector3 } from "three";
 import { Ring3DRenderer, type RingFinish, type RingPose } from "./ring3d";
+import type { Locale } from "../lib/i18n";
+import { LanguageSwitch } from "../components/LanguageSwitch";
 
 type CameraFacing = "environment" | "user";
 type ExperienceState = "intro" | "loading" | "live" | "error";
@@ -447,7 +449,8 @@ function updateInspectPose(
   };
 }
 
-export default function ARExperience() {
+export default function ARExperience({ locale }: { locale: Locale }) {
+  const en = locale === "en";
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const threeCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -662,10 +665,10 @@ export default function ARExperience() {
     stopCamera();
     try {
       if (!window.isSecureContext && window.location.hostname !== "localhost") {
-        throw new Error("กรุณาเปิดหน้านี้ผ่าน HTTPS เพื่ออนุญาตการใช้กล้อง");
+        throw new Error(en ? "Open this page over HTTPS to use the camera" : "กรุณาเปิดหน้านี้ผ่าน HTTPS เพื่ออนุญาตการใช้กล้อง");
       }
       if (!navigator.mediaDevices?.getUserMedia) {
-        throw new Error("เบราว์เซอร์นี้ยังไม่รองรับการเปิดกล้อง กรุณาใช้ Safari หรือ Chrome เวอร์ชันล่าสุด");
+        throw new Error(en ? "This browser cannot access the camera. Please use the latest Safari or Chrome" : "เบราว์เซอร์นี้ยังไม่รองรับการเปิดกล้อง กรุณาใช้ Safari หรือ Chrome เวอร์ชันล่าสุด");
       }
 
       const [stream] = await Promise.all([
@@ -682,7 +685,7 @@ export default function ARExperience() {
 
       streamRef.current = stream;
       const video = videoRef.current;
-      if (!video) throw new Error("ไม่สามารถเริ่มตัวแสดงผลกล้องได้");
+      if (!video) throw new Error(en ? "Could not start the camera preview" : "ไม่สามารถเริ่มตัวแสดงผลกล้องได้");
       video.srcObject = stream;
       await video.play();
       lastVideoTimeRef.current = -1;
@@ -691,14 +694,14 @@ export default function ARExperience() {
       frameRef.current = requestAnimationFrame(renderFrame);
     } catch (cause) {
       stopCamera();
-      const message = cause instanceof Error ? cause.message : "ไม่สามารถเปิดกล้องได้";
+      const message = cause instanceof Error ? cause.message : en ? "Could not open the camera" : "ไม่สามารถเปิดกล้องได้";
       const permissionMessage = message.toLowerCase().includes("permission") || message.toLowerCase().includes("denied")
-        ? "ยังไม่ได้รับอนุญาตให้ใช้กล้อง กรุณาเปิดสิทธิ์ Camera ในการตั้งค่าเบราว์เซอร์แล้วลองอีกครั้ง"
+        ? en ? "Camera permission was denied. Allow camera access in your browser settings and try again" : "ยังไม่ได้รับอนุญาตให้ใช้กล้อง กรุณาเปิดสิทธิ์ Camera ในการตั้งค่าเบราว์เซอร์แล้วลองอีกครั้ง"
         : message;
       setError(permissionMessage);
       setState("error");
     }
-  }, [initialiseDetector, renderFrame, stopCamera]);
+  }, [en, initialiseDetector, renderFrame, stopCamera]);
 
   const switchCamera = useCallback(async () => {
     const nextFacing = facingRef.current === "environment" ? "user" : "environment";
@@ -745,12 +748,12 @@ export default function ARExperience() {
           <div className="relative flex h-full flex-col px-5 pb-8 pt-5 safe-area">
             <div className="flex items-center justify-between">
               <Link href="/" className="rounded-full bg-white/70 px-4 py-2 text-xs font-bold tracking-tight backdrop-blur">Valley&apos;s Darley</Link>
-              <span className="rounded-full border border-black/15 px-3 py-2 text-[10px] uppercase tracking-[0.22em]">AR atelier</span>
+              <div className="flex items-center gap-2"><LanguageSwitch locale={locale} /><span className="rounded-full border border-black/15 px-3 py-2 text-[10px] uppercase tracking-[0.22em]">AR atelier</span></div>
             </div>
             <div className="mx-auto my-auto max-w-sm text-center">
               <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.32em] text-black/45">Virtual try-on</p>
               <h1 className="text-5xl font-semibold leading-[0.9] tracking-[-0.065em]">Your hand.<br /><span className="font-serif font-normal italic text-black/55">Our craft.</span></h1>
-              <p className="mx-auto mt-6 max-w-xs text-sm leading-6 text-black/55">ลองสวมบนมือ หรือจีบนิ้วเพื่อหยิบ ขยับ หมุน และพลิกดูตัวเรือนได้แบบเรียลไทม์</p>
+              <p className="mx-auto mt-6 max-w-xs text-sm leading-6 text-black/55">{en ? "Try it on your hand, or pinch to pick up, move and rotate the ring in real time" : "ลองสวมบนมือ หรือจีบนิ้วเพื่อหยิบ ขยับ หมุน และพลิกดูตัวเรือนได้แบบเรียลไทม์"}</p>
               {error && <p role="alert" className="mt-5 rounded-2xl bg-red-50/90 p-4 text-xs leading-5 text-red-700">{error}</p>}
             </div>
             <div className="mx-auto w-full max-w-sm">
@@ -760,9 +763,9 @@ export default function ARExperience() {
                 onClick={() => startCamera()}
                 className="flex min-h-16 w-full items-center justify-center gap-3 rounded-full bg-black px-8 text-sm font-medium text-white disabled:opacity-60"
               >
-                {state === "loading" ? <><span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />กำลังเตรียม AR…</> : <>เปิดกล้องเพื่อเริ่มลอง <span aria-hidden="true">↗</span></>}
+                {state === "loading" ? <><span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />{en ? "Preparing AR…" : "กำลังเตรียม AR…"}</> : <>{en ? "Open camera to try on" : "เปิดกล้องเพื่อเริ่มลอง"} <span aria-hidden="true">↗</span></>}
               </button>
-              <p className="mt-3 text-center text-[10px] leading-4 text-black/40">ภาพจากกล้องประมวลผลบนอุปกรณ์ของคุณและไม่ถูกอัปโหลด</p>
+              <p className="mt-3 text-center text-[10px] leading-4 text-black/40">{en ? "Camera images are processed on your device and are not uploaded" : "ภาพจากกล้องประมวลผลบนอุปกรณ์ของคุณและไม่ถูกอัปโหลด"}</p>
             </div>
           </div>
         </div>
@@ -773,7 +776,7 @@ export default function ARExperience() {
           <div>
             <div className="flex items-start justify-between">
               <Link href="/" className="pointer-events-auto rounded-full bg-black/35 px-4 py-2 text-xs font-bold backdrop-blur-md">Valley&apos;s Darley</Link>
-              <button type="button" onClick={switchCamera} aria-label="สลับกล้อง" className="pointer-events-auto grid h-11 w-11 place-items-center rounded-full bg-black/35 text-xl backdrop-blur-md">↻</button>
+              <div className="pointer-events-auto flex items-center gap-2"><LanguageSwitch locale={locale} light /><button type="button" onClick={switchCamera} aria-label={en ? "Switch camera" : "สลับกล้อง"} className="grid h-11 w-11 place-items-center rounded-full bg-black/35 text-xl backdrop-blur-md">↻</button></div>
             </div>
             <div className="pointer-events-auto mx-auto mt-3 flex w-fit rounded-full border border-white/20 bg-black/35 p-1 backdrop-blur-xl">
               <button
@@ -781,14 +784,14 @@ export default function ARExperience() {
                 onClick={() => setMode("try-on")}
                 className={`rounded-full px-5 py-2 text-[11px] font-medium transition ${mode === "try-on" ? "bg-white text-black [text-shadow:none]" : "text-white"}`}
               >
-                ลองสวม
+                {en ? "Try on" : "ลองสวม"}
               </button>
               <button
                 type="button"
                 onClick={() => setMode("inspect")}
                 className={`rounded-full px-5 py-2 text-[11px] font-medium transition ${mode === "inspect" ? "bg-white text-black [text-shadow:none]" : "text-white"}`}
               >
-                หยิบดู
+                {en ? "Inspect" : "หยิบดู"}
               </button>
             </div>
           </div>
@@ -796,16 +799,16 @@ export default function ARExperience() {
           <div className="self-center rounded-full bg-black/30 px-4 py-2 text-[11px] font-medium backdrop-blur-md">
             <span className={`mr-2 inline-block h-2 w-2 rounded-full ${gestureState === "grabbed" ? "bg-sky-300" : handFound ? "bg-emerald-400" : "bg-amber-300 animate-pulse"}`} />
             {mode === "try-on"
-              ? handFound ? "พบมือแล้ว—ขยับเพื่อดูทุกมุม" : "วางหลังมือให้อยู่กลางภาพ"
+              ? handFound ? en ? "Hand found — move to see every angle" : "พบมือแล้ว—ขยับเพื่อดูทุกมุม" : en ? "Place the back of your hand in the frame" : "วางหลังมือให้อยู่กลางภาพ"
               : gestureState === "grabbed"
-                ? "หยิบแล้ว—ขยับและเอียงมือเพื่อพลิกดู"
-                : handFound ? "จีบนิ้วเพื่อหยิบ แล้วหมุนข้อมือดูรอบ 360°" : "ยื่นมือเข้ากล้องเพื่อเริ่มหยิบ"}
+                ? en ? "Picked up — move and tilt your hand to turn it" : "หยิบแล้ว—ขยับและเอียงมือเพื่อพลิกดู"
+                : handFound ? en ? "Pinch to pick up, then turn your wrist for a 360° view" : "จีบนิ้วเพื่อหยิบ แล้วหมุนข้อมือดูรอบ 360°" : en ? "Show your hand to the camera" : "ยื่นมือเข้ากล้องเพื่อเริ่มหยิบ"}
           </div>
 
           <div className="pointer-events-auto mx-auto w-full max-w-md rounded-[28px] border border-white/20 bg-black/35 p-3 shadow-2xl backdrop-blur-xl">
             {mode === "try-on" && (
               <div className="mb-2 flex items-center gap-2 rounded-full bg-black/20 p-1">
-                <span className="pl-2 text-[9px] font-medium uppercase tracking-[0.15em] text-white/65">นิ้ว</span>
+                <span className="pl-2 text-[9px] font-medium uppercase tracking-[0.15em] text-white/65">{en ? "Finger" : "นิ้ว"}</span>
                 <div className="grid flex-1 grid-cols-4 gap-1">
                   {fingerOptions.map((finger) => (
                     <button
@@ -815,7 +818,7 @@ export default function ARExperience() {
                       aria-pressed={selectedFinger === finger.id}
                       className={`rounded-full px-2 py-2 text-[10px] font-medium transition ${selectedFinger === finger.id ? "bg-white text-black [text-shadow:none]" : "text-white/80 hover:bg-white/10"}`}
                     >
-                      {finger.label}
+                      {en ? { index: "Index", middle: "Middle", ring: "Ring", pinky: "Pinky" }[finger.id] : finger.label}
                     </button>
                   ))}
                 </div>
@@ -835,12 +838,12 @@ export default function ARExperience() {
                   </button>
                 ))}
               </div>
-              <button type="button" onClick={capture} aria-label="ถ่ายภาพ" className="grid h-12 w-12 shrink-0 place-items-center rounded-full border-2 border-white bg-white/20">
+              <button type="button" onClick={capture} aria-label={en ? "Take photo" : "ถ่ายภาพ"} className="grid h-12 w-12 shrink-0 place-items-center rounded-full border-2 border-white bg-white/20">
                 <span className="h-8 w-8 rounded-full bg-white" />
               </button>
             </div>
             <label className="mt-3 flex items-center gap-3 px-2 pb-1 text-[10px] uppercase tracking-[0.15em]">
-              Size
+              {en ? "Size" : "ขนาด"}
               <input className="accent-white flex-1" type="range" min="0.75" max="1.3" step="0.05" value={ringSize} onChange={(event) => setRingSize(Number(event.target.value))} />
             </label>
           </div>
