@@ -1,13 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
+import { getCmsContent } from "./lib/cms";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+export default async function Home() {
+  const content = await getCmsContent();
   return (
     <div className="bg-[#f8f1e5] text-[#241c16]">
       <section className="grid min-h-[calc(100svh-58px)] md:min-h-[calc(100vh-72px)] md:grid-cols-[0.78fr_1.22fr]">
         <div className="flex flex-col justify-center px-7 py-16 md:px-[8vw] md:py-24">
-          <h1 className="font-serif text-[clamp(2.9rem,6vw,6.5rem)] leading-[0.94] tracking-[-0.04em]">Keepsakes of<br /><em className="font-normal">wonder</em><br />and romance.</h1>
-          <p className="mt-8 max-w-md text-xs leading-6 text-black/55 md:text-sm">Valley&apos;s Darling is a piece of your imagination — a valley beloved by us, and by someone like you. In that world, anything is possible.</p>
+          <h1 className="font-serif text-[clamp(2.9rem,6vw,6.5rem)] leading-[0.94] tracking-[-0.04em]">{content.home.heading}<br /><em className="font-normal">{content.home.emphasis}</em><br />{content.home.ending}</h1>
+          <p className="mt-8 max-w-md text-xs leading-6 text-black/55 md:text-sm">{content.home.intro}</p>
           <div className="mt-8 flex items-center gap-4"><Link href="/collections" className="bg-[#2b1b0d] px-6 py-4 text-[9px] tracking-[0.2em] text-white">EXPLORE COLLECTION</Link><Link href="#story" className="text-[9px] tracking-[0.18em]">OUR STORY →</Link></div>
         </div>
         <div className="relative min-h-[54svh] overflow-hidden bg-[#d8e0df] md:min-h-0">
@@ -26,8 +29,8 @@ export default function Home() {
         </div>
         <div className="flex flex-col justify-center px-8 py-16 md:px-16">
           <span className="text-[9px] uppercase tracking-[0.22em]">Our story</span>
-          <h2 className="mt-5 font-serif text-5xl leading-none md:text-7xl">A little world,<br /><em>made for you.</em></h2>
-          <p className="mt-8 max-w-md text-sm leading-7 text-black/60">Jewelry crafted by hand in Bangkok. Every piece begins with a feeling, then becomes an object you can keep close.</p>
+          <h2 className="mt-5 font-serif text-5xl leading-none md:text-7xl">{content.home.storyHeading}</h2>
+          <p className="mt-8 max-w-md text-sm leading-7 text-black/60">{content.home.storyBody}</p>
           <Link href="/custom-made" className="mt-9 w-fit border-b border-black pb-1 text-[10px] tracking-[0.18em]">DISCOVER CUSTOM MADE</Link>
         </div>
       </section>
