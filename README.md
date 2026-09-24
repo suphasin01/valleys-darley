@@ -17,6 +17,10 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
+## Admin CMS login
+
+The admin login at `/admin/login` is independent of LINE member login. Set `ADMIN_USERNAME`, `ADMIN_PASSWORD_HASH`, and `ADMIN_SESSION_SECRET` in Vercel's Production environment. Run `node scripts/generate-admin-credentials.mjs` locally to generate the hash and session secret; it prompts for a password and never stores the plaintext password. Redeploy after setting the variables. To save CMS changes in production, connect Vercel Blob to the project as well.
+
 ## Project Structure
 
 ```

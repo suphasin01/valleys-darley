@@ -6,7 +6,7 @@ export async function GET(request: Request) {
   let origin: string;
   try { origin = allowedOrigin(request); } catch { return new Response('Invalid host', { status: 400 }); }
   const jar = await cookies();
-  const flow = unseal<{ state: string; nonce: string; verifier: string; redirect: string; target: string; exp: number }>(jar.get('vd_oauth')?.value);
+  const flow = unseal<{ state: string; nonce: string; verifier: string; redirect: string; exp: number }>(jar.get('vd_oauth')?.value);
   jar.delete('vd_oauth');
   const params = new URL(request.url).searchParams;
   try {
@@ -19,7 +19,7 @@ export async function GET(request: Request) {
     if (!verified.ok) throw new Error('Verification failed');
     const profile = await verified.json();
     if (typeof profile.sub !== 'string' || profile.aud !== process.env.LINE_CHANNEL_ID || profile.nonce !== flow.nonce || profile.exp * 1000 <= Date.now()) throw new Error('Invalid identity');
-    const response = NextResponse.redirect(new URL(flow.target === '/admin' ? '/admin' : '/account', origin));
+    const response = NextResponse.redirect(new URL('/account', origin));
     response.cookies.set(sessionCookie, seal({ sub: profile.sub, name: typeof profile.name === 'string' ? profile.name.slice(0, 100) : 'สมาชิก', exp: Date.now() + 86400000 }), { ...cookieOptions, maxAge: 86400 });
     response.headers.set('Cache-Control', 'no-store');
     return response;

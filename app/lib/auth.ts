@@ -24,9 +24,6 @@ export type Member = { sub: string; name: string; exp: number };
 export async function member() {
   return unseal<Member>((await cookies()).get(sessionCookie)?.value);
 }
-export function isAdmin(sub: string) {
-  return (process.env.ADMIN_LINE_USER_IDS || '').split(',').map(x => x.trim()).filter(Boolean).includes(sub);
-}
 export function allowedOrigin(request: Request) {
   const origin = new URL(request.url).origin;
   const allowed = [process.env.NEXT_PUBLIC_SITE_URL || 'https://valleys-darley.vercel.app', process.env.ADMIN_ORIGIN];
