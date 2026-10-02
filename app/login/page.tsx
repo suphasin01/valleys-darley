@@ -1,13 +1,14 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { member, ready } from '../lib/auth';
+import { member, ready, safeMemberNext } from '../lib/auth';
 import { copy } from '../lib/i18n';
 import { getLocale } from '../lib/locale';
 
 export default async function Login({ searchParams }: { searchParams: Promise<{ next?: string; error?: string }> }) {
   const params = await searchParams;
   if (params.next === 'admin') redirect('/admin/login');
-  if (await member()) redirect('/account');
+  const next = safeMemberNext(params.next);
+  if (await member()) redirect(next);
   const enabled = ready();
   const t = copy[await getLocale()];
   return <section className="min-h-screen bg-[#f5f3ef] px-5 pb-20 pt-32">
@@ -21,7 +22,7 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
         <h2 className="mt-4 text-3xl font-semibold">{t.memberTitle}</h2>
         <p className="mb-8 mt-4 text-sm leading-7 text-gray-500">{t.memberIntro}</p>
         {params.error && <p role="alert" className="mb-5 rounded-xl bg-rose-50 p-4 text-sm text-rose-700">{params.error === 'configuration' ? t.memberUnavailable : t.memberFailed}</p>}
-        {enabled ? <a href="/api/auth/line" className="rounded-xl bg-[#06c755] px-6 py-4 text-center font-semibold text-white hover:bg-[#05b34c]">{t.lineSignIn}</a> : <><button disabled className="rounded-xl bg-[#06c755]/40 px-6 py-4 font-semibold text-white">{t.lineSignIn}</button><p role="status" className="mt-4 text-sm text-gray-500">{t.memberPreparing}</p></>}
+        {enabled ? <a href={`/api/auth/line?next=${encodeURIComponent(next)}`} className="rounded-xl bg-[#06c755] px-6 py-4 text-center font-semibold text-white hover:bg-[#05b34c]">{t.lineSignIn}</a> : <><button disabled className="rounded-xl bg-[#06c755]/40 px-6 py-4 font-semibold text-white">{t.lineSignIn}</button><p role="status" className="mt-4 text-sm text-gray-500">{t.memberPreparing}</p></>}
         <p className="mt-6 text-xs leading-6 text-gray-400">{t.memberPrivacy}</p>
         <Link href="/" className="mt-8 text-sm underline underline-offset-4">{t.backCollection}</Link>
       </div>

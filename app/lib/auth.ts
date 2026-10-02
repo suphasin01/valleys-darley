@@ -21,6 +21,9 @@ export function unseal<T extends { exp: number }>(value?: string): T | null {
   } catch { return null; }
 }
 export type Member = { sub: string; name: string; exp: number };
+export function safeMemberNext(value?: string | null) {
+  return value && (/^\/products\/[a-z0-9-]{1,80}$/.test(value) || /^\/checkout\/success\?session_id=cs_(test|live)_[A-Za-z0-9]+$/.test(value)) ? value : '/account';
+}
 export async function member() {
   return unseal<Member>((await cookies()).get(sessionCookie)?.value);
 }
