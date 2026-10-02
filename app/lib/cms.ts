@@ -3,7 +3,7 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import type { Locale } from "./i18n";
 
-export type CmsProduct = { id: string; name: string; image: string; link: string; published: boolean };
+export type CmsProduct = { id: string; name: string; description: string; image: string; link: string; published: boolean };
 export type CmsContent = {
   site: { brand: string; description: string };
   home: { heading: string; emphasis: string; ending: string; intro: string; storyHeading: string; storyBody: string };
@@ -15,6 +15,7 @@ export type CmsContent = {
     customMade: { heading: string; body: string; cta: string };
     contact: { heading: string; body: string; cta: string };
     products: Record<string, string>;
+    productDescriptions: Record<string, string>;
   };
   updatedAt: string;
 };
@@ -41,12 +42,12 @@ export const defaultCmsContent: CmsContent = {
     url: "https://www.instagram.com/valleydarley",
   },
   products: [
-    { id: "ribbon-earring", name: "Pleated Gemstone Ribbon Earring", image: "/images/lifestyle-2.png", link: "/contact", published: true },
-    { id: "heart-locket", name: "The Ruffle Heart Locket Necklace", image: "/images/product-closeup-2.png", link: "/contact", published: true },
-    { id: "swirl-bow", name: "Classic Swirl Bow Necklace", image: "/images/product-closeup-5.png", link: "/contact", published: true },
-    { id: "pearl-ring", name: "Rosette Ribbon Mother of Pearl Ring", image: "/images/ar-ring-silver-v2.png", link: "/ar?product=1", published: true },
-    { id: "pearl-chain", name: "Pink Infusion Pearl Chain", image: "/images/product-closeup-4.png", link: "/contact", published: true },
-    { id: "pearl-keepsake", name: "Darling Pearl Keepsake", image: "/images/collection-overview.png", link: "/contact", published: true },
+    { id: "ribbon-earring", name: "Pleated Gemstone Ribbon Earring", description: "A playful ribbon silhouette, finished by hand for the moments you want to remember.", image: "/images/lifestyle-2.png", link: "/contact", published: true },
+    { id: "heart-locket", name: "The Ruffle Heart Locket Necklace", description: "A romantic heart locket with delicate ruffled details, made to keep a story close.", image: "/images/product-closeup-2.png", link: "/contact", published: true },
+    { id: "swirl-bow", name: "Classic Swirl Bow Necklace", description: "A graceful bow necklace with soft curves and a timeless, personal charm.", image: "/images/product-closeup-5.png", link: "/contact", published: true },
+    { id: "pearl-ring", name: "Rosette Ribbon Mother of Pearl Ring", description: "A luminous mother-of-pearl ring framed by a sculptural ribbon setting. Try it on virtually before choosing your piece.", image: "/images/ar-ring-silver-v2.png", link: "/ar?product=1", published: true },
+    { id: "pearl-chain", name: "Pink Infusion Pearl Chain", description: "Pearls and gentle pink tones come together in a piece for everyday wonder.", image: "/images/product-closeup-4.png", link: "/contact", published: true },
+    { id: "pearl-keepsake", name: "Darling Pearl Keepsake", description: "A cherished pearl-inspired keepsake, thoughtfully made to stay with you.", image: "/images/collection-overview.png", link: "/contact", published: true },
   ],
   th: {
     home: {
@@ -61,6 +62,14 @@ export const defaultCmsContent: CmsContent = {
       "swirl-bow": "สร้อยโบว์เกลียวคลาสสิก", "pearl-ring": "แหวนมุกโรเซ็ตริบบิ้น",
       "pearl-chain": "สร้อยมุกพิงก์อินฟิวชัน", "pearl-keepsake": "เครื่องประดับมุกดาร์ลิง",
     },
+    productDescriptions: {
+      "ribbon-earring": "ต่างหูรูปริบบิ้นแสนสดใส เก็บรายละเอียดด้วยมือสำหรับช่วงเวลาที่อยากจดจำ",
+      "heart-locket": "ล็อกเก็ตหัวใจแต่งระบายละเอียดอ่อน สำหรับเก็บเรื่องราวไว้ใกล้ตัว",
+      "swirl-bow": "สร้อยโบว์โค้งพลิ้วที่เติมเสน่ห์คลาสสิกให้ทุกวัน",
+      "pearl-ring": "แหวนมุกเปล่งประกายในตัวเรือนริบบิ้น ลองสวมแบบ AR ก่อนเลือกชิ้นที่ใช่",
+      "pearl-chain": "มุกและโทนชมพูอ่อนรวมกันเป็นเครื่องประดับที่ใส่ได้ทุกวัน",
+      "pearl-keepsake": "ของแทนใจที่ได้รับแรงบันดาลใจจากมุก สร้างอย่างตั้งใจให้คุณเก็บไว้ใกล้ตัว",
+    },
   },
   updatedAt: "",
 };
@@ -71,7 +80,7 @@ export function localizedContent(content: CmsContent, locale: Locale) {
     home: { ...content.home, ...content.th.home },
     customMade: { ...content.customMade, ...content.th.customMade },
     contact: { ...content.contact, ...content.th.contact },
-    products: content.products.map(product => ({ ...product, name: content.th.products[product.id] || product.name })),
+    products: content.products.map(product => ({ ...product, name: content.th.products[product.id] || product.name, description: content.th.productDescriptions[product.id] || product.description })),
   } : content;
 }
 
@@ -85,12 +94,13 @@ function normalize(value: Partial<CmsContent>): CmsContent {
     home: { ...defaultCmsContent.home, ...value.home },
     customMade: { ...defaultCmsContent.customMade, ...value.customMade },
     contact: { ...defaultCmsContent.contact, ...value.contact },
-    products: Array.isArray(value.products) ? value.products.slice(0, 100) : defaultCmsContent.products,
+    products: Array.isArray(value.products) ? value.products.slice(0, 100).map(product => ({ ...product, description: typeof product.description === "string" ? product.description : defaultCmsContent.products.find(item => item.id === product.id)?.description || "" })) : defaultCmsContent.products,
     th: {
       home: { ...defaultCmsContent.th.home, ...value.th?.home },
       customMade: { ...defaultCmsContent.th.customMade, ...value.th?.customMade },
       contact: { ...defaultCmsContent.th.contact, ...value.th?.contact },
       products: { ...defaultCmsContent.th.products, ...value.th?.products },
+      productDescriptions: { ...defaultCmsContent.th.productDescriptions, ...value.th?.productDescriptions },
     },
   };
 }

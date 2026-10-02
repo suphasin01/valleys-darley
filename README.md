@@ -21,6 +21,8 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 The admin login at `/admin/login` is independent of LINE member login. Set `ADMIN_USERNAME`, `ADMIN_PASSWORD_HASH`, and `ADMIN_SESSION_SECRET` in Vercel's Production environment. Run `node scripts/generate-admin-credentials.mjs` locally to generate the hash and session secret; it prompts for a password and never stores the plaintext password. Redeploy after setting the variables. To save CMS changes in production, connect Vercel Blob to the project as well.
 
+The CMS lets an administrator add or edit products, upload a JPG/PNG/WebP image (up to 4 MB), set English and Thai names and descriptions, and publish or unpublish each product. Product cards open `/products/[id]`; the product's action leads to contact or AR try-on. Image uploads and content updates require a valid admin session. Blob must be a public store connected to this Vercel project with a `BLOB_READ_WRITE_TOKEN` environment variable.
+
 ## Languages
 
 Use the EN/TH switch in the site header (or the AR overlay) to choose a language. The choice is saved in a one-year cookie and applies across pages. English CMS fields and their Thai translations are edited separately in the admin studio.
