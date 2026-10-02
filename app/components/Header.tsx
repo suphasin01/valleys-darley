@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { LanguageSwitch } from "./LanguageSwitch";
 import { copy, type Locale } from "../lib/i18n";
@@ -11,6 +12,8 @@ export function BrandLogo({ className = "" }: { className?: string }) {
 
 export function Header({ locale }: { locale: Locale }) {
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
+  const isAdmin = pathname === "/admin" || pathname.startsWith("/admin/");
   const t = copy[locale];
   const menuItems = [
     { label: t.shop, href: "/collections" }, { label: t.newIn, href: "/collections#new-in" },
@@ -30,7 +33,7 @@ export function Header({ locale }: { locale: Locale }) {
           <button type="button" onClick={() => setIsOpen(true)} aria-label={t.menu} aria-expanded={isOpen} className="grid h-10 w-10 place-items-center">
             <span className="relative block h-3.5 w-5 border-y border-current before:absolute before:left-0 before:top-1/2 before:h-px before:w-3 before:-translate-y-1/2 before:bg-current" />
           </button>
-          <Link href="/" className="absolute left-1/2 -translate-x-1/2" aria-label="Valley's Darling home">
+          <Link href={isAdmin ? "/admin" : "/"} className="absolute left-1/2 -translate-x-1/2" aria-label={isAdmin ? "Admin home" : "Valley's Darling home"}>
             <BrandLogo className="text-[20px] sm:text-[25px] md:text-[36px]" />
           </Link>
           <div className="flex items-center gap-1 sm:gap-2"><LanguageSwitch locale={locale} /><Link href="/account" aria-label={t.bag} className="grid h-10 w-10 place-items-center">
