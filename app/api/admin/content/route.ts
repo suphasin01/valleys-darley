@@ -14,7 +14,7 @@ export async function PUT(request: Request) {
     const content = await request.json() as CmsContent;
     if (!content?.home?.heading || !content?.site?.brand || !Array.isArray(content.products) || content.products.length > 100) return NextResponse.json({ error: "Invalid content" }, { status: 400 });
     if (content.products.some(product => {
-      if (!/^[a-z0-9-]{1,80}$/.test(product.id) || !product.name?.trim() || typeof product.description !== "string" || typeof product.image !== "string" || typeof product.link !== "string") return true;
+      if (!/^[a-z0-9-]{1,80}$/.test(product.id) || !product.name?.trim() || typeof product.description !== "string" || typeof product.image !== "string" || typeof product.link !== "string" || (product.priceBaht !== undefined && (!Number.isSafeInteger(product.priceBaht) || product.priceBaht < 10 || product.priceBaht > 999999))) return true;
       const image = product.image;
       const remote = (() => { try { const url = new URL(image); return url.protocol === "https:" && (url.hostname.endsWith(".public.blob.vercel-storage.com") || url.hostname === "images.unsplash.com" || url.hostname.endsWith(".cdninstagram.com")); } catch { return false; } })();
       return !(image.startsWith("/images/") && !image.includes("..") || remote) || !product.link.startsWith("/") || product.link.startsWith("//");

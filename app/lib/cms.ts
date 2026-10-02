@@ -3,7 +3,7 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import type { Locale } from "./i18n";
 
-export type CmsProduct = { id: string; name: string; description: string; image: string; link: string; published: boolean };
+export type CmsProduct = { id: string; name: string; description: string; image: string; link: string; published: boolean; priceBaht?: number };
 export type CmsContent = {
   site: { brand: string; description: string };
   home: { heading: string; emphasis: string; ending: string; intro: string; storyHeading: string; storyBody: string };
@@ -94,7 +94,7 @@ function normalize(value: Partial<CmsContent>): CmsContent {
     home: { ...defaultCmsContent.home, ...value.home },
     customMade: { ...defaultCmsContent.customMade, ...value.customMade },
     contact: { ...defaultCmsContent.contact, ...value.contact },
-    products: Array.isArray(value.products) ? value.products.slice(0, 100).map(product => ({ ...product, description: typeof product.description === "string" ? product.description : defaultCmsContent.products.find(item => item.id === product.id)?.description || "" })) : defaultCmsContent.products,
+    products: Array.isArray(value.products) ? value.products.slice(0, 100).map(product => ({ ...product, description: typeof product.description === "string" ? product.description : defaultCmsContent.products.find(item => item.id === product.id)?.description || "", priceBaht: Number.isSafeInteger(product.priceBaht) && (product.priceBaht || 0) >= 10 && (product.priceBaht || 0) <= 999999 ? product.priceBaht : undefined })) : defaultCmsContent.products,
     th: {
       home: { ...defaultCmsContent.th.home, ...value.th?.home },
       customMade: { ...defaultCmsContent.th.customMade, ...value.th?.customMade },
