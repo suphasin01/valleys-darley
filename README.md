@@ -31,6 +31,10 @@ In Stripe Dashboard, add a webhook endpoint at `https://valleys-darley.vercel.ap
 
 Customers must sign in with LINE before starting Checkout. The server uses the verified LINE user ID from the signed member session to link a Stripe Customer and the Checkout Session; a browser-supplied customer ID is never accepted. `/account` displays that LINE member's completed orders. `/admin/orders` displays completed Checkout Sessions, their payment and shipping details, and allows an admin to mark paid orders as preparing, shipped, or completed and enter a tracking number. These fulfillment states are stored in Stripe Checkout Session metadata; inventory deduction, automated LINE messages, and a separate order database are not included. Configure `LINE_CHANNEL_ID`, `LINE_CHANNEL_SECRET`, and `AUTH_SECRET` and register the website callback URL in the LINE Developers Console before enabling customer ordering.
 
+## Thailand Post tracking
+
+Register at the official [Thailand Post Track & Trace developer portal](https://trackcodrep.thailandpost.co.th/developerGuide), generate a Token Key under the developer menu, and set `THAILAND_POST_TOKEN_KEY` as a server-only Vercel Production variable. Redeploy after adding it. The admin enters a valid 13-character Thailand Post barcode on a paid order and marks it shipped. The customer and admin can then open the order's tracking page; the server exchanges the Token Key for a temporary API token and calls the official `/post/api/v1/track` endpoint on demand. If the key or API is unavailable, the page shows an honest error and links to Thailand Post's official public tracking page. Tracking data is only fetched when an authorized customer or admin opens the page, not continuously in the background.
+
 ## Languages
 
 Use the EN/TH switch in the site header (or the AR overlay) to choose a language. The choice is saved in a one-year cookie and applies across pages. English CMS fields and their Thai translations are edited separately in the admin studio.
