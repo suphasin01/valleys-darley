@@ -6,7 +6,7 @@ export function Footer({ locale }: { locale: Locale }) {
   const t = copy[locale];
   const groups = [
     { title: t.shop, links: [[t.newIn, "/collections#new-in"], [locale === 'th' ? 'เครื่องประดับ' : 'JEWELRY', "/collections"], [t.customMade, "/custom-made"]] },
-    { title: t.help, links: [[t.contactUs, "/contact"], [t.orderShipping, "/account"], [t.care, "/#care"], [t.returns, "/contact"]] },
+    { title: t.help, links: [[t.contactUs, "/contact"], [t.orderShipping, "/account"], [t.care, "/contact"], [t.returns, "/contact"]] },
     { title: t.about, links: [[t.whereToFind, "/contact"], [t.ourStory, "/#story"], [t.journal, "/#story"]] },
   ];
   return (
