@@ -3,9 +3,9 @@ import { cookies } from 'next/headers';
 
 export const sessionCookie = 'vd_session';
 export const cookieOptions = { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' as const, path: '/' };
-export type Provider = 'line' | 'google' | 'facebook';
+export type Provider = 'line' | 'google' | 'facebook' | 'email';
 export const authSecretReady = () => (process.env.AUTH_SECRET?.length || 0) >= 32;
-export const providerReady = (provider: Provider) => authSecretReady() && (provider === 'line'
+export const providerReady = (provider: Provider) => authSecretReady() && (provider === 'email' ? Boolean(process.env.BLOB_READ_WRITE_TOKEN) : provider === 'line'
   ? Boolean(process.env.LINE_CHANNEL_ID && process.env.LINE_CHANNEL_SECRET)
   : provider === 'google'
     ? Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET)
@@ -29,7 +29,7 @@ export function unseal<T extends { exp: number }>(value?: string): T | null {
 }
 export type Member = { sub: string; name: string; email?: string; provider?: Provider; exp: number };
 export function memberProvider(user: Member): Provider {
-  return user.provider || (user.sub.startsWith('google:') ? 'google' : user.sub.startsWith('facebook:') ? 'facebook' : 'line');
+  return user.provider || (user.sub.startsWith('email:') ? 'email' : user.sub.startsWith('google:') ? 'google' : user.sub.startsWith('facebook:') ? 'facebook' : 'line');
 }
 export function safeMemberNext(value?: string | null) {
   return value && (/^\/products\/[a-z0-9-]{1,80}$/.test(value) || /^\/checkout\?product=[a-z0-9-]{1,80}(?:&quantity=(?:[1-9]|10))?$/.test(value) || /^\/checkout\/success\?session_id=cs_(test|live)_[A-Za-z0-9]+$/.test(value)) ? value : '/account';

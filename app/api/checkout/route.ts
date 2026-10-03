@@ -2,6 +2,7 @@ import { getCmsContent } from "../../lib/cms";
 import { shippingFeeSatang, stripeCheckoutReady, stripeClient } from "../../lib/stripe";
 import { member, memberProvider } from "../../lib/auth";
 import { getOrCreateMemberCustomer } from "../../lib/orders";
+import { getCustomerProfile } from "../../lib/customer-profile";
 
 export async function POST(request: Request) {
   const origin = new URL(request.url).origin;
@@ -14,6 +15,7 @@ export async function POST(request: Request) {
   if (typeof quantityRaw !== "string" || !/^(?:[1-9]|10)$/.test(quantityRaw) || !Number.isSafeInteger(quantity)) return new Response("Invalid quantity", { status: 400 });
   const user = await member();
   if (!user) return Response.redirect(new URL(`/login?next=${encodeURIComponent(`/checkout?product=${productId}&quantity=${quantity}`)}`, origin), 303);
+  if (!await getCustomerProfile(user)) return Response.redirect(new URL(`/register?next=${encodeURIComponent(`/checkout?product=${productId}&quantity=${quantity}`)}`, origin), 303);
   const product = (await getCmsContent()).products.find(item => item.id === productId && item.published);
   if (!product || !Number.isSafeInteger(product.priceBaht) || (product.priceBaht || 0) < 10 || (product.priceBaht || 0) > 999999) return new Response("Product is not available for checkout", { status: 400 });
   if (!stripeCheckoutReady()) return Response.redirect(new URL(`/checkout?product=${productId}&quantity=${quantity}&error=unavailable`, origin), 303);

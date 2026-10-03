@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import type Stripe from 'stripe';
 import { memberProvider, type Member } from './auth';
 import { stripeClient } from './stripe';
+import { getCustomerProfile } from './customer-profile';
 
 function memberHash(sub: string) { return createHash('sha256').update(sub).digest('hex'); }
 
@@ -14,13 +15,17 @@ export async function findMemberCustomers(user: Member) {
 
 export async function getOrCreateMemberCustomer(user: Member) {
   const stripe = stripeClient();
+  const profile = await getCustomerProfile(user);
+  if (!profile) throw new Error('CUSTOMER_PROFILE_REQUIRED');
+  const address = { line1: profile.address, line2: profile.subdistrict, city: profile.district, state: profile.province, postal_code: profile.postalCode, country: 'TH' };
+  const details = { name: profile.name, email: profile.email, phone: profile.phone, address, shipping: { name: profile.name, phone: profile.phone, address } };
   const existing = (await findMemberCustomers(user))[0];
   if (existing) {
-    if (existing.name !== user.name) await stripe.customers.update(existing.id, { name: user.name });
+    await stripe.customers.update(existing.id, details);
     return existing.id;
   }
   const provider = memberProvider(user);
-  const customer = await stripe.customers.create({ name: user.name, ...(user.email ? { email: user.email } : {}), metadata: {
+  const customer = await stripe.customers.create({ ...details, metadata: {
     source: 'valleys-darley', memberId: user.sub, memberIdHash: memberHash(user.sub), provider,
     ...(provider === 'line' ? { lineUserId: user.sub, lineUserHash: memberHash(user.sub) } : {}),
   } }, { idempotencyKey: `member-customer-${memberHash(user.sub)}` });

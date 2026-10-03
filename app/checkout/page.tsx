@@ -5,6 +5,8 @@ import { member, memberProvider } from '../lib/auth';
 import { getCmsContent, localizedContent } from '../lib/cms';
 import { getLocale } from '../lib/locale';
 import { stripeCheckoutReady, stripeTestMode } from '../lib/stripe';
+import { getCustomerProfile } from '../lib/customer-profile';
+import { redirect } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { robots: { index: false, follow: false } };
@@ -14,6 +16,7 @@ export default async function OrderPage({ searchParams }: { searchParams: Promis
   if (!id || !/^[a-z0-9-]{1,80}$/.test(id)) notFound();
   const locale = await getLocale();
   const user = await member();
+  if (user && !await getCustomerProfile(user)) redirect(`/register?next=${encodeURIComponent(`/checkout?product=${id}`)}`);
   const product = localizedContent(await getCmsContent(), locale).products.find(item => item.id === id && item.published);
   if (!product) notFound();
   const price = Number.isSafeInteger(product.priceBaht) && (product.priceBaht || 0) >= 10 ? product.priceBaht! : null;

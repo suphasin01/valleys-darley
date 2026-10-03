@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { allowedOrigin, cookieOptions, providerReady, safeMemberNext, seal, sessionCookie, unseal, type Provider } from './auth';
 
-type SocialProvider = Exclude<Provider, 'line'>;
+type SocialProvider = Exclude<Provider, 'line' | 'email'>;
 type Flow = { state: string; nonce: string; verifier: string; redirect: string; next: string; exp: number };
 const googleKeys = createRemoteJWKSet(new URL('https://www.googleapis.com/oauth2/v3/certs'));
 const flowCookie = (provider: SocialProvider) => `vd_oauth_${provider}`;
@@ -87,7 +87,7 @@ export async function completeSocial(request: Request, provider: SocialProvider)
   try {
     if (!providerReady(provider) || !flow || flow.state !== params.get('state') || !params.get('code') || params.has('error') || flow.redirect !== `${origin}/api/auth/${provider}/callback`) throw new Error('Invalid callback');
     const identity = provider === 'google' ? await googleIdentity(params.get('code')!, flow) : await facebookIdentity(params.get('code')!, flow);
-    response = NextResponse.redirect(new URL(safeMemberNext(flow.next), origin));
+    response = NextResponse.redirect(new URL(`/register?next=${encodeURIComponent(safeMemberNext(flow.next))}`, origin));
     response.cookies.set(sessionCookie, seal({ ...identity, provider, exp: Date.now() + 86400000 }), { ...cookieOptions, maxAge: 86400 });
   } catch {
     response = NextResponse.redirect(fallback);

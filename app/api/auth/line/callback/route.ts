@@ -19,7 +19,7 @@ export async function GET(request: Request) {
     if (!verified.ok) throw new Error('Verification failed');
     const profile = await verified.json();
     if (typeof profile.sub !== 'string' || profile.aud !== process.env.LINE_CHANNEL_ID || profile.nonce !== flow.nonce || profile.exp * 1000 <= Date.now()) throw new Error('Invalid identity');
-    const response = NextResponse.redirect(new URL(safeMemberNext(flow.next), origin));
+    const response = NextResponse.redirect(new URL(`/register?next=${encodeURIComponent(safeMemberNext(flow.next))}`, origin));
     response.cookies.set(sessionCookie, seal({ sub: profile.sub, name: typeof profile.name === 'string' ? profile.name.slice(0, 100) : 'สมาชิก', exp: Date.now() + 86400000 }), { ...cookieOptions, maxAge: 86400 });
     response.headers.set('Cache-Control', 'no-store');
     return response;
