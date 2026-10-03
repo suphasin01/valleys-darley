@@ -18,15 +18,15 @@ export default async function TrackingPage({ params }: { params: Promise<{ id: s
 
   let barcode: string | null = null;
   let productName = '';
-  let lineUserId = '';
+  let orderMemberId = '';
   try {
     const order = await stripeClient().checkout.sessions.retrieve(id);
     if (order.metadata?.source !== 'valleys-darley' || order.payment_status !== 'paid') notFound();
-    lineUserId = order.metadata.lineUserId || '';
+    orderMemberId = order.metadata.memberId || order.metadata.lineUserId || '';
     barcode = normalizeTrackingNumber(order.metadata.trackingNumber || '');
     productName = order.metadata.productName || '';
   } catch { notFound(); }
-  if ((!admin && user?.sub !== lineUserId) || !barcode) notFound();
+  if ((!admin && user?.sub !== orderMemberId) || !barcode) notFound();
 
   let events: Awaited<ReturnType<typeof trackThailandPost>> = [];
   let error: 'configuration' | 'unavailable' | null = null;

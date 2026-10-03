@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { member, ready, safeMemberNext } from '../lib/auth';
+import { member, providerReady, safeMemberNext, type Provider } from '../lib/auth';
 import { copy } from '../lib/i18n';
 import { getLocale } from '../lib/locale';
 
@@ -9,8 +9,13 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
   if (params.next === 'admin') redirect('/admin/login');
   const next = safeMemberNext(params.next);
   if (await member()) redirect(next);
-  const enabled = ready();
-  const t = copy[await getLocale()];
+  const providers: { id: Provider; label: string; className: string }[] = [
+    { id: 'google', label: 'Google', className: 'border border-black/15 bg-white text-[#2c2221]' },
+    { id: 'facebook', label: 'Facebook', className: 'bg-[#1877f2] text-white' },
+    { id: 'line', label: 'LINE', className: 'bg-[#06c755] text-white' },
+  ];
+  const locale = await getLocale();
+  const t = copy[locale];
   return <section className="min-h-screen bg-[#f5f3ef] px-5 pb-20 pt-32">
     <div className="mx-auto grid max-w-5xl overflow-hidden rounded-3xl border border-black/5 bg-white shadow-xl md:grid-cols-2">
       <div className="flex min-h-64 flex-col justify-between bg-[#deddd8] p-10 md:min-h-[540px]">
@@ -22,7 +27,9 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
         <h2 className="mt-4 text-3xl font-semibold">{t.memberTitle}</h2>
         <p className="mb-8 mt-4 text-sm leading-7 text-gray-500">{t.memberIntro}</p>
         {params.error && <p role="alert" className="mb-5 rounded-xl bg-rose-50 p-4 text-sm text-rose-700">{params.error === 'configuration' ? t.memberUnavailable : t.memberFailed}</p>}
-        {enabled ? <a href={`/api/auth/line?next=${encodeURIComponent(next)}`} className="rounded-xl bg-[#06c755] px-6 py-4 text-center font-semibold text-white hover:bg-[#05b34c]">{t.lineSignIn}</a> : <><button disabled className="rounded-xl bg-[#06c755]/40 px-6 py-4 font-semibold text-white">{t.lineSignIn}</button><p role="status" className="mt-4 text-sm text-gray-500">{t.memberPreparing}</p></>}
+        <div className="space-y-3">{providers.map(provider => providerReady(provider.id) ? <a key={provider.id} href={`/api/auth/${provider.id}?next=${encodeURIComponent(next)}`} className={`block rounded-xl px-6 py-4 text-center text-sm font-semibold transition-opacity hover:opacity-80 ${provider.className}`}>{provider.id === 'line' ? t.lineSignIn : `${locale === 'th' ? 'ดำเนินการต่อด้วย' : 'Continue with'} ${provider.label}`}</a> : <div key={provider.id} className={`rounded-xl px-6 py-4 text-center text-sm font-semibold opacity-45 ${provider.className}`} aria-disabled="true">{provider.id === 'line' ? t.lineSignIn : `${locale === 'th' ? 'ดำเนินการต่อด้วย' : 'Continue with'} ${provider.label}`}</div>)}</div>
+        <p role="status" className="mt-4 text-xs leading-6 text-gray-500">{locale === 'th' ? 'ช่องทางที่แสดงสีจางยังไม่ได้เชื่อมบัญชีผู้ให้บริการ จึงยังใช้งานไม่ได้' : 'Dimmed providers are not configured yet.'}</p>
+        <p className="mt-3 text-xs leading-6 text-gray-400">{locale === 'th' ? 'การเข้าสู่ระบบครั้งแรกจะสร้างบัญชีสมาชิกโดยอัตโนมัติ ออเดอร์ผูกกับช่องทางที่ใช้เข้าสู่ระบบ' : 'Your first sign-in creates your account. Orders stay with the sign-in method you used.'}</p>
         <p className="mt-6 text-xs leading-6 text-gray-400">{t.memberPrivacy}</p>
         <Link href="/" className="mt-8 text-sm underline underline-offset-4">{t.backCollection}</Link>
       </div>

@@ -1,31 +1,37 @@
 import { createHash } from 'node:crypto';
 import type Stripe from 'stripe';
-import type { Member } from './auth';
+import { memberProvider, type Member } from './auth';
 import { stripeClient } from './stripe';
 
-function lineHash(sub: string) { return createHash('sha256').update(sub).digest('hex'); }
+function memberHash(sub: string) { return createHash('sha256').update(sub).digest('hex'); }
 
-export async function findLineCustomers(sub: string) {
-  const result = await stripeClient().customers.search({ query: `metadata['lineUserHash']:'${lineHash(sub)}'`, limit: 100 });
-  return result.data.filter(customer => !customer.deleted && customer.metadata.lineUserId === sub);
+export async function findMemberCustomers(user: Member) {
+  const provider = memberProvider(user);
+  const key = provider === 'line' ? 'lineUserHash' : 'memberIdHash';
+  const result = await stripeClient().customers.search({ query: `metadata['${key}']:'${memberHash(user.sub)}'`, limit: 100 });
+  return result.data.filter(customer => !customer.deleted && (provider === 'line' ? customer.metadata.lineUserId === user.sub : customer.metadata.memberId === user.sub));
 }
 
-export async function getOrCreateLineCustomer(user: Member) {
+export async function getOrCreateMemberCustomer(user: Member) {
   const stripe = stripeClient();
-  const existing = (await findLineCustomers(user.sub))[0];
+  const existing = (await findMemberCustomers(user))[0];
   if (existing) {
     if (existing.name !== user.name) await stripe.customers.update(existing.id, { name: user.name });
     return existing.id;
   }
-  const customer = await stripe.customers.create({ name: user.name, metadata: { source: 'valleys-darley', lineUserId: user.sub, lineUserHash: lineHash(user.sub) } }, { idempotencyKey: `line-customer-${lineHash(user.sub)}` });
+  const provider = memberProvider(user);
+  const customer = await stripe.customers.create({ name: user.name, ...(user.email ? { email: user.email } : {}), metadata: {
+    source: 'valleys-darley', memberId: user.sub, memberIdHash: memberHash(user.sub), provider,
+    ...(provider === 'line' ? { lineUserId: user.sub, lineUserHash: memberHash(user.sub) } : {}),
+  } }, { idempotencyKey: `member-customer-${memberHash(user.sub)}` });
   return customer.id;
 }
 
-export async function memberOrders(sub: string) {
+export async function memberOrders(user: Member) {
   const stripe = stripeClient();
-  const customers = await findLineCustomers(sub);
+  const customers = await findMemberCustomers(user);
   const pages = await Promise.all(customers.map(customer => stripe.checkout.sessions.list({ customer: customer.id, status: 'complete', limit: 100 })));
-  return pages.flatMap(page => page.data).filter(session => session.metadata?.source === 'valleys-darley' && session.metadata?.lineUserId === sub).sort((a, b) => b.created - a.created);
+  return pages.flatMap(page => page.data).filter(session => session.metadata?.source === 'valleys-darley' && (session.metadata.memberId || session.metadata.lineUserId) === user.sub).sort((a, b) => b.created - a.created);
 }
 
 export function orderState(session: Stripe.Checkout.Session) {
