@@ -5,7 +5,7 @@ import { get, list, put } from '@vercel/blob';
 import { authSecretReady, type Member } from './auth';
 
 const scrypt = promisify(scryptCallback);
-export type CustomerProfile = { name: string; email: string; phone: string; address: string; subdistrict: string; district: string; province: string; postalCode: string; updatedAt: string };
+export type CustomerProfile = { name: string; email: string; phone: string; address: string; subdistrict: string; district: string; province: string; postalCode: string; updatedAt: string; privacy?: { version: string; acknowledgedAt: string; provider: string } };
 type CustomerRecord = { sub: string; profile: CustomerProfile; password?: { salt: string; hash: string }; failed?: number; lockedUntil?: number };
 export const customerStorageReady = () => authSecretReady() && Boolean(process.env.BLOB_READ_WRITE_TOKEN);
 function encryptionKey() {
@@ -58,7 +58,7 @@ export async function listCustomerProfiles(cursor?: string) {
 }
 export async function saveCustomerProfile(user: Member, profile: CustomerProfile) {
   const existing = await readRecord(user.sub);
-  await writeRecord({ ...existing, sub: user.sub, profile });
+  await writeRecord({ ...existing, sub: user.sub, profile: { ...profile, privacy: existing?.profile.privacy || profile.privacy } });
 }
 function emailSub(email: string) { return `email:${createHash('sha256').update(email.trim().toLowerCase()).digest('hex')}`; }
 export async function registerEmail(profile: CustomerProfile, password: string) {

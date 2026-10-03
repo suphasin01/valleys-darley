@@ -25,6 +25,7 @@ vm.runInNewContext(code, { exports: mod.exports, module: mod, require: name => n
   const form = new FormData();
   Object.entries({ name: 'Test Customer', email: 'TEST@example.com', phone: '081-234-5678', address: 'Test address', subdistrict: 'Test subdistrict', district: 'Test district', province: 'Test province', postalCode: '10100' }).forEach(([key, value]) => form.set(key, value));
   const profile = api.validateProfile(form);
+  profile.privacy = { version: '2026-10-03', acknowledgedAt: '2026-10-03T13:00:00.000Z', provider: 'email' };
   assert.equal(profile.email, 'test@example.com');
   assert.equal(profile.phone, '0812345678');
   form.set('postalCode', 'abc');
@@ -36,9 +37,14 @@ vm.runInNewContext(code, { exports: mod.exports, module: mod, require: name => n
   assert.equal((await api.loginEmail('TEST@example.com', 'test-password-12345')).sub, user.sub);
   assert.equal(await api.getCustomerProfile({ sub: 'google:other-user' }), null);
   await api.saveCustomerProfile(user, { ...profile, name: 'Updated Customer' });
+  assert.equal((await api.getCustomerProfile(user)).privacy.acknowledgedAt, '2026-10-03T13:00:00.000Z');
+  for (const provider of ['google', 'line']) {
+    await api.saveCustomerProfile({ sub: `${provider}:test` }, { ...profile, privacy: { ...profile.privacy, provider } });
+    assert.equal((await api.getCustomerProfile({ sub: `${provider}:test` })).privacy.provider, provider);
+  }
   assert.equal((await api.loginEmail(profile.email, 'test-password-12345')).name, 'Updated Customer');
   const page = await api.listCustomerProfiles();
-  assert.equal(page.profiles.length, 1);
+  assert.equal(page.profiles.length, 3);
   assert.ok(!JSON.stringify(page).includes('password'));
   for (let n = 0; n < 5; n++) assert.equal(await api.loginEmail(profile.email, 'incorrect-password'), null);
   assert.equal(await api.loginEmail(profile.email, 'test-password-12345'), null);
