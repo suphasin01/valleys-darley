@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { member, providerReady, safeMemberNext } from '../lib/auth';
+import { member, safeMemberNext } from '../lib/auth';
+import { SocialSignIn, AuthDivider } from '../components/SocialSignIn';
 import { customerStorageReady, getCustomerProfile } from '../lib/customer-profile';
 import { getLocale } from '../lib/locale';
 
@@ -29,7 +30,7 @@ export default async function Register({ searchParams }: { searchParams: Promise
     <p className="text-[10px] tracking-[.3em] text-black/45">VALLEY&apos;S DARLING · MEMBERS</p>
     <h1 className="mt-4 font-serif text-4xl">{th ? user ? 'ข้อมูลลูกค้าและที่อยู่จัดส่ง' : 'สมัครสมาชิก' : user ? 'Your details & delivery address' : 'Create your account'}</h1>
     <p className="mt-4 text-sm leading-7 text-black/55">{th ? 'สมัครผ่านช่องทางที่คุณสะดวก แล้วกรอกข้อมูลผู้รับและที่อยู่ให้ครบ เพื่อใช้ในการสั่งซื้อและจัดส่งสินค้าในประเทศไทย' : 'Choose how to sign up, then complete your recipient details and Thailand delivery address.'}</p>
-{!user && <><div className="mt-7 grid gap-3 sm:grid-cols-2">{(['google', 'line'] as const).map(provider => providerReady(provider) ? <a key={provider} href={`/api/auth/${provider}?next=${encodeURIComponent(next)}`} className="rounded-xl border border-black/15 px-4 py-3 text-center text-sm">{provider === 'google' ? 'Google / Gmail' : 'LINE'} ↗</a> : <span key={provider} aria-disabled="true" className="rounded-xl border border-black/10 px-4 py-3 text-center text-sm text-black/35">{provider === 'google' ? 'Google / Gmail' : 'LINE'}</span>)}</div><p className="mt-3 text-xs text-black/45">{th ? 'ช่องทางสีจางกำลังเตรียมเปิดให้บริการ หรือสมัครด้วยอีเมลด้านล่างได้' : 'Dimmed options are coming soon. You can also register with email below.'}</p></>}
+    {!user && <div className="mt-7"><SocialSignIn next={next} th={th} /><AuthDivider th={th} /><p className="text-center text-sm text-black/55">{th ? 'สมัครด้วยอีเมลและกรอกที่อยู่ด้านล่าง' : 'Register with email and complete your address below'}</p></div>}
     {params.error && <p role="alert" className="mt-6 rounded-xl bg-rose-50 p-4 text-sm text-rose-800">{params.error === 'password' ? th ? 'รหัสผ่านต้องมีอย่างน้อย 12 ตัวอักษร และตรงกันทั้งสองช่อง' : 'Use a password of 12–128 characters and matching confirmation.' : params.error === 'validation' ? th ? 'กรุณากรอกข้อมูลให้ครบ ตรวจอีเมล เบอร์โทรศัพท์ และรหัสไปรษณีย์ 5 หลัก' : 'Please complete all fields with a valid email, Thai phone and 5-digit postal code.' : th ? 'ยังบันทึกไม่ได้ หากใช้อีเมลนี้สมัครแล้วให้เข้าสู่ระบบ หรือลองใหม่ภายหลัง' : 'Unable to save. If this email is already registered, please sign in; otherwise try again later.'}</p>}
     {!ready && <p role="status" className="mt-6 rounded-xl bg-amber-50 p-4 text-sm text-amber-900">{th ? 'ระบบลงทะเบียนกำลังเตรียมเปิดให้บริการ' : 'Registration is being prepared. Please check back shortly.'}</p>}
     <form action="/api/customer/profile" method="post" className="mt-8"><input type="hidden" name="next" value={next} /><div className="grid gap-5 sm:grid-cols-2">{fields.map(([name, label, autocomplete, value, max]) => <label key={name} className={`text-sm ${name === 'address' ? 'sm:col-span-2' : ''}`}>{label}<input className={input} name={name} type={name === 'email' ? 'email' : name === 'phone' ? 'tel' : 'text'} autoComplete={autocomplete} defaultValue={value} maxLength={max} required inputMode={name === 'postalCode' ? 'numeric' : undefined} pattern={name === 'postalCode' ? '[0-9]{5}' : undefined} /></label>)}

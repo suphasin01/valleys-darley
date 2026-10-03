@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { member, providerReady, safeMemberNext, type Provider } from '../lib/auth';
+import { member, providerReady, safeMemberNext } from '../lib/auth';
+import { SocialSignIn, AuthDivider } from '../components/SocialSignIn';
 import { copy } from '../lib/i18n';
 import { getLocale } from '../lib/locale';
 
@@ -9,10 +10,6 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
   if (params.next === 'admin') redirect('/admin/login');
   const next = safeMemberNext(params.next);
   if (await member()) redirect(next);
-  const providers: { id: Provider; label: string; className: string }[] = [
-    { id: 'google', label: 'Google', className: 'border border-black/15 bg-white text-[#2c2221]' },
-    { id: 'line', label: 'LINE', className: 'bg-[#06c755] text-white' },
-  ];
   const locale = await getLocale();
   const t = copy[locale];
   return <section className="min-h-screen bg-[#f5f3ef] px-5 pb-20 pt-32">
@@ -28,7 +25,8 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
         <Link href={`/register?next=${encodeURIComponent(next)}`} className="my-5 text-center text-sm underline">{locale === 'th' ? 'ยังไม่มีบัญชี? สมัครสมาชิก' : 'New here? Create an account'}</Link>
         <p className="mb-8 mt-4 text-sm leading-7 text-gray-500">{t.memberIntro}</p>
         {params.error && <p role="alert" className="mb-5 rounded-xl bg-rose-50 p-4 text-sm text-rose-700">{params.error === 'configuration' ? t.memberUnavailable : t.memberFailed}</p>}
-        <div className="space-y-3">{providers.map(provider => providerReady(provider.id) ? <a key={provider.id} href={`/api/auth/${provider.id}?next=${encodeURIComponent(next)}`} className={`block rounded-xl px-6 py-4 text-center text-sm font-semibold transition-opacity hover:opacity-80 ${provider.className}`}>{provider.id === 'line' ? t.lineSignIn : `${locale === 'th' ? 'ดำเนินการต่อด้วย' : 'Continue with'} ${provider.label}`}</a> : <div key={provider.id} className={`rounded-xl px-6 py-4 text-center text-sm font-semibold opacity-45 ${provider.className}`} aria-disabled="true">{provider.id === 'line' ? t.lineSignIn : `${locale === 'th' ? 'ดำเนินการต่อด้วย' : 'Continue with'} ${provider.label}`}</div>)}</div>
+        <AuthDivider th={locale === 'th'} />
+        <SocialSignIn next={next} th={locale === 'th'} />
         <p role="status" className="mt-4 text-xs leading-6 text-gray-500">{locale === 'th' ? 'ช่องทางที่แสดงสีจางยังไม่ได้เชื่อมบัญชีผู้ให้บริการ จึงยังใช้งานไม่ได้' : 'Dimmed providers are not configured yet.'}</p>
         <p className="mt-3 text-xs leading-6 text-gray-400">{locale === 'th' ? 'การเข้าสู่ระบบครั้งแรกจะสร้างบัญชีสมาชิกโดยอัตโนมัติ ออเดอร์ผูกกับช่องทางที่ใช้เข้าสู่ระบบ' : 'Your first sign-in creates your account. Orders stay with the sign-in method you used.'}</p>
         <p className="mt-6 text-xs leading-6 text-gray-400">{t.memberPrivacy}</p>
