@@ -23,7 +23,6 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
         <h2 className="mt-4 text-3xl font-semibold">{t.memberTitle}</h2>
         <form action="/api/auth/email" method="post" className="mt-6 space-y-4"><input type="hidden" name="next" value={next} /><label className="block text-sm">{locale === 'th' ? 'อีเมล' : 'Email'}<input name="email" type="email" autoComplete="email" maxLength={254} required className="mt-2 w-full rounded-xl border border-black/15 px-4 py-3" /></label><label className="block text-sm">{locale === 'th' ? 'รหัสผ่าน' : 'Password'}<input name="password" type="password" autoComplete="current-password" maxLength={128} required className="mt-2 w-full rounded-xl border border-black/15 px-4 py-3" /></label><button disabled={!providerReady('email')} className="w-full rounded-xl bg-[#2c2221] px-6 py-4 text-sm text-white disabled:opacity-40">{locale === 'th' ? 'เข้าสู่ระบบด้วยอีเมล' : 'Sign in with email'}</button></form>
         <Link href={`/register?next=${encodeURIComponent(next)}`} className="my-5 text-center text-sm underline">{locale === 'th' ? 'ยังไม่มีบัญชี? สมัครสมาชิก' : 'New here? Create an account'}</Link>
-        <p className="mb-8 mt-4 text-sm leading-7 text-gray-500">{t.memberIntro}</p>
         {params.error && <p role="alert" className="mb-5 rounded-xl bg-rose-50 p-4 text-sm text-rose-700">{params.error === 'configuration' ? t.memberUnavailable : t.memberFailed}</p>}
         <AuthDivider th={locale === 'th'} />
         <SocialSignIn next={next} th={locale === 'th'} />
