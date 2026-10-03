@@ -9,7 +9,7 @@ export const providerReady = (provider: Provider) => authSecretReady() && (provi
   ? Boolean(process.env.LINE_CHANNEL_ID && process.env.LINE_CHANNEL_SECRET)
   : provider === 'google'
     ? Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET)
-    : Boolean(process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET));
+    : false);
 export const ready = () => providerReady('line');
 export function seal(data: object) {
   if (!process.env.AUTH_SECRET || process.env.AUTH_SECRET.length < 32) throw new Error('Auth not configured');

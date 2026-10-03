@@ -11,7 +11,6 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
   if (await member()) redirect(next);
   const providers: { id: Provider; label: string; className: string }[] = [
     { id: 'google', label: 'Google', className: 'border border-black/15 bg-white text-[#2c2221]' },
-    { id: 'facebook', label: 'Facebook', className: 'bg-[#1877f2] text-white' },
     { id: 'line', label: 'LINE', className: 'bg-[#06c755] text-white' },
   ];
   const locale = await getLocale();
