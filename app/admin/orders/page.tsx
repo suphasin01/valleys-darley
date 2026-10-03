@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { adminSession } from '../../lib/admin-auth';
 import { orderState, orderStateLabels } from '../../lib/orders';
-import { stripeClient } from '../../lib/stripe';
+import { stripeClient, stripeTestMode } from '../../lib/stripe';
 import { normalizeTrackingNumber } from '../../lib/thailand-post';
 
 export const dynamic = 'force-dynamic';
@@ -26,6 +26,7 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
       {updated === '1' && <p role="status" className="mt-7 rounded-xl bg-emerald-50 p-4 text-sm text-emerald-800">อัปเดตสถานะคำสั่งซื้อแล้ว</p>}
       {updated === '0' && <p role="alert" className="mt-7 rounded-xl bg-red-50 p-4 text-sm text-red-800">อัปเดตสถานะไม่สำเร็จ</p>}
       <p className="mt-7 text-xs text-black/50">แสดงออเดอร์ Checkout ที่ลูกค้ากรอกข้อมูลเสร็จแล้ว สถานะชำระเงินอ้างอิง Stripe โดยตรง</p>
+      {stripeTestMode() && <p role="status" className="mt-4 rounded-xl bg-amber-50 p-4 text-sm text-amber-900">Stripe โหมดทดสอบ · รายการในหน้านี้เป็นคำสั่งซื้อจำลอง ไม่มีการรับเงินจริงหรือจัดส่งสินค้า ตั้งราคาขายได้ที่ CMS → สินค้าและคอลเลกชัน → ราคา (บาท) แล้วบันทึกและเผยแพร่ ราคานั้นจะถูกใช้ใน Checkout โดยอัตโนมัติ</p>}
       <div className="mt-6 space-y-4">{orders.map(order => {
         const address = order.collected_information?.shipping_details?.address;
         const state = orderState(order);

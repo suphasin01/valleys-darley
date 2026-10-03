@@ -1,5 +1,9 @@
 import Stripe from "stripe";
 
+export function stripeTestMode() {
+  return process.env.STRIPE_SECRET_KEY?.startsWith("sk_test_") === true;
+}
+
 export function stripeCheckoutReady() {
   const shipping = Number(process.env.STRIPE_SHIPPING_FEE_THB);
   return Boolean(process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET && process.env.STRIPE_SHIPPING_FEE_THB !== undefined && Number.isSafeInteger(shipping) && shipping >= 0 && shipping <= 100000);

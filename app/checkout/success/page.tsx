@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { stripeClient } from "../../lib/stripe";
+import { stripeClient, stripeTestMode } from "../../lib/stripe";
 import { member } from "../../lib/auth";
 
 export const dynamic = "force-dynamic";
@@ -24,6 +24,7 @@ export default async function CheckoutSuccess({ searchParams }: { searchParams: 
   }
   return <main className="flex min-h-[70svh] items-center justify-center bg-[#f1e9eb] px-6 py-20 text-[#261e1c]"><div className="w-full max-w-xl bg-white p-8 text-center shadow-sm md:p-14">
     <p className="text-[10px] uppercase tracking-[.25em]">VALLEY&apos;S DARLING · CHECKOUT</p>
+    {stripeTestMode() && <p role="status" className="mt-5 rounded-xl bg-amber-50 p-4 text-sm text-amber-900">โหมดทดสอบ · ไม่มีการเรียกเก็บเงินจริงหรือจัดส่งสินค้า</p>}
     <h1 className="mt-7 font-serif text-4xl">{!user ? "เข้าสู่ระบบเพื่อดูคำสั่งซื้อ" : paid ? "ชำระเงินสำเร็จ" : pending ? "กำลังยืนยันการชำระเงิน" : "ยังไม่ยืนยันการชำระเงิน"}</h1>
     <p className="mt-5 text-sm leading-7 text-black/60">{!user ? "ใช้บัญชีเดียวกับที่สั่งซื้อเพื่อดูสถานะ" : paid ? `${productName} · ฿${(total / 100).toLocaleString("th-TH")}` : pending ? "ระบบชำระเงินกำลังประมวลผล กรุณาตรวจอีกครั้งภายหลัง" : "ไม่พบรายการที่ชำระสำเร็จ หากคุณถูกตัดเงินแล้ว โปรดติดต่อเราโดยแจ้งหมายเลขรายการจาก Stripe"}</p>
     {paid && <p className="mt-4 text-xs leading-6 text-black/50">เราจะใช้ข้อมูลจัดส่งที่คุณกรอกใน Stripe Checkout เพื่อติดต่อและดำเนินการคำสั่งซื้อ</p>}
