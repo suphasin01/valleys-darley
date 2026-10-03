@@ -16,7 +16,7 @@ export function Footer({ locale }: { locale: Locale }) {
         <p className="mt-2 text-[9px] uppercase tracking-[0.12em]">{t.footerTagline}</p>
         <div className="mt-10 grid grid-cols-2 gap-8 text-[10px] md:grid-cols-4 md:text-xs">
           {groups.map((group) => <div key={group.title}><h3 className="mb-4 font-serif font-semibold">{group.title}</h3><ul className="space-y-2.5">{group.links.map(([label, href]) => <li key={label}><Link href={href} className="hover:underline">{label}</Link></li>)}</ul></div>)}
-          <div><h3 className="mb-4 font-serif font-semibold">{t.legal}</h3><p>{t.privacy}</p><p className="mt-2">© {new Date().getFullYear()} VALLEY&apos;S DARLING</p></div>
+          <div><h3 className="mb-4 font-serif font-semibold">{t.legal}</h3><Link href="/privacy" className="block hover:underline">{t.privacy}</Link><Link href="/terms" className="mt-2 block hover:underline">{locale === 'th' ? 'ข้อกำหนดการใช้เว็บไซต์' : 'WEBSITE TERMS'}</Link><p className="mt-2">© {new Date().getFullYear()} VALLEY&apos;S DARLING</p></div>
         </div>
       </div>
     </footer>
