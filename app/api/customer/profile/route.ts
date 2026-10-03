@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { cookieOptions, member, memberProvider, safeMemberNext, seal, sessionCookie } from '../../../lib/auth';
 import { privacyVersion } from '../../../lib/privacy';
-import { customerStorageReady, registerEmail, saveCustomerProfile, validateProfile } from '../../../lib/customer-profile';
+import { customerStorageReady, getCustomerProfile, registerEmail, saveCustomerProfile, validateProfile } from '../../../lib/customer-profile';
 
 export async function POST(request: Request) {
   const origin = new URL(request.url).origin;
@@ -10,12 +10,13 @@ export async function POST(request: Request) {
   const form = await request.formData();
   const next = safeMemberNext(String(form.get('next') || ''));
   const fail = (error: string) => NextResponse.redirect(new URL(`/register?error=${error}&edit=1&next=${encodeURIComponent(next)}`, origin), 303);
-  if (form.get('privacyAcknowledged') !== 'yes' || form.get('privacyVersion') !== privacyVersion) return fail('privacy');
-  const profile = validateProfile(form);
-  if (!profile) return fail('validation');
   try {
     const user = await member();
-    profile.privacy = { version: privacyVersion, acknowledgedAt: new Date().toISOString(), provider: user ? memberProvider(user) : 'email' };
+    const existing = user ? await getCustomerProfile(user) : null;
+    if (!existing && (form.get('privacyAcknowledged') !== 'yes' || form.get('privacyVersion') !== privacyVersion)) return fail('privacy');
+    const profile = validateProfile(form);
+    if (!profile) return fail('validation');
+    if (!existing) profile.privacy = { version: privacyVersion, acknowledgedAt: new Date().toISOString(), provider: user ? memberProvider(user) : 'email' };
     let identity;
     if (user) {
       // Native account login IDs cannot be changed by editing the contact email.

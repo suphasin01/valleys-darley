@@ -3,7 +3,6 @@ import { createRemoteJWKSet, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { allowedOrigin, cookieOptions, providerReady, safeMemberNext, seal, sessionCookie, unseal, type Provider } from './auth';
-import { privacyCookie, privacyStartAllowed } from './privacy';
 
 type SocialProvider = Exclude<Provider, 'line' | 'email'>;
 type Flow = { state: string; nonce: string; verifier: string; redirect: string; next: string; exp: number };
@@ -14,7 +13,6 @@ export async function startSocial(request: Request, provider: SocialProvider) {
   let origin: string;
   try { origin = allowedOrigin(request); } catch { return new Response('Invalid host', { status: 400 }); }
   if (!providerReady(provider)) return NextResponse.redirect(new URL('/login?error=configuration', origin));
-  if (!await privacyStartAllowed(provider)) return NextResponse.redirect(new URL(`/register?error=privacy&next=${encodeURIComponent(safeMemberNext(new URL(request.url).searchParams.get('next')))}`, origin));
   const state = randomBytes(24).toString('hex');
   const nonce = randomBytes(24).toString('hex');
   const verifier = randomBytes(32).toString('base64url');
@@ -30,7 +28,6 @@ export async function startSocial(request: Request, provider: SocialProvider) {
     state, scope: 'public_profile,email',
   }).toString();
   const response = NextResponse.redirect(url);
-  response.cookies.set(privacyCookie, '', { ...cookieOptions, maxAge: 0 });
   response.cookies.set(flowCookie(provider), seal({ state, nonce, verifier, redirect, next, exp: Date.now() + 600000 }), { ...cookieOptions, maxAge: 600 });
   response.headers.set('Cache-Control', 'no-store');
   return response;

@@ -1,8 +1,7 @@
 import { providerReady } from '../lib/auth';
-import { PrivacyCheckbox } from './PrivacyCheckbox';
 
 export function SocialSignIn({ next, th }: { next: string; th: boolean }) {
-  return <form action="/api/auth/consent" method="post" className="space-y-3"><input type="hidden" name="next" value={next}/><PrivacyCheckbox th={th}/>{(['google', 'line'] as const).map(provider => {
+  return <form action="/api/auth/consent" method="post" className="space-y-3"><input type="hidden" name="next" value={next}/>{(['google', 'line'] as const).map(provider => {
     const enabled = providerReady(provider);
     const label = `${th ? 'ดำเนินการต่อด้วย' : 'Continue with'} ${provider === 'google' ? 'Google' : 'LINE'}`;
     const style = `flex min-h-12 w-full items-center justify-center gap-3 rounded-lg border px-4 py-3 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#9c7674] ${provider === 'google' ? 'border-[#dadce0] bg-white text-[#3c4043] hover:bg-[#f8f9fa]' : 'border-[#06c755] bg-[#06c755] text-white hover:bg-[#05b34c]'} ${enabled ? '' : 'opacity-45'}`;
