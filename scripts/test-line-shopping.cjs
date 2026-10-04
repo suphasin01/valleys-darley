@@ -41,6 +41,28 @@ const api = moduleObject.exports;
     assert.equal(mapped[0].description, 'From LINE'); assert.equal(mapped[0].priceMin, 90);
     assert.equal(mapping.exports.mapLineCatalog([{ ...product(1), isDisplay: false }], { 'line-1': true })[0].published, false);
     assert.equal(mapping.exports.mapLineCatalog([product(1), product(2), product(3)], { 'line-1': false }).length, 3);
+    const originalBlobToken = process.env.BLOB_READ_WRITE_TOKEN;
+    let stored;
+    try {
+      process.env.BLOB_READ_WRITE_TOKEN = 'test-blob';
+      const cms = { exports: {} };
+      const cmsSource = ts.transpileModule(fs.readFileSync('app/lib/cms.ts', 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, esModuleInterop: true } }).outputText;
+      new Function('require', 'module', 'exports', cmsSource)(id => {
+        if (id === '@vercel/blob') return { list: async () => ({ blobs: [{ url: 'https://example.com/cms' }] }), get: async (_, options) => { assert.equal(options.useCache, false); return { stream: new Response(JSON.stringify(stored)).body }; }, put: async (_, json) => { stored = JSON.parse(json); } };
+        if (id === './line-shopping') return { lineShoppingReady: () => true, getLineCatalog: async () => [product(1), product(2)] };
+        if (id === './line-catalog') return mapping.exports;
+        return require(id);
+      }, cms, cms.exports);
+      stored = structuredClone(cms.exports.defaultCmsContent);
+      const originalProducts = structuredClone(stored.products);
+      const live = await cms.exports.getCmsContent();
+      assert.equal(live.products.length, 2); assert.equal(live.products[0].name, 'Product 1');
+      await cms.exports.saveCmsContent({ ...live, products: [{ ...live.products[0], name: 'FORGED NAME' }], lineVisibility: { 'line-1': false } });
+      assert.deepEqual(stored.products, originalProducts);
+      assert.equal((await cms.exports.getCmsContent()).products[0].published, false);
+      assert.equal((await cms.exports.getCmsContent()).products[1].published, true);
+      assert.equal(cms.exports.localizedContent(live, 'th').products[0].name, 'Product 1');
+    } finally { if (originalBlobToken === undefined) delete process.env.BLOB_READ_WRITE_TOKEN; else process.env.BLOB_READ_WRITE_TOKEN = originalBlobToken; }
   } finally {
     global.fetch = originalFetch;
     if (originalKey === undefined) delete process.env.LINE_SHOPPING_API_KEY; else process.env.LINE_SHOPPING_API_KEY = originalKey;
