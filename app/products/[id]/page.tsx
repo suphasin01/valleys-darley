@@ -17,7 +17,7 @@ export default async function ProductPage({ params, searchParams }: { params: Pr
   const hasPrice = Number.isSafeInteger(product.priceBaht) && (product.priceBaht || 0) >= 10;
   return <section className="min-h-screen bg-[#f6ecec] px-5 py-10 text-[#211815] md:px-10 md:py-20">
     <div className="mx-auto grid max-w-6xl gap-10 md:grid-cols-2 md:gap-16">
-      <div className="relative aspect-[4/5] overflow-hidden bg-[#eee4da]"><Image src={product.image} alt={product.name} fill priority className={isAr ? "object-contain p-10" : "object-cover"} sizes="(max-width: 768px) 100vw, 50vw" /></div>
+      <div className="relative aspect-[4/5] overflow-hidden bg-[#eee4da]"><Image unoptimized={Boolean(product.lineProductId)} src={product.image} alt={product.name} fill priority className={isAr ? "object-contain p-10" : "object-cover"} sizes="(max-width: 768px) 100vw, 50vw" /></div>
       <div className="flex flex-col justify-center">
         <Link href="/collections" className="text-xs tracking-[.15em] text-black/50 hover:underline">← {locale === "th" ? "กลับไปคอลเลกชัน" : "BACK TO COLLECTION"}</Link>
         <p className="mt-10 text-[10px] uppercase tracking-[.25em] text-black/45">VALLEY&apos;S DARLING · JEWELRY</p>

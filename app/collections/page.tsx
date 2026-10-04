@@ -20,7 +20,7 @@ export default async function CollectionsPage() {
         <div id="new-in" className="mt-12 grid grid-cols-2 gap-x-3 gap-y-8 md:mt-16 md:grid-cols-3 md:gap-x-5 md:gap-y-14">
           {products.filter(product => product.published).map((product) => (
             <Link href={`/products/${encodeURIComponent(product.id)}`} key={product.id} className="group">
-              <div className="relative aspect-[4/5] overflow-hidden bg-[#eee4da]"><Image src={product.image} alt={product.name} fill className={`${product.link.startsWith("/ar") ? "object-contain p-8 md:p-16" : "object-cover"} transition duration-700 group-hover:scale-[1.04]`} sizes="(max-width: 768px) 50vw, 33vw" /></div>
+              <div className="relative aspect-[4/5] overflow-hidden bg-[#eee4da]"><Image unoptimized={Boolean(product.lineProductId)} src={product.image} alt={product.name} fill className={`${product.link.startsWith("/ar") ? "object-contain p-8 md:p-16" : "object-cover"} transition duration-700 group-hover:scale-[1.04]`} sizes="(max-width: 768px) 50vw, 33vw" /></div>
               <h2 className="mt-3 min-h-8 font-serif text-[10px] uppercase leading-4 md:text-sm">{product.name}</h2><p className="mt-1 text-[9px] tracking-[0.12em]">{t.viewPiece} →</p>
               {product.priceMin !== undefined && <p className="mt-2 text-xs">฿{product.priceMin.toLocaleString('th-TH')}{product.priceMax !== product.priceMin && ` – ฿${product.priceMax?.toLocaleString('th-TH')}`}</p>}
             </Link>

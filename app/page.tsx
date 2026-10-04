@@ -61,7 +61,7 @@ export default async function Home() {
         <h2 className="mx-auto mt-5 max-w-2xl text-center font-serif text-[clamp(2.1rem,4vw,4.4rem)] uppercase leading-[1.1] tracking-[-.035em]">{th ? "บางสิ่งที่เราจินตนาการไว้แล้ว" : "A few things we’ve already imagined."}</h2>
         <div className="mt-14 grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-7 md:mt-20 md:gap-y-20">
           {products.map((product) => <Link key={product.id} href={`/products/${encodeURIComponent(product.id)}`} className="group block">
-            <div className="relative aspect-[1.12] overflow-hidden bg-[#e4dfe0]"><Image src={product.image} alt={product.name} fill sizes="(max-width: 640px) 100vw, 50vw" className="object-cover transition-transform duration-700 group-hover:scale-[1.055]" /></div>
+            <div className="relative aspect-[1.12] overflow-hidden bg-[#e4dfe0]"><Image unoptimized={Boolean(product.lineProductId)} src={product.image} alt={product.name} fill sizes="(max-width: 640px) 100vw, 50vw" className="object-cover transition-transform duration-700 group-hover:scale-[1.055]" /></div>
             <div className="mt-4 flex items-start justify-between gap-4 text-[10px] uppercase leading-5 tracking-[.12em] md:text-xs"><h3>{product.name}</h3><span aria-hidden className="transition-transform group-hover:translate-x-1">↗</span></div>
           </Link>)}
         </div>
