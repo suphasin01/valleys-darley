@@ -2,7 +2,7 @@ import type { CmsProduct } from './cms';
 
 export function purchaseSelection(product: CmsProduct, variantId: string | undefined, quantity: number) {
   if (!product.published || !Number.isInteger(quantity) || quantity < 1 || quantity > 10) return null;
-  if (product.lineProductId) {
+  if (product.variants?.length) {
     const variant = product.variants?.find(v=>String(v.id)===variantId);
     if (!variant || !Number.isSafeInteger(variant.available) || variant.available < quantity) return null;
     const amount = Math.round(variant.price * 100);

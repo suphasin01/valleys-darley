@@ -1,5 +1,5 @@
 import { getCmsContent } from "../../lib/cms";
-import { shippingFeeSatang, stripeCheckoutReady, stripeClient, stripeTestMode } from "../../lib/stripe";
+import { shippingFeeSatang, stripeCheckoutReady, stripeClient } from "../../lib/stripe";
 import { purchaseSelection } from '../../lib/purchase';
 import { createHash } from 'node:crypto';
 import { member, memberProvider } from "../../lib/auth";
@@ -26,8 +26,6 @@ export async function POST(request: Request) {
   const product = (await getCmsContent()).products.find(item => item.id === productId && item.published);
   const selection = product && purchaseSelection(product, variantId, quantity);
   if (!product || !selection) return Response.redirect(new URL(`${next}&error=stock`, origin), 303);
-  // Never take live payment against shared LINE stock without atomic reservation.
-  if (product.lineProductId && !stripeTestMode()) return Response.redirect(new URL(`${next}&error=inventory`, origin), 303);
   if (!stripeCheckoutReady()) return Response.redirect(new URL(`/checkout?product=${productId}&quantity=${quantity}&error=unavailable`, origin), 303);
 
   try {

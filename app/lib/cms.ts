@@ -3,18 +3,14 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { randomUUID } from 'node:crypto';
 import type { Locale } from "./i18n";
-import { getLineCatalog, lineShoppingReady } from './line-shopping';
-import { mapLineCatalog } from './line-catalog';
 
-export type CmsProduct = { id: string; name: string; description: string; image: string; images?: string[]; link: string; published: boolean; priceBaht?: number; lineProductId?: number; linePublished?: boolean; variants?: { id: number; sku: string; label?: string; price: number; available: number }[]; priceMin?: number; priceMax?: number };
+export type CmsProduct = { id: string; name: string; description: string; image: string; images?: string[]; link: string; published: boolean; priceBaht?: number; variants?: { id: number; sku: string; label?: string; price: number; available: number }[] };
 export type CmsContent = {
   site: { brand: string; description: string };
   home: { heading: string; emphasis: string; ending: string; intro: string; storyHeading: string; storyBody: string };
   customMade: { heading: string; body: string; cta: string };
   contact: { heading: string; body: string; cta: string; url: string };
   products: CmsProduct[];
-  lineVisibility?: Record<string, boolean>;
-  lineCatalogStatus?: 'connected' | 'unavailable';
   th: {
     home: { heading: string; emphasis: string; ending: string; intro: string; storyHeading: string; storyBody: string };
     customMade: { heading: string; body: string; cta: string };
@@ -85,7 +81,7 @@ export function localizedContent(content: CmsContent, locale: Locale) {
     home: { ...content.home, ...content.th.home },
     customMade: { ...content.customMade, ...content.th.customMade },
     contact: { ...content.contact, ...content.th.contact },
-    products: content.products.map(product => product.lineProductId ? product : ({ ...product, name: content.th.products[product.id] || product.name, description: content.th.productDescriptions[product.id] || product.description })),
+    products: content.products.map(product => ({ ...product, name: content.th.products[product.id] || product.name, description: content.th.productDescriptions[product.id] || product.description })),
   } : content;
 }
 
@@ -94,7 +90,7 @@ const localFile = path.join(process.cwd(), "data", "cms-content.json");
 function normalize(value: Partial<CmsContent>): CmsContent {
   return {
     ...defaultCmsContent,
-    ...value,
+    updatedAt: value.updatedAt || "",
     site: { ...defaultCmsContent.site, ...value.site },
     home: { ...defaultCmsContent.home, ...value.home },
     customMade: { ...defaultCmsContent.customMade, ...value.customMade },
@@ -131,16 +127,11 @@ async function getStoredContent(): Promise<CmsContent> {
 }
 
 export async function getCmsContent(): Promise<CmsContent> {
-  const content = await getStoredContent();
-  if (!lineShoppingReady()) return content;
-  try { return { ...content, products: mapLineCatalog(await getLineCatalog(), content.lineVisibility), lineCatalogStatus: 'connected' }; }
-  catch { return { ...content, products: [], lineCatalogStatus: 'unavailable' }; }
+  return getStoredContent();
 }
 
 export async function saveCmsContent(value: CmsContent): Promise<CmsContent> {
-  const stored = lineShoppingReady() ? await getStoredContent() : null;
-  const { lineCatalogStatus: _status, ...editable } = value;
-  const content = normalize({ ...editable, ...(stored ? { products: stored.products } : {}), updatedAt: new Date().toISOString() });
+  const content = normalize({ ...value, updatedAt: new Date().toISOString() });
   const serialized = JSON.stringify(content, null, 2);
   if (cmsStorageReady()) {
     const revision = `${String(9999999999999 - Date.now()).padStart(13, '0')}-${randomUUID()}`;

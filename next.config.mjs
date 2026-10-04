@@ -3,7 +3,6 @@ const nextConfig = {
   reactStrictMode: true,
   images: {
     remotePatterns: [
-      { protocol: 'https', hostname: 'obs-ect.line-scdn.net' },
       {
         protocol: 'https',
         hostname: '**.cdninstagram.com',

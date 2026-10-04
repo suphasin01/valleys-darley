@@ -10,7 +10,7 @@ export default async function AboutPage() {
   const locale = await getLocale();
   const th = locale === "th";
   const content = localizedContent(await getCmsContent(), locale);
-  const ring = content.products.find(product => product.published && product.id === "line-1008342128");
+  const ring = content.products.find(product => product.published && product.id === "pearl-ring");
   const storyImage = ring?.images?.[3] || "/images/heartfelt-chronicles.png";
   return <main className="editorial-page mx-auto max-w-[1440px] bg-[#fffefa] px-5 py-10 text-[#261e1c] md:px-16 md:py-16">
     <h1 className={`mb-8 text-right ${th ? "text-3xl md:text-5xl" : "brand-script text-5xl md:text-7xl"}`}>{th ? "เข้าสู่โลกของเรา" : "Enter our World"}</h1>
