@@ -7,7 +7,7 @@ import { LanguageSwitch } from "./LanguageSwitch";
 import { copy, type Locale } from "../lib/i18n";
 
 export function BrandLogo({ className = "" }: { className?: string }) {
-  return <span className={`brand-script inline-block whitespace-nowrap ${className}`}><img src="/images/figma/brand.png" alt="Valley's Darling" className="block h-[1.2em] w-[8.2em] max-w-full object-contain" /></span>;
+  return <span className={`brand-script inline-block whitespace-nowrap ${className}`}><img src="/images/figma/brand-hd.png" alt="Valley's Darling" width={1291} height={259} className="block h-[1.2em] w-[8.2em] max-w-full object-contain" /></span>;
 }
 
 export function Header({ locale }: { locale: Locale }) {
