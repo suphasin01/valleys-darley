@@ -1,6 +1,6 @@
 import 'server-only';
 
-export type LineProduct = { id: number; name: string; description: string; imageUrls: string[]; isDisplay: boolean; variants: { id: number; price: number; discountedPrice: number; availableNumber: number; sku: string }[] };
+export type LineProduct = { id: number; name: string; description: string; imageUrls: string[]; isDisplay: boolean; variants: { id: number; price: number; discountedPrice: number; availableNumber: number; sku: string; options?: { name: string; value: string }[] }[] };
 export type LineOrder = {
   orderNumber: string; orderStatus: string; paymentStatus: string; shipmentStatus: string;
   totalPrice: number; checkoutAt: string; lastUpdatedAt: string;

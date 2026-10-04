@@ -32,7 +32,15 @@ export function memberProvider(user: Member): Provider {
   return user.provider || (user.sub.startsWith('email:') ? 'email' : user.sub.startsWith('google:') ? 'google' : user.sub.startsWith('facebook:') ? 'facebook' : 'line');
 }
 export function safeMemberNext(value?: string | null) {
-  return value && (/^\/products\/[a-z0-9-]{1,80}$/.test(value) || /^\/checkout\?product=[a-z0-9-]{1,80}(?:&quantity=(?:[1-9]|10))?$/.test(value) || /^\/checkout\/success\?session_id=cs_(test|live)_[A-Za-z0-9]+$/.test(value)) ? value : '/account';
+  if (!value || !value.startsWith('/') || value.startsWith('//')) return '/account';
+  if (/^\/products\/[a-z0-9-]{1,80}$/.test(value) || value === '/orders' || /^\/orders\/cs_(test|live)_[A-Za-z0-9]+$/.test(value) || /^\/checkout\/success\?session_id=cs_(test|live)_[A-Za-z0-9]+$/.test(value)) return value;
+  const url = new URL(value, 'https://local.invalid');
+  if (url.pathname !== '/checkout' || url.hash || !/^[a-z0-9-]{1,80}$/.test(url.searchParams.get('product') || '')) return '/account';
+  const keys = [...url.searchParams.keys()];
+  if (new Set(keys).size !== keys.length || keys.some(key=>!['product','quantity','variant'].includes(key))) return '/account';
+  if (url.searchParams.has('quantity') && !/^(?:[1-9]|10)$/.test(url.searchParams.get('quantity')!)) return '/account';
+  if (url.searchParams.has('variant') && !/^[0-9]{1,20}$/.test(url.searchParams.get('variant')!)) return '/account';
+  return `${url.pathname}${url.search}`;
 }
 export async function member() {
   return unseal<Member>((await cookies()).get(sessionCookie)?.value);

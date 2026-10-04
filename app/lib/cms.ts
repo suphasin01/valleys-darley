@@ -6,7 +6,7 @@ import type { Locale } from "./i18n";
 import { getLineCatalog, lineShoppingReady } from './line-shopping';
 import { mapLineCatalog } from './line-catalog';
 
-export type CmsProduct = { id: string; name: string; description: string; image: string; link: string; published: boolean; priceBaht?: number; lineProductId?: number; linePublished?: boolean; variants?: { id: number; sku: string; price: number; available: number }[]; priceMin?: number; priceMax?: number };
+export type CmsProduct = { id: string; name: string; description: string; image: string; link: string; published: boolean; priceBaht?: number; lineProductId?: number; linePublished?: boolean; variants?: { id: number; sku: string; label?: string; price: number; available: number }[]; priceMin?: number; priceMax?: number };
 export type CmsContent = {
   site: { brand: string; description: string };
   home: { heading: string; emphasis: string; ending: string; intro: string; storyHeading: string; storyBody: string };

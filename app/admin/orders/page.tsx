@@ -13,11 +13,11 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
   const route = view === 'shipping' ? '/admin/shipping' : view === 'payments' ? '/admin/payments' : '/admin/orders';
   if (process.env.STRIPE_SECRET_KEY) {
     try {
-      const page = await stripeClient().checkout.sessions.list({ limit: 50, status: 'complete', ...(after && /^cs_(test|live)_[A-Za-z0-9]+$/.test(after) ? { starting_after: after } : {}) });
+      const page = await stripeClient().checkout.sessions.list({ limit: 50, ...(after && /^cs_(test|live)_[A-Za-z0-9]+$/.test(after) ? { starting_after: after } : {}) });
       orders = page.data.filter(o => o.metadata?.source === 'valleys-darley').map(o => {
         const address = o.collected_information?.shipping_details?.address || o.customer_details?.address;
         const state = orderState(o); const update = Number(o.metadata?.fulfillmentUpdatedAt);
-        return { id:o.id, name:o.collected_information?.shipping_details?.name || o.customer_details?.name || o.metadata?.memberName || '—', email:o.customer_details?.email || '', phone:o.customer_details?.phone || '', address:address ? [address.line1,address.line2,address.city,address.state,address.postal_code,address.country].filter(Boolean).join(', ') : '', product:o.metadata?.productName || o.metadata?.productId || 'Jewelry', created:o.created, updated:Number.isFinite(update)&&update>0?update:o.created, amount:o.amount_total || 0, state, label:orderStateLabels[state], tracking:o.metadata?.trackingNumber || '', trackable:!!normalizeTrackingNumber(o.metadata?.trackingNumber || '') };
+        return { id:o.id, name:o.collected_information?.shipping_details?.name || o.customer_details?.name || o.metadata?.memberName || '—', email:o.customer_details?.email || '', phone:o.customer_details?.phone || '', address:address ? [address.line1,address.line2,address.city,address.state,address.postal_code,address.country].filter(Boolean).join(', ') : '', product:[o.metadata?.productName || o.metadata?.productId || 'Jewelry',o.metadata?.variantLabel,o.metadata?.quantity?`× ${o.metadata.quantity}`:''].filter(Boolean).join(' · '), created:o.created, updated:Number.isFinite(update)&&update>0?update:o.created, amount:o.amount_total || 0, state, label:orderStateLabels[state], tracking:o.metadata?.trackingNumber || '', trackable:!!normalizeTrackingNumber(o.metadata?.trackingNumber || '') };
       });
       next = page.has_more ? page.data.at(-1)?.id || null : null;
     } catch { error = true; }

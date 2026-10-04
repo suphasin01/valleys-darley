@@ -32,11 +32,15 @@ export async function getOrCreateMemberCustomer(user: Member) {
   return customer.id;
 }
 
-export async function memberOrders(user: Member) {
+export async function memberOrders(user: Member, includeOpen = false) {
   const stripe = stripeClient();
   const customers = await findMemberCustomers(user);
-  const pages = await Promise.all(customers.map(customer => stripe.checkout.sessions.list({ customer: customer.id, status: 'complete', limit: 100 })));
+  const pages = await Promise.all(customers.map(customer => stripe.checkout.sessions.list({ customer: customer.id, ...(includeOpen ? {} : { status: 'complete' as const }), limit: 100 })));
   return pages.flatMap(page => page.data).filter(session => session.metadata?.source === 'valleys-darley' && (session.metadata.memberId || session.metadata.lineUserId) === user.sub).sort((a, b) => b.created - a.created);
+}
+
+export function ownsOrder(session: Stripe.Checkout.Session, user: Member) {
+  return session.metadata?.source === 'valleys-darley' && (session.metadata.memberId || session.metadata.lineUserId) === user.sub;
 }
 
 export function orderState(session: Stripe.Checkout.Session) {
