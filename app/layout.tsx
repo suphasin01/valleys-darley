@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Pinyon_Script, Cormorant_Garamond, Noto_Serif_Thai } from "next/font/google";
+import { Geist, Geist_Mono, Pinyon_Script, Cormorant_SC, Noto_Serif_Thai } from "next/font/google";
 import "./globals.css";
 import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 const script = Pinyon_Script({ weight: "400", subsets: ["latin"], variable: "--font-brand-script", display: "swap" });
-const editorial = Cormorant_Garamond({ weight: ["400", "500"], subsets: ["latin"], variable: "--font-editorial", display: "swap" });
+const editorial = Cormorant_SC({ weight: ["400", "500", "600"], subsets: ["latin"], variable: "--font-editorial", display: "swap" });
 const thai = Noto_Serif_Thai({ weight: ["400", "500"], subsets: ["thai", "latin"], variable: "--font-editorial-thai", display: "swap" });
 
 export const metadata: Metadata = {

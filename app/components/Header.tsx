@@ -7,7 +7,7 @@ import { LanguageSwitch } from "./LanguageSwitch";
 import { copy, type Locale } from "../lib/i18n";
 
 export function BrandLogo({ className = "" }: { className?: string }) {
-  return <span className={`brand-script whitespace-nowrap ${className}`}>Valley&apos;s Darling</span>;
+  return <span className={`brand-script inline-block whitespace-nowrap ${className}`}><img src="/images/figma/brand.png" alt="Valley's Darling" className="block h-[1.2em] w-[8.2em] max-w-full object-contain" /></span>;
 }
 
 export function Header({ locale }: { locale: Locale }) {
@@ -29,13 +29,13 @@ export function Header({ locale }: { locale: Locale }) {
 
   return (
     <>
-      <header className="sticky top-0 z-50 h-[58px] border-b border-black/10 bg-[#fffefa]/95 text-[#17130f] backdrop-blur-md md:h-[72px]">
+      <header className="editorial-page sticky top-0 z-50 h-[64px] border-b border-black/60 bg-white text-black md:h-[9.3vw] md:max-h-[134px]">
         <div className="relative mx-auto flex h-full max-w-[1480px] items-center justify-between gap-2 px-3 sm:px-5 md:px-9">
           <div className="flex items-center gap-5"><button type="button" onClick={() => setIsOpen(true)} aria-label={t.menu} aria-expanded={isOpen} className="grid h-10 w-10 place-items-center">
             <span className="relative block h-3.5 w-5 border-y border-current before:absolute before:left-0 before:top-1/2 before:h-px before:w-3 before:-translate-y-1/2 before:bg-current" />
-          </button><Link href="/collections" className="hidden text-xs tracking-wider lg:block">{t.shop}</Link></div>
+          </button><Link href="/collections" className="hidden text-[clamp(1rem,2.5vw,2.25rem)] lg:block">{t.shop}</Link></div>
           <Link href={isAdmin ? "/admin" : "/"} className="min-w-0 lg:absolute lg:left-1/2 lg:-translate-x-1/2" aria-label={isAdmin ? "Admin home" : "Valley's Darling home"}>
-            <BrandLogo className="text-[20px] sm:text-[25px] md:text-[36px]" />
+            <BrandLogo className="text-[16px] min-[375px]:text-[20px] sm:text-[25px] md:text-[clamp(2rem,4.44vw,4rem)]" />
           </Link>
           <div className="flex items-center gap-1 sm:gap-2"><Link href="/orders" className="mr-3 hidden text-xs underline underline-offset-4 lg:block">{locale==='th'?'คำสั่งซื้อของฉัน':'My orders'}</Link><Link href="/account" className="mr-3 hidden text-xs lg:block">{locale === 'th' ? 'บัญชี' : 'ACCOUNT'}</Link><LanguageSwitch locale={locale} /><Link href="/account" aria-label={t.bag} className="grid h-10 w-10 place-items-center">
             <svg viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current" strokeWidth="1.35" aria-hidden="true"><path d="M6.5 8.5h11l-.7 11h-9.6l-.7-11Z" /><path d="M9 9V6.8a3 3 0 0 1 6 0V9" /></svg>

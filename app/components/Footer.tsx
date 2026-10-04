@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BrandLogo } from "./Header";
+import { FigmaImage } from "./FigmaImage";
 import { copy, type Locale } from "../lib/i18n";
 
 export function Footer({ locale }: { locale: Locale }) {
@@ -10,13 +10,13 @@ export function Footer({ locale }: { locale: Locale }) {
     { title: t.about, links: [[t.whereToFind, "/contact"], [t.ourStory, "/about"], [t.journal, "/about"]] },
   ];
   return (
-    <footer className="bg-[#fffefa] px-6 py-12 text-[#211a16] md:px-12 md:py-16">
+    <footer className="editorial-page bg-white px-[5.5%] pb-[3%] pt-[1%] text-black">
       <div className="mx-auto max-w-[1280px]">
-        <div className="grid grid-cols-2 gap-8 text-[10px] md:grid-cols-4 md:text-xs">
+        <div className="grid grid-cols-2 gap-8 border-t border-black/20 pt-4 text-[11px] md:mx-auto md:max-w-[980px] md:grid-cols-4 md:text-[16px]">
           {groups.map((group) => <div key={group.title}><h3 className="mb-4 font-serif font-semibold">{group.title}</h3><ul className="space-y-2.5">{group.links.map(([label, href]) => <li key={label}><Link href={href} className="hover:underline">{label}</Link></li>)}</ul></div>)}
           <div><h3 className="mb-4 font-serif font-semibold">{t.legal}</h3><Link href="/privacy" className="block hover:underline">{t.privacy}</Link><Link href="/terms" className="mt-2 block hover:underline">{locale === 'th' ? 'ข้อกำหนดการใช้เว็บไซต์' : 'WEBSITE TERMS'}</Link><p className="mt-2">© {new Date().getFullYear()} VALLEY&apos;S DARLING</p></div>
         </div>
-        <div className="mt-16 text-center"><BrandLogo className="text-[clamp(2.7rem,8vw,7rem)]" /><p className="mt-3 text-[9px] uppercase tracking-[0.12em]">{t.footerTagline}</p></div>
+        <Link href="/" aria-label="Valley's Darling home" className="mt-[4%] block"><FigmaImage src="/images/figma/landing-13.webp" alt="Valley's Darling" className="aspect-[1304/299]" crop={{width:"113.67%",height:"618.73%",left:"-4.44%",top:"-29.91%"}} /></Link>
       </div>
     </footer>
   );

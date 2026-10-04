@@ -139,3 +139,5 @@
     @apply px-4;
   }
 }
+.figma-cta { display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:.6em 1em; border-radius:8px; font-size:clamp(.7rem,2.22vw,2rem); line-height:1.5; box-shadow:0 1px 2px #0000000d; transition:background-color .3s,color .3s; }
+.figma-cta:hover { background:#211815; color:white; }
