@@ -1,6 +1,7 @@
 import { get, list, put } from "@vercel/blob";
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import { randomUUID } from 'node:crypto';
 import type { Locale } from "./i18n";
 import { getLineCatalog, lineShoppingReady } from './line-shopping';
 import { mapLineCatalog } from './line-catalog';
@@ -114,7 +115,10 @@ export function cmsStorageReady() { return Boolean(process.env.BLOB_READ_WRITE_T
 async function getStoredContent(): Promise<CmsContent> {
   try {
     if (cmsStorageReady()) {
-      const { blobs } = await list({ prefix: "cms/content.json", limit: 1 });
+      // Immutable revisions avoid serving an old visibility setting from Blob CDN.
+      // Reverse timestamps sort the newest revision first by pathname.
+      let { blobs } = await list({ prefix: 'cms/revisions/', limit: 1 });
+      if (!blobs.length) ({ blobs } = await list({ prefix: 'cms/content.json', limit: 1 }));
       if (blobs[0]) {
         const response = await get(blobs[0].url, { access: 'public', useCache: false });
         if (response?.stream) return normalize(await new Response(response.stream).json());
@@ -139,7 +143,8 @@ export async function saveCmsContent(value: CmsContent): Promise<CmsContent> {
   const content = normalize({ ...editable, ...(stored ? { products: stored.products } : {}), updatedAt: new Date().toISOString() });
   const serialized = JSON.stringify(content, null, 2);
   if (cmsStorageReady()) {
-    await put("cms/content.json", serialized, { access: "public", allowOverwrite: true, contentType: "application/json", cacheControlMaxAge: 60 });
+    const revision = `${String(9999999999999 - Date.now()).padStart(13, '0')}-${randomUUID()}`;
+    await put(`cms/revisions/${revision}.json`, serialized, { access: 'public', contentType: 'application/json', cacheControlMaxAge: 60 });
   } else if (process.env.NODE_ENV !== "production") {
     await fs.mkdir(path.dirname(localFile), { recursive: true });
     await fs.writeFile(localFile, serialized);
