@@ -29,10 +29,21 @@
 }
 
 .brand-script {
-  font-family: "Snell Roundhand", "Apple Chancery", "URW Chancery L", cursive;
-  font-style: italic;
+  font-family: var(--font-brand-script), cursive;
+  font-style: normal;
   font-weight: 400;
-  letter-spacing: -0.055em;
+  letter-spacing: -0.025em;
+}
+
+.editorial-page { font-family: var(--font-editorial), var(--font-editorial-thai), Georgia, serif; }
+.editorial-page :lang(th) { line-height: 1.8; }
+.editorial-button { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; padding: 12px 32px; background: #f1e9eb; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; transition: background .3s, color .3s; }
+.editorial-button:hover { background: #261e1c; color: white; }
+.editorial-button:focus-visible { outline: 2px solid #261e1c; outline-offset: 4px; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .fade-in, .slide-up { animation: none; }
+  *, *::before, *::after { transition-duration: .01ms !important; }
 }
 
 .safe-area {

@@ -39,6 +39,8 @@ const api = moduleObject.exports;
     const mapped = mapping.exports.mapLineCatalog([product(1), product(2)], { 'line-1': false });
     assert.equal(mapped[0].published, false); assert.equal(mapped[1].published, true);
     assert.equal(mapped[0].description, 'From LINE'); assert.equal(mapped[0].priceMin, 90);
+    assert.deepEqual(mapped[0].images, ['https://obs-ect.line-scdn.net/test.jpg']);
+    assert.deepEqual(mapping.exports.mapLineCatalog([{ ...product(1), imageUrls: ['javascript:alert(1)', 'http://example.com/a.jpg', 'https://example.com/a.jpg', 'https://example.com/b.jpg'] }])[0].images, ['https://example.com/a.jpg', 'https://example.com/b.jpg']);
     assert.equal(mapping.exports.mapLineCatalog([{ ...product(1), isDisplay: false }], { 'line-1': true })[0].published, false);
     assert.equal(mapping.exports.mapLineCatalog([product(1), product(2), product(3)], { 'line-1': false }).length, 3);
     const originalBlobToken = process.env.BLOB_READ_WRITE_TOKEN;

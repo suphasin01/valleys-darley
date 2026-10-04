@@ -17,8 +17,8 @@ export function Header({ locale }: { locale: Locale }) {
   const t = copy[locale];
   const menuItems = [
     { label: t.shop, href: "/collections" }, { label: t.newIn, href: "/collections#new-in" },
-    { label: t.customMade, href: "/custom-made" }, { label: t.about, href: "/#story" },
-    { label: t.care, href: "/#care" }, { label: t.contact, href: "/contact" },
+    { label: t.customMade, href: "/custom-made" }, { label: t.about, href: "/about" },
+    { label: t.care, href: "/contact" }, { label: t.contact, href: "/contact" },
     { label: locale === 'th' ? 'คำสั่งซื้อของฉัน' : 'My orders', href: '/orders' },
   ];
 
@@ -30,14 +30,14 @@ export function Header({ locale }: { locale: Locale }) {
   return (
     <>
       <header className="sticky top-0 z-50 h-[58px] border-b border-black/10 bg-[#fffefa]/95 text-[#17130f] backdrop-blur-md md:h-[72px]">
-        <div className="relative mx-auto flex h-full max-w-[1480px] items-center justify-between px-5 md:px-9">
-          <button type="button" onClick={() => setIsOpen(true)} aria-label={t.menu} aria-expanded={isOpen} className="grid h-10 w-10 place-items-center">
+        <div className="relative mx-auto flex h-full max-w-[1480px] items-center justify-between gap-2 px-3 sm:px-5 md:px-9">
+          <div className="flex items-center gap-5"><button type="button" onClick={() => setIsOpen(true)} aria-label={t.menu} aria-expanded={isOpen} className="grid h-10 w-10 place-items-center">
             <span className="relative block h-3.5 w-5 border-y border-current before:absolute before:left-0 before:top-1/2 before:h-px before:w-3 before:-translate-y-1/2 before:bg-current" />
-          </button>
-          <Link href={isAdmin ? "/admin" : "/"} className="absolute left-1/2 -translate-x-1/2" aria-label={isAdmin ? "Admin home" : "Valley's Darling home"}>
+          </button><Link href="/collections" className="hidden text-xs tracking-wider lg:block">{t.shop}</Link></div>
+          <Link href={isAdmin ? "/admin" : "/"} className="min-w-0 lg:absolute lg:left-1/2 lg:-translate-x-1/2" aria-label={isAdmin ? "Admin home" : "Valley's Darling home"}>
             <BrandLogo className="text-[20px] sm:text-[25px] md:text-[36px]" />
           </Link>
-          <div className="flex items-center gap-1 sm:gap-2"><Link href="/orders" className="mr-3 hidden text-xs underline underline-offset-4 md:block">{locale==='th'?'คำสั่งซื้อของฉัน':'My orders'}</Link><LanguageSwitch locale={locale} /><Link href="/account" aria-label={t.bag} className="grid h-10 w-10 place-items-center">
+          <div className="flex items-center gap-1 sm:gap-2"><Link href="/orders" className="mr-3 hidden text-xs underline underline-offset-4 lg:block">{locale==='th'?'คำสั่งซื้อของฉัน':'My orders'}</Link><Link href="/account" className="mr-3 hidden text-xs lg:block">{locale === 'th' ? 'บัญชี' : 'ACCOUNT'}</Link><LanguageSwitch locale={locale} /><Link href="/account" aria-label={t.bag} className="grid h-10 w-10 place-items-center">
             <svg viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current" strokeWidth="1.35" aria-hidden="true"><path d="M6.5 8.5h11l-.7 11h-9.6l-.7-11Z" /><path d="M9 9V6.8a3 3 0 0 1 6 0V9" /></svg>
           </Link></div>
         </div>
