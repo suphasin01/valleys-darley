@@ -1,15 +1,19 @@
-import { list, put } from "@vercel/blob";
+import { get, list, put } from "@vercel/blob";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import type { Locale } from "./i18n";
+import { getLineCatalog, lineShoppingReady } from './line-shopping';
+import { mapLineCatalog } from './line-catalog';
 
-export type CmsProduct = { id: string; name: string; description: string; image: string; link: string; published: boolean; priceBaht?: number };
+export type CmsProduct = { id: string; name: string; description: string; image: string; link: string; published: boolean; priceBaht?: number; lineProductId?: number; linePublished?: boolean; variants?: { id: number; sku: string; price: number; available: number }[]; priceMin?: number; priceMax?: number };
 export type CmsContent = {
   site: { brand: string; description: string };
   home: { heading: string; emphasis: string; ending: string; intro: string; storyHeading: string; storyBody: string };
   customMade: { heading: string; body: string; cta: string };
   contact: { heading: string; body: string; cta: string; url: string };
   products: CmsProduct[];
+  lineVisibility?: Record<string, boolean>;
+  lineCatalogStatus?: 'connected' | 'unavailable';
   th: {
     home: { heading: string; emphasis: string; ending: string; intro: string; storyHeading: string; storyBody: string };
     customMade: { heading: string; body: string; cta: string };
@@ -80,7 +84,7 @@ export function localizedContent(content: CmsContent, locale: Locale) {
     home: { ...content.home, ...content.th.home },
     customMade: { ...content.customMade, ...content.th.customMade },
     contact: { ...content.contact, ...content.th.contact },
-    products: content.products.map(product => ({ ...product, name: content.th.products[product.id] || product.name, description: content.th.productDescriptions[product.id] || product.description })),
+    products: content.products.map(product => product.lineProductId ? product : ({ ...product, name: content.th.products[product.id] || product.name, description: content.th.productDescriptions[product.id] || product.description })),
   } : content;
 }
 
@@ -107,13 +111,13 @@ function normalize(value: Partial<CmsContent>): CmsContent {
 
 export function cmsStorageReady() { return Boolean(process.env.BLOB_READ_WRITE_TOKEN || process.env.VERCEL_OIDC_TOKEN); }
 
-export async function getCmsContent(): Promise<CmsContent> {
+async function getStoredContent(): Promise<CmsContent> {
   try {
     if (cmsStorageReady()) {
       const { blobs } = await list({ prefix: "cms/content.json", limit: 1 });
       if (blobs[0]) {
-        const response = await fetch(blobs[0].url, { cache: "no-store" });
-        if (response.ok) return normalize(await response.json());
+        const response = await get(blobs[0].url, { access: 'public', useCache: false });
+        if (response?.stream) return normalize(await new Response(response.stream).json());
       }
     } else if (process.env.NODE_ENV !== "production") {
       return normalize(JSON.parse(await fs.readFile(localFile, "utf8")));
@@ -122,8 +126,17 @@ export async function getCmsContent(): Promise<CmsContent> {
   return defaultCmsContent;
 }
 
+export async function getCmsContent(): Promise<CmsContent> {
+  const content = await getStoredContent();
+  if (!lineShoppingReady()) return content;
+  try { return { ...content, products: mapLineCatalog(await getLineCatalog(), content.lineVisibility), lineCatalogStatus: 'connected' }; }
+  catch { return { ...content, products: [], lineCatalogStatus: 'unavailable' }; }
+}
+
 export async function saveCmsContent(value: CmsContent): Promise<CmsContent> {
-  const content = normalize({ ...value, updatedAt: new Date().toISOString() });
+  const stored = lineShoppingReady() ? await getStoredContent() : null;
+  const { lineCatalogStatus: _status, ...editable } = value;
+  const content = normalize({ ...editable, ...(stored ? { products: stored.products } : {}), updatedAt: new Date().toISOString() });
   const serialized = JSON.stringify(content, null, 2);
   if (cmsStorageReady()) {
     await put("cms/content.json", serialized, { access: "public", allowOverwrite: true, contentType: "application/json", cacheControlMaxAge: 60 });
@@ -133,5 +146,5 @@ export async function saveCmsContent(value: CmsContent): Promise<CmsContent> {
   } else {
     throw new Error("CMS_STORAGE_NOT_CONFIGURED");
   }
-  return content;
+  return getCmsContent();
 }

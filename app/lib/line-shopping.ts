@@ -10,6 +10,21 @@ export type LineOrder = {
 export type LinePage<T> = { data: T[]; currentPage: number; totalPage: number; totalRow: number };
 export function lineShoppingReady() { return Boolean(process.env.LINE_SHOPPING_API_KEY); }
 
+export async function getLineCatalog(): Promise<LineProduct[]> {
+  const first = await getLinePage<LineProduct>('products');
+  // Do not return a partial catalog, which would accidentally hide missing pages.
+  if (first.totalPage > 200) throw new Error('LINE_CATALOG_TOO_LARGE');
+  const products = [...first.data];
+  for (let page = 2; page <= first.totalPage; page++) {
+    const result = await getLinePage<LineProduct>('products', page);
+    if (result.totalRow !== first.totalRow || result.currentPage !== page) throw new Error('LINE_CATALOG_CHANGED');
+    products.push(...result.data);
+  }
+  if (products.length !== first.totalRow || new Set(products.map(p => p.id)).size !== products.length) throw new Error('LINE_CATALOG_INCOMPLETE');
+  if (products.some(p => !Number.isSafeInteger(p.id) || typeof p.name !== 'string' || typeof p.description !== 'string' || typeof p.isDisplay !== 'boolean' || !Array.isArray(p.imageUrls) || !Array.isArray(p.variants))) throw new Error('LINE_INVALID_PRODUCT');
+  return products;
+}
+
 export async function getLinePage<T>(resource: 'products' | 'orders', page = 1, search = ''): Promise<LinePage<T>> {
   if (!lineShoppingReady()) throw new Error('LINE_NOT_CONFIGURED');
   const url = new URL(`https://developers-oaplus.line.biz/myshop/v1/${resource}`);

@@ -24,6 +24,8 @@ export default async function ProductPage({ params, searchParams }: { params: Pr
         <h1 className="mt-5 font-serif text-4xl leading-tight md:text-6xl">{product.name}</h1>
         <p className="mt-8 max-w-lg whitespace-pre-line text-sm leading-8 text-black/65">{product.description}</p>
         {hasPrice && <p className="mt-7 font-serif text-3xl">฿{product.priceBaht!.toLocaleString("th-TH")}</p>}
+        {product.lineProductId && product.priceMin !== undefined && <p className="mt-7 font-serif text-3xl">฿{product.priceMin.toLocaleString('th-TH')}{product.priceMax !== product.priceMin && ` – ฿${product.priceMax?.toLocaleString('th-TH')}`}</p>}
+        {product.lineProductId && <div className="mt-5 space-y-2 text-xs text-black/60">{product.variants?.map(v=><p key={v.id}>{v.sku||`#${v.id}`} · ฿{v.price.toLocaleString('th-TH')} · {locale==='th'?'คงเหลือ':'Available'} {v.available}</p>)}</div>}
         {checkout === "unavailable" && <p role="alert" className="mt-5 text-sm text-red-700">{locale === "th" ? "ยังไม่สามารถเริ่มชำระเงินได้ กรุณาลองอีกครั้งหรือติดต่อเรา" : "Checkout is unavailable. Please try again or contact us."}</p>}
         {checkout === "canceled" && <p role="status" className="mt-5 text-sm text-black/60">{locale === "th" ? "ยกเลิกการชำระเงินแล้ว ยังไม่มีการเรียกเก็บเงิน" : "Checkout was canceled. You have not been charged."}</p>}
         <Link href={`/checkout?product=${encodeURIComponent(product.id)}`} className="mt-8 w-fit bg-[#211815] px-8 py-4 text-xs tracking-[.12em] text-white">{hasPrice ? locale === "th" ? "สั่งซื้อสินค้านี้" : "ORDER THIS PIECE" : locale === "th" ? "สอบถามเพื่อสั่งซื้อ" : "ENQUIRE TO ORDER"} ↗</Link>
