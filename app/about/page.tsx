@@ -10,9 +10,11 @@ export default async function AboutPage() {
   const locale = await getLocale();
   const th = locale === "th";
   const content = localizedContent(await getCmsContent(), locale);
+  const ring = content.products.find(product => product.published && product.id === "line-1008342128");
+  const storyImage = ring?.images?.[3] || "/images/heartfelt-chronicles.png";
   return <main className="editorial-page mx-auto max-w-[1440px] bg-[#fffefa] px-5 py-10 text-[#261e1c] md:px-16 md:py-16">
     <h1 className={`mb-8 text-right ${th ? "text-3xl md:text-5xl" : "brand-script text-5xl md:text-7xl"}`}>{th ? "เข้าสู่โลกของเรา" : "Enter our World"}</h1>
-    <div className="relative aspect-[16/10] overflow-hidden md:aspect-[2.2]"><Image src="/images/heartfelt-chronicles.png" alt="Valley's Darling handcrafted jewelry editorial" fill priority sizes="(max-width: 768px) 100vw, 1280px" className="object-cover object-[center_42%] transition-transform duration-1000 hover:scale-[1.025]" /></div>
+    <div className="relative aspect-[16/10] overflow-hidden md:aspect-[2.2]"><Image unoptimized={storyImage.startsWith("https:")} src={storyImage} alt="Valley's Darling handcrafted jewelry editorial" fill priority sizes="(max-width: 768px) 100vw, 1280px" className="object-cover object-[center_42%] transition-transform duration-1000 hover:scale-[1.025]" /></div>
     <section className="grid gap-8 py-16 md:grid-cols-2 md:gap-20 md:py-24">
       <div className="flex flex-col justify-center"><h2 className="max-w-lg text-4xl leading-tight md:text-6xl">{content.home.heading}<br />{content.home.emphasis}<br />{content.home.ending}</h2><p className="mt-8 max-w-md text-sm leading-8">{content.home.storyBody}</p><Link href="/collections" className="editorial-button mt-8 self-start">{th ? "ค้นพบคอลเลกชัน" : "EXPLORE COLLECTION"}</Link></div>
       <div className="relative aspect-[4/5] overflow-hidden"><Image src="/images/collection-overview.png" alt="Pearls and gemstones from our little world" fill sizes="(max-width: 768px) 100vw, 45vw" className="object-cover" /></div>
