@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     const stripe = stripeClient();
     const session = await stripe.checkout.sessions.retrieve(sessionId);
     if (session.metadata?.source !== 'valleys-darley' || session.payment_status !== 'paid') return new Response('Order not paid', { status: 400 });
-    await stripe.checkout.sessions.update(sessionId, { metadata: { fulfillmentStatus: String(status), trackingNumber: barcode || '', carrier: barcode ? 'thailand-post' : '' } });
+    await stripe.checkout.sessions.update(sessionId, { metadata: { fulfillmentStatus: String(status), trackingNumber: barcode || '', carrier: barcode ? 'thailand-post' : '', fulfillmentUpdatedAt: String(Math.floor(Date.now() / 1000)) } });
     return Response.redirect(new URL('/admin/orders?updated=1', origin), 303);
   } catch { return Response.redirect(new URL('/admin/orders?updated=0', origin), 303); }
 }

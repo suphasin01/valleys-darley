@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
+import { StorefrontOnly } from "./components/StorefrontOnly";
 import { getLocale } from "./lib/locale";
 
 const geistSans = Geist({
@@ -34,9 +35,9 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Header locale={locale} />
+        <StorefrontOnly><Header locale={locale} /></StorefrontOnly>
         <main>{children}</main>
-        <Footer locale={locale} />
+        <StorefrontOnly><Footer locale={locale} /></StorefrontOnly>
       </body>
     </html>
   );
