@@ -35,8 +35,8 @@ export default async function Home() {
   </section>
   <section className="bg-[#f1e9eb]">
    <div className="flex items-center justify-between gap-4 border-y border-black/30 px-[2.2%] py-[1.3%]">
-    <h2 className="text-[clamp(1.5rem,7.2vw,6.5rem)] leading-none">{th?content.customMade.heading:"custom made"}</h2>
-    <p className="max-w-[38%] text-right text-[clamp(.6rem,2.5vw,2.25rem)] font-semibold leading-tight">{th?"เครื่องประดับสั่งทำ ที่สร้างจากจินตนาการของคุณ":<>custom-made jewelry,<br/>crafted around your imagination.</>}</p>
+    <h2 className="min-w-0 text-[clamp(1.25rem,6.5vw,6.5rem)] leading-none">{th?content.customMade.heading:"custom made"}</h2>
+    <p className="min-w-0 max-w-[38%] flex-1 break-words text-right text-[clamp(.6rem,2.5vw,2.25rem)] font-semibold leading-tight">{th?"เครื่องประดับสั่งทำ ที่สร้างจากจินตนาการของคุณ":<>custom-made jewelry,<br/>crafted around your imagination.</>}</p>
    </div>
    <div className="mx-auto grid w-[89%] grid-cols-3 gap-[2%] pb-[1%] pt-[9.5%]">
     {[{left:"-64.69%",top:"-112.81%"},{left:"-122.35%",top:"-19.43%"},{left:"-194.85%",top:"-104.46%"}].map((crop,i)=><Link key={i} href="/custom-made" className="transition-transform duration-500 hover:scale-105"><FigmaImage src={asset(0)} alt={["Heart locket design","Ribbon bow locket design","Gemstone locket design"][i]} className="aspect-[384/379]" crop={{...crop,width:"419.08%",height:"238.69%"}}/></Link>)}
