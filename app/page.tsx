@@ -5,10 +5,10 @@ import { FigmaImage } from "./components/FigmaImage";
 import { editorialImage } from "./lib/editorial-images";
 
 export const dynamic = "force-dynamic";
-const asset = (id: number) => `/images/figma/landing-${id}.webp`;
+const asset = (id: number | string) => `/images/figma/landing-${id}.webp`;
 const features = [
- { id:"ribbon-earring", name:"pleated gemstone ribbon earring", image:11, crop:{width:"132.44%",height:"355.22%",left:"-2.01%",top:"-161.29%"} },
- { id:"swirl-bow", name:"classic swirl bow necklace", image:12, crop:{width:"117.46%",height:"313.98%",left:"-8.69%",top:"-120.09%"} },
+ { id:"swirl-bow", name:"classic swirl bow necklace", image:"necklace-latest", crop:{width:"153.10%",height:"432.32%",left:"-53.18%",top:"-175.06%"} },
+ { id:"ribbon-earring", name:"pleated gemstone ribbon earring", image:"earrings-latest", crop:{width:"99.11%",height:"257.09%",left:"-.35%",top:"-94.32%"} },
  { id:"pearl-ring", name:"rosette ribbon mother of pearl ring", image:9, crop:{width:"98.69%",height:"270.87%",left:".60%",top:"-80.57%"} },
  { id:"heart-locket", name:"the ruffle heart locket necklace", image:10, crop:{width:"102.29%",height:"257.08%",left:"-.54%",top:"-94.32%"} },
 ];
@@ -27,11 +27,11 @@ export default async function Home() {
    <Link href="/about"><FigmaImage src={asset(4)} alt="A woman in a pink room beneath a chandelier" className="aspect-[759/1011]" crop={{width:"100%",height:"100.12%",left:0,top:"2.11%"}}/></Link>
    <Link href="/about"><FigmaImage src={asset(3)} alt="Mother of pearl ring worn beside a birthday cake" className="aspect-[755/1006]"/></Link>
   </section>
-  <section className="relative pb-[4.1%] text-center">
+  <section className="relative pb-[18%] text-center">
    <FigmaImage src={asset(6)} className="aspect-[1535/260] opacity-80" crop={{width:"167.07%",height:"619.41%",left:"-17.77%",top:"-.07%"}}/>
-   <FigmaImage src={asset(7)} alt="Keepsakes of wonder and Romance" className="mx-auto -mt-[3%] aspect-[847.62/265.389] w-[59%] rotate-[-9.16deg]" crop={{width:"200.42%",height:"799.84%",left:"-45.51%",top:"-501.75%"}}/>
-   <p className="mx-auto mt-[3%] max-w-[74%] text-[clamp(.75rem,2.22vw,2rem)] font-semibold leading-tight">{th?content.home.storyBody:"this collection is inspired by the ribbon — reshaped into rosettes and countless other forms"}</p>
-   <Link href="/collections" className="figma-cta mt-[4%] bg-[#f1e9eb]">{th?"ดูคอลเลกชัน":"explore collection"}</Link>
+   <FigmaImage src={asset(7)} alt="Keepsakes of wonder and Romance" className="mx-auto mt-[7%] aspect-[847.62/265.389] w-[59%] rotate-[-9.16deg]" crop={{width:"200.42%",height:"799.84%",left:"-45.51%",top:"-501.75%"}}/>
+   <p className="mx-auto mt-[13%] max-w-[74%] text-[clamp(.75rem,2.22vw,2rem)] font-semibold leading-tight">{th?content.home.storyBody:"this collection is inspired by the ribbon — reshaped into rosettes and countless other forms"}</p>
+   <Link href="/collections" className="figma-cta mt-[6%] bg-[#f1e9eb]">{th?"ดูคอลเลกชัน":"explore collection"}</Link>
   </section>
   <section className="bg-[#f1e9eb]">
    <div className="flex items-center justify-between gap-4 border-y border-black/30 px-[2.2%] py-[1.3%]">
@@ -51,7 +51,7 @@ export default async function Home() {
    <p className="mb-[3%] text-[clamp(.65rem,1.67vw,1.5rem)] font-semibold">{th?"ค้นพบเครื่องประดับของเรา":"DISCOVER OUR JEWELRY"}</p>
    <div className="grid grid-cols-2 gap-x-[3%] gap-y-[6vw]">
     {features.flatMap(item=>{ const product=content.products.find(p=>p.id===item.id&&p.published); if(!product)return []; const original=editorialImage(product)!==product.image; return [<Link key={item.id} href={`/products/${item.id}`} className="group">
-     <FigmaImage src={original?asset(item.image):product.image} alt={product.name} className="aspect-[624/349] rounded-[8px] transition-transform duration-700 group-hover:scale-[1.02]" crop={original?item.crop:undefined}/>
+     <FigmaImage src={original?asset(item.image):product.image} alt={product.name} className="aspect-[642/341] rounded-[8px] transition-transform duration-700 group-hover:scale-[1.02]" crop={original?item.crop:undefined}/>
      <p className="mt-[4%] text-[clamp(.65rem,1.67vw,1.5rem)]">{product.name}</p>
     </Link>];})}
    </div>
