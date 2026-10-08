@@ -19,7 +19,7 @@ export function Header({ locale }: { locale: Locale }) {
   const menuItems = [
     { label: t.shop, href: "/collections" }, { label: t.newIn, href: "/collections#new-in" },
     { label: t.customMade, href: "/custom-made" }, { label: t.about, href: "/about" },
-    { label: t.care, href: "/contact" }, { label: t.contact, href: "/contact" },
+    { label: t.care, href: "/help#care" }, { label: t.help, href: "/help" }, { label: t.contact, href: "/help#contact" },
     { label: locale === 'th' ? 'คำสั่งซื้อของฉัน' : 'My orders', href: '/orders' },
   ];
 

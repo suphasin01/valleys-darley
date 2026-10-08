@@ -6,7 +6,7 @@ export function Footer({ locale }: { locale: Locale }) {
   const t = copy[locale];
   const groups = [
     { title: t.shop, links: [[t.newIn, "/collections#new-in"], [locale === 'th' ? 'เครื่องประดับ' : 'JEWELRY', "/collections"], [t.customMade, "/custom-made"]] },
-    { title: t.help, links: [[t.contactUs, "/contact"], [t.orderShipping, "/account"], [t.care, "/contact"], [t.returns, "/contact"]] },
+    { title: t.help, links: [[t.contactUs, "/help#contact"], ['after sale services', '/help#after-sales'], [t.care, "/help#care"], [t.returns, "/help#shipping"], ['size guide', '/help#size-guide'], ['ring size guide', '/help#ring-size']] },
     { title: t.about, links: [[locale === 'th' ? 'เรื่องราว' : 'stories', "/about"], [t.whereToFind, "/contact"], [t.journal, "/about"]] },
   ];
   return (

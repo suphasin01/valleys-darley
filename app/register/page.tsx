@@ -27,9 +27,8 @@ export default async function Register({ searchParams }: { searchParams: Promise
     ['postalCode', th ? 'รหัสไปรษณีย์' : 'Postal code', 'postal-code', profile?.postalCode || '', 5],
   ] as const;
   const input = 'mt-2 w-full rounded-xl border border-black/15 bg-white px-4 py-3 text-sm outline-none focus:border-[#9c7674]';
-  return <main className="min-h-screen bg-[#f5f0ed] px-5 py-16 text-[#2c2221] md:py-24"><div className="mx-auto max-w-3xl rounded-3xl bg-white p-6 shadow-sm md:p-12">
-    <p className="text-[10px] tracking-[.3em] text-black/45">VALLEY&apos;S DARLING · MEMBERS</p>
-    <h1 className="mt-4 font-serif text-4xl">{th ? user ? 'ข้อมูลลูกค้าและที่อยู่จัดส่ง' : 'สมัครสมาชิก' : user ? 'Your details & delivery address' : 'Create your account'}</h1>
+  return <main className="editorial-page bg-white px-5 py-16 text-black md:py-24"><div className="auth-design mx-auto max-w-[626px]">
+    <h1 className="text-center text-[32px] font-bold">{user ? 'Your details & delivery address' : 'SIGN UP'}</h1>
     <p className="mt-4 text-sm leading-7 text-black/55">{th ? 'สมัครผ่านช่องทางที่คุณสะดวก แล้วกรอกข้อมูลผู้รับและที่อยู่ให้ครบ เพื่อใช้ในการสั่งซื้อและจัดส่งสินค้าในประเทศไทย' : 'Choose how to sign up, then complete your recipient details and Thailand delivery address.'}</p>
     {!user && <div className="mt-7"><SocialSignIn next={next} th={th} /><AuthDivider th={th} /><p className="text-center text-sm text-black/55">{th ? 'สมัครด้วยอีเมลและกรอกที่อยู่ด้านล่าง' : 'Register with email and complete your address below'}</p></div>}
     {params.error && <p role="alert" className="mt-6 rounded-xl bg-rose-50 p-4 text-sm text-rose-800">{params.error === 'password' ? th ? 'รหัสผ่านต้องมีอย่างน้อย 12 ตัวอักษร และตรงกันทั้งสองช่อง' : 'Use a password of 12–128 characters and matching confirmation.' : params.error === 'validation' ? th ? 'กรุณากรอกข้อมูลให้ครบ ตรวจอีเมล เบอร์โทรศัพท์ และรหัสไปรษณีย์ 5 หลัก' : 'Please complete all fields with a valid email, Thai phone and 5-digit postal code.' : th ? 'ยังบันทึกไม่ได้ หากใช้อีเมลนี้สมัครแล้วให้เข้าสู่ระบบ หรือลองใหม่ภายหลัง' : 'Unable to save. If this email is already registered, please sign in; otherwise try again later.'}</p>}

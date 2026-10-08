@@ -12,15 +12,11 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
   if (await member()) redirect(next);
   const locale = await getLocale();
   const t = copy[locale];
-  return <section className="min-h-screen bg-[#f5f3ef] px-5 pb-20 pt-32">
-    <div className="mx-auto grid max-w-5xl overflow-hidden rounded-3xl border border-black/5 bg-white shadow-xl md:grid-cols-2">
-      <div className="flex min-h-64 flex-col justify-between bg-[#deddd8] p-10 md:min-h-[540px]">
-        <span className="text-xs tracking-[0.3em]">VALLEY’S DARLEY · MEMBERS</span>
-        <div><h1 className="font-serif text-5xl leading-tight">A little closer.<br /><i className="text-black/50">A little more you.</i></h1><p className="mt-6 text-sm leading-7 text-black/60">{t.memberLeft}</p></div>
-      </div>
-      <div className="flex flex-col justify-center p-8 md:p-12">
-        <p className="text-xs uppercase tracking-[0.25em] text-gray-400">{t.memberWelcome}</p>
-        <h2 className="mt-4 text-3xl font-semibold">{t.memberTitle}</h2>
+  return <section className="editorial-page bg-white px-5 pb-24 pt-16 text-black md:pb-40 md:pt-32">
+    <div className="mx-auto max-w-[626px]">
+      <div className="auth-design flex flex-col">
+        <h1 className="text-center text-[32px] font-bold">LOG IN</h1>
+        <p className="mb-12 mt-8 text-center text-[15px]">please enter your email and password</p>
         <form action="/api/auth/email" method="post" className="mt-6 space-y-4"><input type="hidden" name="next" value={next} /><label className="block text-sm">{locale === 'th' ? 'อีเมล' : 'Email'}<input name="email" type="email" autoComplete="email" maxLength={254} required className="mt-2 w-full rounded-xl border border-black/15 px-4 py-3" /></label><label className="block text-sm">{locale === 'th' ? 'รหัสผ่าน' : 'Password'}<input name="password" type="password" autoComplete="current-password" maxLength={128} required className="mt-2 w-full rounded-xl border border-black/15 px-4 py-3" /></label><button disabled={!providerReady('email')} className="w-full rounded-xl bg-[#2c2221] px-6 py-4 text-sm text-white disabled:opacity-40">{locale === 'th' ? 'เข้าสู่ระบบด้วยอีเมล' : 'Sign in with email'}</button></form>
         <Link href={`/register?next=${encodeURIComponent(next)}`} className="my-5 text-center text-sm underline">{locale === 'th' ? 'ยังไม่มีบัญชี? สมัครสมาชิก' : 'New here? Create an account'}</Link>
         {params.error && <p role="alert" className="mb-5 rounded-xl bg-rose-50 p-4 text-sm text-rose-700">{params.error === 'configuration' ? t.memberUnavailable : t.memberFailed}</p>}
