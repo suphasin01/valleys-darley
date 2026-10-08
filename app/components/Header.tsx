@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { LanguageSwitch } from "./LanguageSwitch";
 import { copy, type Locale } from "../lib/i18n";
 
@@ -12,6 +12,8 @@ export function BrandLogo({ className = "" }: { className?: string }) {
 
 export function Header({ locale }: { locale: Locale }) {
   const [isOpen, setIsOpen] = useState(false);
+  const menuButton = useRef<HTMLButtonElement>(null);
+  const menuPanel = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const isAdmin = pathname === "/admin" || pathname.startsWith("/admin/");
   const t = copy[locale];
@@ -24,26 +26,38 @@ export function Header({ locale }: { locale: Locale }) {
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    if (isOpen) menuPanel.current?.querySelector<HTMLButtonElement>('button')?.focus();
+    return () => {
+      document.body.style.overflow = "";
+      if (isOpen) menuButton.current?.focus();
+    };
   }, [isOpen]);
 
   return (
     <>
       <header className="editorial-page sticky top-0 z-50 h-[64px] border-b border-black/60 bg-white text-black md:h-[9.3vw] md:max-h-[134px]">
         <div className="relative mx-auto flex h-full max-w-[1480px] items-center justify-between gap-2 px-3 sm:px-5 md:px-9">
-          <div className="flex items-center gap-5"><button type="button" onClick={() => setIsOpen(true)} aria-label={t.menu} aria-expanded={isOpen} className="grid h-10 w-10 place-items-center">
-            <span className="relative block h-3.5 w-5 border-y border-current before:absolute before:left-0 before:top-1/2 before:h-px before:w-3 before:-translate-y-1/2 before:bg-current" />
-          </button><Link href="/collections" className="hidden text-[clamp(1rem,2.5vw,2.25rem)] lg:block">{t.shop}</Link></div>
+          <button ref={menuButton} type="button" onClick={() => setIsOpen(true)} aria-label={t.menu} aria-expanded={isOpen} aria-controls="store-navigation" className="grid h-11 min-w-11 place-items-center rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 xl:ml-7 xl:justify-items-start">
+            <span className="relative block h-3.5 w-5 border-y border-current before:absolute before:left-0 before:top-1/2 before:h-px before:w-3 before:-translate-y-1/2 before:bg-current xl:hidden" />
+            <span className="hidden text-[clamp(1rem,2.5vw,2.25rem)] font-medium xl:block">{locale === 'th' ? 'เมนู' : 'menu'}</span>
+          </button>
           <Link href={isAdmin ? "/admin" : "/"} className="min-w-0 lg:absolute lg:left-1/2 lg:-translate-x-1/2" aria-label={isAdmin ? "Admin home" : "Valley's Darling home"}>
             <BrandLogo className="text-[16px] min-[375px]:text-[20px] sm:text-[25px] md:text-[clamp(2rem,4.44vw,4rem)]" />
           </Link>
-          <div className="flex items-center gap-1 sm:gap-2"><Link href="/orders" className="mr-3 hidden text-xs underline underline-offset-4 lg:block">{locale==='th'?'คำสั่งซื้อของฉัน':'My orders'}</Link><Link href="/account" className="mr-3 hidden text-xs lg:block">{locale === 'th' ? 'บัญชี' : 'ACCOUNT'}</Link><LanguageSwitch locale={locale} /><Link href="/account" aria-label={t.bag} className="grid h-10 w-10 place-items-center">
+          <div className="flex items-center gap-1 sm:gap-2 xl:gap-5"><Link href="/account" className="hidden text-[clamp(1rem,2.22vw,2rem)] font-medium lg:block">{locale === 'th' ? 'บัญชี' : 'account'}</Link><LanguageSwitch locale={locale} /><Link href="/account" aria-label={t.bag} className="grid h-11 w-11 place-items-center">
             <svg viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current" strokeWidth="1.35" aria-hidden="true"><path d="M6.5 8.5h11l-.7 11h-9.6l-.7-11Z" /><path d="M9 9V6.8a3 3 0 0 1 6 0V9" /></svg>
           </Link></div>
         </div>
       </header>
 
-      <div className={`fixed inset-0 z-[80] bg-[#f4e7eb] text-[#17130f] transition duration-500 ${isOpen ? "visible opacity-100" : "invisible opacity-0"}`}>
+      <div ref={menuPanel} id="store-navigation" role="dialog" aria-modal={isOpen ? true : undefined} aria-label={t.menu} aria-hidden={!isOpen} onKeyDown={(event) => {
+        if (event.key === 'Escape') setIsOpen(false);
+        if (event.key !== 'Tab') return;
+        const controls = menuPanel.current?.querySelectorAll<HTMLElement>('button, a[href]');
+        const first = controls?.[0]; const last = controls?.[controls.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+        if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+      }} className={`fixed inset-0 z-[80] overflow-y-auto bg-[#f4e7eb] text-[#17130f] transition duration-500 ${isOpen ? "visible opacity-100" : "invisible opacity-0"}`}>
         <div className={`mx-auto flex h-full max-w-[1480px] flex-col px-6 py-5 transition-transform duration-500 md:px-12 md:py-8 ${isOpen ? "translate-x-0" : "-translate-x-8"}`}>
           <div className="flex items-center justify-between">
             <button type="button" onClick={() => setIsOpen(false)} aria-label={t.closeMenu} className="grid h-11 w-11 place-items-center text-3xl font-light">×</button>
