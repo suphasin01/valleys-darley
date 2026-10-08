@@ -32,6 +32,7 @@ export function memberProvider(user: Member): Provider {
   return user.provider || (user.sub.startsWith('email:') ? 'email' : user.sub.startsWith('google:') ? 'google' : user.sub.startsWith('facebook:') ? 'facebook' : 'line');
 }
 export function safeMemberNext(value?: string | null) {
+  if (value === '/cart') return '/cart';
   if (!value || !value.startsWith('/') || value.startsWith('//')) return '/account';
   if (/^\/products\/[a-z0-9-]{1,80}$/.test(value) || value === '/orders' || /^\/orders\/cs_(test|live)_[A-Za-z0-9]+$/.test(value) || /^\/checkout\/success\?session_id=cs_(test|live)_[A-Za-z0-9]+$/.test(value)) return value;
   const url = new URL(value, 'https://local.invalid');

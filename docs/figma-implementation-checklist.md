@@ -17,7 +17,7 @@ Reference: NYRVrMduxSliJ3BXNelW14, Page 1. Read-only; no design or comment mutat
 - #8–11, #16: Help and sizing anchor destinations added; product-specific guide links still to review.
 - #20: policy rewrite anchor and approved wording still to confirm.
 - #21, #22, #38–41: auth/about/privacy navigation exists; exact all-screen link audit outstanding.
-- #25–27, #31, #42: native multi-item cart, drawer, checkout country selection and server-validated totals outstanding. Existing single-product Stripe checkout is unchanged.
+- #26, #27, #31, #42: native multi-item cart and checkout implemented, header bag link connected, server-validated totals and Stripe line items added. Existing single-product checkout retained. Drawer styling and international country/rate configuration remain outstanding.
 - #23: international delivery/taxes need merchant configuration. Do not apply Thailand delivery fee internationally. Help explicitly states domestic online checkout and international quotes.
 - #28–35: product links exist; gallery arrows, model hover photographs, option controls and guide links require further implementation.
 

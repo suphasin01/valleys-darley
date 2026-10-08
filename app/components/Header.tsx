@@ -43,7 +43,7 @@ export function Header({ locale }: { locale: Locale }) {
           <Link href={isAdmin ? "/admin" : "/"} className="min-w-0 lg:absolute lg:left-1/2 lg:-translate-x-1/2" aria-label={isAdmin ? "Admin home" : "Valley's Darling home"}>
             <BrandLogo className="text-[16px] min-[375px]:text-[20px] sm:text-[25px] md:text-[clamp(2rem,4.44vw,4rem)]" />
           </Link>
-          <div className="flex items-center gap-1 sm:gap-2 xl:gap-5"><Link href="/account" className="hidden text-[clamp(1rem,2.22vw,2rem)] font-medium lg:block">{locale === 'th' ? 'บัญชี' : 'account'}</Link><Link href="/account" aria-label={t.bag} className="grid h-11 w-11 place-items-center">
+          <div className="flex items-center gap-1 sm:gap-2 xl:gap-5"><Link href="/account" className="hidden text-[clamp(1rem,2.22vw,2rem)] font-medium lg:block">{locale === 'th' ? 'บัญชี' : 'account'}</Link><Link href="/cart" aria-label="Shopping bag" className="grid h-11 w-11 place-items-center">
             <svg viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current" strokeWidth="1.35" aria-hidden="true"><path d="M6.5 8.5h11l-.7 11h-9.6l-.7-11Z" /><path d="M9 9V6.8a3 3 0 0 1 6 0V9" /></svg>
           </Link></div>
         </div>
