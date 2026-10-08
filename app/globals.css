@@ -36,6 +36,9 @@
 }
 
 .editorial-page { font-family: var(--font-editorial), var(--font-editorial-thai), Georgia, serif; }
+.brand-loading-line { animation: brand-loading 1.6s ease-in-out infinite; }
+@keyframes brand-loading { 0% { transform: translateX(-100%); } 100% { transform: translateX(200%); } }
+@media (prefers-reduced-motion: reduce) { .brand-loading-line { animation: none; transform: translateX(50%); } }
 .editorial-page :lang(th) { line-height: 1.8; }
 .auth-design label { font-size: 20px; }
 .auth-design input:not([type=checkbox]) { border-radius: 8px; border-color: #e0e0e0; min-height: 44px; }

@@ -8,6 +8,13 @@ export async function POST(request: Request) {
   if (request.headers.get('origin') !== origin) return new Response('Invalid origin', { status: 403 });
   if (!customerStorageReady()) return NextResponse.redirect(new URL('/register?error=configuration', origin), 303);
   const form = await request.formData();
+  // Signup uses separate name fields; existing profile edits still submit `name`.
+  if (!form.get('name')) {
+    const first = form.get('firstName'); const last = form.get('lastName');
+    if (typeof first === 'string' && typeof last === 'string' && first.trim() && last.trim()) {
+      form.set('name', `${first.trim()} ${last.trim()}`);
+    }
+  }
   const next = safeMemberNext(String(form.get('next') || ''));
   const fail = (error: string) => NextResponse.redirect(new URL(`/register?error=${error}&edit=1&next=${encodeURIComponent(next)}`, origin), 303);
   try {
