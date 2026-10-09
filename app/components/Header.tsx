@@ -60,7 +60,7 @@ export function Header({ locale }: { locale: Locale }) {
         <div className={`mx-auto flex h-full max-w-[1480px] flex-col px-6 py-5 transition-transform duration-500 md:px-12 md:py-8 ${isOpen ? "translate-x-0" : "-translate-x-8"}`}>
           <div className="flex items-center justify-between">
             <button type="button" onClick={() => setIsOpen(false)} aria-label={t.closeMenu} className="grid h-11 w-11 place-items-center text-3xl font-light">×</button>
-            <BrandLogo className="text-[28px] md:text-[42px]" />
+            <BrandLogo className="bg-[#f4e7eb] text-[28px] md:text-[42px]" />
             <span className="w-11" />
           </div>
           <nav className="mt-14 flex flex-col items-start gap-4 font-serif text-xl tracking-[0.04em] md:mt-20 md:gap-5 md:text-4xl">
