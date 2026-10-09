@@ -5,7 +5,8 @@ import { get, list, put } from '@vercel/blob';
 import { authSecretReady, type Member } from './auth';
 
 const scrypt = promisify(scryptCallback);
-export type CustomerProfile = { name: string; email: string; phone: string; address: string; subdistrict: string; district: string; province: string; postalCode: string; updatedAt: string; privacy?: { version: string; acknowledgedAt: string; provider: string } };
+export const preferencesVersion = '2026-10-09';
+export type CustomerProfile = { birthDate?: string; preferences?: {marketing: boolean; personalization: boolean; version: string; recordedAt: string}; name: string; email: string; phone: string; address: string; subdistrict: string; district: string; province: string; postalCode: string; updatedAt: string; privacy?: { version: string; acknowledgedAt: string; provider: string } };
 type CustomerRecord = { sub: string; profile: CustomerProfile; password?: { salt: string; hash: string }; failed?: number; lockedUntil?: number };
 export const customerStorageReady = () => authSecretReady() && Boolean(process.env.BLOB_READ_WRITE_TOKEN);
 function encryptionKey() {
@@ -40,8 +41,23 @@ async function writeRecord(record: CustomerRecord, overwrite = true) {
 }
 export function validateProfile(form: FormData): CustomerProfile | null {
   const field = (key: string, max: number) => { const value = form.get(key); return typeof value === 'string' && value.trim().length <= max ? value.trim() : ''; };
-  const profile = { name: field('name', 100), email: field('email', 254).toLowerCase(), phone: field('phone', 20).replace(/[\s()-]/g, ''), address: field('address', 250), subdistrict: field('subdistrict', 100), district: field('district', 100), province: field('province', 100), postalCode: field('postalCode', 5), updatedAt: new Date().toISOString() };
+  const profile: CustomerProfile = { name: field('name', 100), email: field('email', 254).toLowerCase(), phone: field('phone', 20).replace(/[\s()-]/g, ''), address: field('address', 250), subdistrict: field('subdistrict', 100), district: field('district', 100), province: field('province', 100), postalCode: field('postalCode', 5), updatedAt: new Date().toISOString() };
   if (!profile.name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profile.email) || !/^(?:0\d{8,9}|\+66\d{8,9})$/.test(profile.phone) || !profile.address || !profile.subdistrict || !profile.district || !profile.province || !/^\d{5}$/.test(profile.postalCode)) return null;
+  if (form.has('birthDate')) {
+    const birth = form.get('birthDate');
+    if (typeof birth !== 'string') return null;
+    if (birth) {
+      const date = new Date(birth + 'T00:00:00.000Z');
+      const today = new Date().toLocaleDateString('en-CA', {timeZone:'Asia/Bangkok'});
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(birth) || !Number.isFinite(date.getTime()) || date.toISOString().slice(0,10) !== birth || birth < '1900-01-01' || birth > today) return null;
+    }
+    profile.birthDate = birth;
+  }
+  if (form.has('preferencesVersion')) {
+    if (form.get('preferencesVersion') !== preferencesVersion) return null;
+    for (const key of ['marketingConsent','personalizationConsent']) if (form.has(key) && form.get(key) !== 'yes') return null;
+    profile.preferences = {marketing:form.get('marketingConsent') === 'yes', personalization:form.get('personalizationConsent') === 'yes', version:preferencesVersion, recordedAt:new Date().toISOString()};
+  }
   return profile;
 }
 export async function getCustomerProfile(user: Member) { return (await readRecord(user.sub))?.profile || null; }
@@ -58,7 +74,7 @@ export async function listCustomerProfiles(cursor?: string) {
 }
 export async function saveCustomerProfile(user: Member, profile: CustomerProfile) {
   const existing = await readRecord(user.sub);
-  await writeRecord({ ...existing, sub: user.sub, profile: { ...profile, privacy: existing?.profile.privacy || profile.privacy } });
+  await writeRecord({ ...existing, sub: user.sub, profile: { ...profile, birthDate: profile.birthDate ?? existing?.profile.birthDate, preferences: profile.preferences ?? existing?.profile.preferences, privacy: existing?.profile.privacy || profile.privacy } });
 }
 function emailSub(email: string) { return `email:${createHash('sha256').update(email.trim().toLowerCase()).digest('hex')}`; }
 export async function registerEmail(profile: CustomerProfile, password: string) {
