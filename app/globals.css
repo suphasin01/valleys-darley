@@ -148,3 +148,24 @@
 }
 .figma-cta { display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:.6em 1em; border-radius:8px; font-size:clamp(.7rem,2.22vw,2rem); line-height:1.5; box-shadow:0 1px 2px #0000000d; transition:background-color .3s,color .3s; }
 .figma-cta:hover { background:#211815; color:white; }
+
+/* Desktop dimensions are bounded instead of enlarging with the viewport.
+   Keep the original phone layout and preserve browser accessibility zoom. */
+@media (min-width: 1024px) {
+  main.editorial-page { max-width: 1440px; margin-inline: auto; }
+  header.editorial-page { height: 88px; max-height: 88px; }
+  header.editorial-page .brand-script { font-size: 36px; }
+  header.editorial-page button > span:last-child { font-size: 18px; }
+  header.editorial-page a[href="/account"] { font-size: 18px; }
+  .figma-home > section:first-of-type { height: clamp(440px, 65vh, 640px); aspect-ratio: auto; }
+  .figma-home > div:first-child { padding-block: 12px; font-size: 16px; }
+  .figma-home h1, .figma-cta { font-size: 20px; }
+  .signup-page { padding-top: 56px; padding-bottom: 96px; }
+  .signup-page > div { max-width: 480px; }
+  .signup-page h1 { font-size: 26px; }
+  .signup-page form { margin-top: 32px; }
+  .signup-page form > label { font-size: 16px; }
+  .signup-page fieldset label, .signup-page legend { font-size: 16px; }
+  .signup-page input:not([type="checkbox"]) { padding-block: 10px; }
+  .signup-page button[type="submit"] { font-size: 16px; min-height: 44px; padding-block: 12px; }
+}

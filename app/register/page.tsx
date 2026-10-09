@@ -30,7 +30,7 @@ export default async function Register({ searchParams }: { searchParams: Promise
     configuration: 'Registration is being prepared. Please check back shortly.',
     save: 'Unable to save. If this email is already registered, please sign in; otherwise try again later.',
   };
-  return <main className="editorial-page bg-white px-5 pb-24 pt-16 text-black md:pb-40 md:pt-24"><div className="mx-auto max-w-[626px]">
+  return <main className="editorial-page signup-page bg-white px-5 pb-24 pt-16 text-black md:pb-40 md:pt-24"><div className="mx-auto max-w-[626px]">
     <header className="text-center"><h1 className="text-[32px] font-semibold">{user ? 'YOUR DETAILS' : 'SIGN UP'}</h1><p className="mt-4 text-[15px]">{user ? 'your contact information and delivery address' : 'please fill in the information below'}</p></header>
     {params.error && <p role="alert" className="mt-8 rounded-lg bg-rose-50 p-4 text-sm text-rose-800">{messages[params.error] || messages.save}</p>}
     {!ready && <p role="status" className="mt-8 rounded-lg bg-amber-50 p-4 text-sm text-amber-900">{messages.configuration}</p>}
