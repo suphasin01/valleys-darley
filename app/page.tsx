@@ -5,12 +5,12 @@ import { FigmaImage } from "./components/FigmaImage";
 import { editorialImage } from "./lib/editorial-images";
 
 export const dynamic = "force-dynamic";
-const asset = (id: number | string) => `/images/figma/landing-${id}.webp`;
+const asset = (id: number | string) => `/images/figma/preview-${id}.webp`;
 const features = [
- { id:"swirl-bow", name:"classic swirl bow necklace", image:"necklace-latest", crop:{width:"153.10%",height:"432.32%",left:"-53.18%",top:"-175.06%"} },
- { id:"ribbon-earring", name:"pleated gemstone ribbon earring", image:"earrings-latest", crop:{width:"99.11%",height:"257.09%",left:"-.35%",top:"-94.32%"} },
- { id:"pearl-ring", name:"rosette ribbon mother of pearl ring", image:9, crop:{width:"98.69%",height:"270.87%",left:".60%",top:"-80.57%"} },
- { id:"heart-locket", name:"the ruffle heart locket necklace", image:10, crop:{width:"102.29%",height:"257.08%",left:"-.54%",top:"-94.32%"} },
+ { id:"swirl-bow", name:"classic swirl bow necklace", image:9, crop:{width:"153.10%",height:"432.32%",left:"-53.18%",top:"-175.06%"} },
+ { id:"ribbon-earring", name:"pleated gemstone ribbon earring", image:10, crop:{width:"99.11%",height:"257.09%",left:"-.35%",top:"-94.32%"} },
+ { id:"pearl-ring", name:"rosette ribbon mother of pearl ring", image:11, crop:{width:"98.69%",height:"270.87%",left:".60%",top:"-80.57%"} },
+ { id:"heart-locket", name:"the ruffle heart locket necklace", image:12, crop:{width:"102.29%",height:"257.08%",left:"-.54%",top:"-94.32%"} },
 ];
 export default async function Home() {
  const locale=await getLocale();

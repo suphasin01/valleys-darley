@@ -169,3 +169,45 @@
   .signup-page input:not([type="checkbox"]) { padding-block: 10px; }
   .signup-page button[type="submit"] { font-size: 16px; min-height: 44px; padding-block: 12px; }
 }
+
+/* Landing prototype 1:2418: proportions referenced to its 1440px canvas.
+   Container units keep the composition bounded on wider desktop displays. */
+@media (min-width: 1024px) {
+  .figma-home { container-type: inline-size; }
+  body:has(.figma-home) > header { height: min(9.3056vw, 134px); max-height: 134px; }
+  body:has(.figma-home) > header .brand-script { font-size: min(4.4444vw, 64px); }
+  body:has(.figma-home) > header button > span:last-child { font-size: min(2.5vw, 36px); }
+  body:has(.figma-home) > header a[href="/account"] { font-size: min(2.2222vw, 32px); }
+  body:has(.figma-home) > header > div > a { left: 56.56%; }
+  body:has(.figma-home) > header a[href="/cart"] { width: 105px; font-size: min(2.2222vw, 32px); }
+  body:has(.figma-home) .prototype-cart-label { display: inline; }
+  body:has(.figma-home) .prototype-cart-label + svg { display: none; }
+  .figma-home > div:first-child { height: 5.4167cqw; padding: 0; font-size: 1.6667cqw; }
+  .figma-home > section:first-of-type { height: 63.4722cqw; }
+  .figma-home h1 { top: 3.2639cqw; font-size: 2.2222cqw; }
+  .figma-home .figma-cta { font-size: 2.2222cqw; padding: 1.3889cqw 2.2222cqw; min-height: 0; }
+  .figma-home > section:first-of-type .figma-cta { bottom: 5cqw; }
+  .figma-home > section:nth-of-type(2) { position: relative; display: block; height: 67.0139cqw; padding: 0; }
+  .figma-home > section:nth-of-type(2) > a { position: absolute; width: 52.7083%; left: -.2778%; top: -1.8056cqw; }
+  .figma-home > section:nth-of-type(2) > a + a { width: 52.4306%; left: 48.125%; top: 0; }
+  .figma-home > section:nth-of-type(3) { height: 91.8056cqw; padding: 0; }
+  .figma-home > section:nth-of-type(3) > div:first-child { position: absolute; top: 0; left: -3.2639%; width: 106.5972%; height: 18.0556cqw; opacity: 1; }
+  .figma-home > section:nth-of-type(3) > div:nth-child(2) { position: absolute; top: 24.7917cqw; left: 20.2778%; width: 58.8625%; margin: 0; }
+  .figma-home > section:nth-of-type(3) > p { position: absolute; top: 54.9306cqw; left: 13.8889%; width: 72.2222%; margin: 0; font-size: 2.2222cqw; }
+  .figma-home > section:nth-of-type(3) > a { position: absolute; top: 67.5694cqw; left: 50%; transform: translateX(-50%); margin: 0; }
+  .figma-home > section:nth-of-type(4) { position: relative; height: 78.1944cqw; }
+  .figma-home > section:nth-of-type(4) > div:first-child { height: 8.9583cqw; padding: 0 2.1528%; }
+  .figma-home > section:nth-of-type(4) h2 { font-size: 8.8889cqw; }
+  .figma-home > section:nth-of-type(4) p { font-size: 2.5cqw; }
+  .figma-home > section:nth-of-type(4) > div:nth-child(2) { position: absolute; top: 18.4028cqw; left: 5%; width: 80.382%; margin: 0; padding: 0; grid-template-columns: 1fr 1fr .9387fr; gap: 2.0139cqw; }
+  .figma-home > section:nth-of-type(4) > div:nth-child(2) > a:nth-child(2):hover { transform: scale(1.1354); }
+  .figma-home > section:nth-of-type(4) > div:nth-child(2) > a:nth-child(3):hover { transform: scale(1.0769); }
+  .figma-home > section:nth-of-type(4) > div:nth-child(3) { position: absolute; top: 58.5417cqw; left: 11.6667%; right: 6.3889%; padding: 0; }
+  .figma-home > section:nth-of-type(4) > div:nth-child(3) p { max-width: 58.4%; }
+  .figma-home > section:nth-of-type(5) { padding: 4.0972cqw 4.5139% 5.5556cqw; }
+  .figma-home > section:nth-of-type(5) h2 { font-size: 2.7778cqw; margin-bottom: 4.2361cqw; }
+  .figma-home > section:nth-of-type(5) > p:first-of-type { font-size: 1.6667cqw; margin-bottom: 5.9028cqw; }
+  .figma-home > section:nth-of-type(5) .grid { column-gap: 2.1528cqw; row-gap: 10cqw; }
+  .figma-home > section:nth-of-type(5) .grid p { font-size: 1.6667cqw; margin-top: 1cqw; }
+  body:has(.figma-home) footer { max-width: 1440px; margin-inline: auto; }
+}

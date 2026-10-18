@@ -18,7 +18,7 @@ export function Footer({ locale }: { locale: Locale }) {
           <div><h3 className="mb-3 text-[14px] font-medium md:text-[20px]"><Link href="/privacy" className="hover:underline">{t.privacy}</Link></h3><Link href="/terms" className="block hover:underline">{locale === 'th' ? 'ข้อกำหนดการใช้เว็บไซต์' : 'term of service'}</Link><Link href="/orders" className="mt-1 block hover:underline">{locale === 'th' ? 'คำสั่งซื้อของฉัน' : 'my orders'}</Link><p className="mt-3 text-[11px] text-black/50">© {new Date().getFullYear()} VALLEY&apos;S DARLING</p></div>
         </div>
         </div>
-        <Link href="/" aria-label="Valley's Darling home" className="mt-[6.3%] block"><FigmaImage src="/images/figma/landing-13.webp" alt="Valley's Darling" className="aspect-[1304/299]" crop={{width:"113.67%",height:"618.73%",left:"-4.44%",top:"-29.91%"}} /></Link>
+        <Link href="/" aria-label="Valley's Darling home" className="mt-[6.3%] block"><FigmaImage src="/images/figma/preview-13.webp" alt="Valley's Darling" className="aspect-[1304/299]" crop={{width:"113.67%",height:"618.73%",left:"-4.44%",top:"-29.91%"}} /></Link>
       </div>
     </footer>
   );
