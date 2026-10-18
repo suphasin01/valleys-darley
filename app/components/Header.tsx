@@ -11,16 +11,16 @@ export function BrandLogo({ className = "" }: { className?: string }) {
 
 export function Header({ locale }: { locale: Locale }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [collectionOpen, setCollectionOpen] = useState(false);
   const menuButton = useRef<HTMLButtonElement>(null);
   const menuPanel = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const isAdmin = pathname === "/admin" || pathname.startsWith("/admin/");
   const t = copy[locale];
   const menuItems = [
-    { label: t.shop, href: "/collections" }, { label: t.newIn, href: "/collections#new-in" },
+    { label: t.shop, href: "/collections" },
     { label: t.customMade, href: "/custom-made" }, { label: t.about, href: "/about" },
-    { label: t.care, href: "/help#care" }, { label: t.help, href: "/help" }, { label: t.contact, href: "/help#contact" },
-    { label: locale === 'th' ? 'คำสั่งซื้อของฉัน' : 'My orders', href: '/orders' },
+    { label: t.help, href: "/help" },
   ];
 
   useEffect(() => {
@@ -52,27 +52,26 @@ export function Header({ locale }: { locale: Locale }) {
       <div ref={menuPanel} id="store-navigation" role="dialog" aria-modal={isOpen ? true : undefined} aria-label={t.menu} aria-hidden={!isOpen} onKeyDown={(event) => {
         if (event.key === 'Escape') setIsOpen(false);
         if (event.key !== 'Tab') return;
-        const controls = menuPanel.current?.querySelectorAll<HTMLElement>('button, a[href]');
+        const controls = Array.from(menuPanel.current?.querySelectorAll<HTMLElement>('button, a[href]') || []).filter(el => el.getClientRects().length > 0);
         const first = controls?.[0]; const last = controls?.[controls.length - 1];
         if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
         if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
-      }} className={`fixed inset-0 z-[80] overflow-y-auto bg-[#f4e7eb] text-[#17130f] transition duration-500 ${isOpen ? "visible opacity-100" : "invisible opacity-0"}`}>
-        <div className={`mx-auto flex h-full max-w-[1480px] flex-col px-6 py-5 transition-transform duration-500 md:px-12 md:py-8 ${isOpen ? "translate-x-0" : "-translate-x-8"}`}>
-          <div className="flex items-center justify-between">
-            <button type="button" onClick={() => setIsOpen(false)} aria-label={t.closeMenu} className="grid h-11 w-11 place-items-center text-3xl font-light">×</button>
-            <BrandLogo className="bg-[#f4e7eb] text-[28px] md:text-[42px]" />
-            <span className="w-11" />
-          </div>
-          <nav className="mt-14 flex flex-col items-start gap-4 font-serif text-xl tracking-[0.04em] md:mt-20 md:gap-5 md:text-4xl">
-            {menuItems.map((item) => (
-              <Link key={item.label} href={item.href} onClick={() => setIsOpen(false)} className="group relative py-1">
-                {item.label}<span className="absolute bottom-0 left-0 h-px w-0 bg-current transition-all group-hover:w-full" />
-              </Link>
-            ))}
+      }} className={`editorial-page store-navigation fixed inset-0 z-[80] text-black transition-opacity duration-300 ${isOpen ? "visible opacity-100" : "invisible opacity-0"}`}>
+        <button type="button" onClick={() => setIsOpen(false)} aria-label={t.closeMenu} className="absolute inset-0 h-full w-full bg-black/25" />
+        <div className={`store-navigation-panel absolute bottom-0 left-0 flex flex-col overflow-y-auto bg-[#f1e9eb] transition-transform duration-300 ${isOpen ? "translate-x-0" : "-translate-x-full"}`}>
+          <nav aria-label="Main navigation" className="py-10 text-2xl leading-[1.5]">
+            {menuItems.map((item, index) => <div key={item.href}>
+              <Link href={item.href} onClick={() => setIsOpen(false)} className="block px-10 py-1.5 hover:bg-white focus-visible:bg-white">{item.label}</Link>
+              {index === 0 && <>
+                <button type="button" aria-expanded={collectionOpen} aria-controls="collection-navigation" onClick={() => setCollectionOpen(!collectionOpen)} className="block w-full px-10 py-1.5 text-left hover:bg-white focus-visible:bg-white">COLLECTION</button>
+                <div id="collection-navigation" hidden={!collectionOpen}><Link href="/collections/be-present" onClick={() => setIsOpen(false)} className="block px-10 py-1 text-lg hover:bg-white focus-visible:bg-white">BE PRESENT</Link></div>
+              </>}
+            </div>)}
           </nav>
-          <div className="mt-auto border-t border-black/20 pt-5 font-serif text-sm tracking-wide md:flex md:justify-between md:text-lg">
-            <div className="flex gap-6"><Link href="/login" onClick={() => setIsOpen(false)}>{t.signIn}</Link><Link href="/account" onClick={() => setIsOpen(false)}>{t.myAccount}</Link></div>
-            <Link href="/ar?product=1" onClick={() => setIsOpen(false)} className="mt-4 inline-block md:mt-0">{t.tryOn} ↗</Link>
+          <div className="mt-auto px-4 pb-3 pt-10 text-base">
+            <Link href="/login" onClick={() => setIsOpen(false)} className="block w-fit underline underline-offset-4">LOG IN</Link>
+            <p className="mt-2 text-sm">CURRENCY : THB</p>
+            <Link href="/" aria-label="Valley's Darling home" onClick={() => setIsOpen(false)} className="mt-3 block"><BrandLogo className="bg-[#f1e9eb] text-[clamp(24px,3.4vw,54px)]" /></Link>
           </div>
         </div>
       </div>
