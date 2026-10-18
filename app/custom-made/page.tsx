@@ -1,27 +1,24 @@
-import Image from "next/image";
 import Link from "next/link";
-import { getCmsContent, localizedContent } from "../lib/cms";
-import { copy } from "../lib/i18n";
-import { getLocale } from "../lib/locale";
+import { FigmaImage } from "../components/FigmaImage";
+import { CustomMadeTitle } from "../components/CustomMadeTitle";
 
-const customPieces = ["/images/ar-ring-silver-v2.png", "/images/product-closeup-2.png", "/images/collection-overview.png"];
-
-export const dynamic = "force-dynamic";
-export default async function CustomMadePage() {
-  const locale = await getLocale();
-  const t = copy[locale];
-  const content = localizedContent(await getCmsContent(), locale);
-  return (
-    <div className="min-h-screen bg-[#f4e5e9] text-[#211815]">
-      <section className="mx-auto max-w-[1320px] px-6 pb-20 pt-16 text-center md:px-12 md:pb-28 md:pt-24">
-        <h1 className="brand-script text-5xl md:text-8xl">{content.customMade.heading}</h1>
-        <p className="mx-auto mt-10 max-w-2xl whitespace-pre-line font-serif text-xs uppercase leading-6 tracking-[0.06em] md:text-sm md:leading-7">{content.customMade.body}</p>
-        <Link href="/contact" className="mt-10 inline-block bg-black px-8 py-4 text-[10px] tracking-[0.18em] text-white">{content.customMade.cta}</Link>
-        <div className="mt-14 flex snap-x gap-4 overflow-x-auto pb-5 md:mt-20 md:grid md:grid-cols-3 md:overflow-visible">
-          {customPieces.map((image, index) => <article key={image} className="relative aspect-[4/5] w-[82vw] shrink-0 snap-center overflow-hidden bg-[#eee4da] md:w-auto"><Image src={image} alt={`${t.customMade} ${index + 1}`} fill className={index === 0 ? "object-contain p-10" : "object-cover"} sizes="(max-width: 768px) 82vw, 33vw" /><span className="absolute bottom-4 left-4 bg-white/85 px-3 py-2 text-[9px] tracking-[0.14em]">0{index + 1} — {t.madeForYou}</span></article>)}
-        </div>
-        <p className="mt-2 text-[9px] uppercase tracking-[0.17em] md:hidden">{t.swipe}</p>
-      </section>
-    </div>
-  );
+export const metadata = { title: "Custom Made — Valley’s Darling" };
+const designs = [
+  { id: "heart-locket", name: "The Ruffle Heart Locket Necklace", left: "-64.69%", top: "-112.81%" },
+  { id: "swirl-bow", name: "The Swirl Bow Locket Necklace", left: "-122.35%", top: "-19.43%" },
+  { id: "gemstone-locket", name: "The Gemstone Locket Necklace", left: "-194.85%", top: "-104.46%" },
+];
+export default function CustomMadePage() {
+  return <main className="editorial-page custom-made-page mx-auto max-w-[1440px] bg-[#f1e9eb] text-black">
+    <section className="custom-made-selection text-center">
+      <CustomMadeTitle />
+      <p className="custom-made-intro uppercase">Custom-made jewelry, crafted around your imagination.</p>
+      <div className="custom-made-designs mx-auto grid grid-cols-3">
+        {designs.map(design => <Link key={design.id} href={`/custom-made/${design.id}`} aria-label={`Customize ${design.name}`} className="group block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4">
+          <FigmaImage src="/images/figma/preview-0.webp" alt={design.name} className="aspect-[384/379] transition-transform duration-500 group-hover:scale-105" crop={{ width: "419.08%", height: "238.69%", left: design.left, top: design.top }} />
+        </Link>)}
+      </div>
+      <p className="custom-made-note mx-auto uppercase">Choose your own colour, size, stone or have a name engraved on<br className="hidden sm:block" /> the piece. Each creation is made to order, especially for you.</p>
+    </section>
+  </main>;
 }

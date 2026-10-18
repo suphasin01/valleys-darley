@@ -2,6 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom-made selection: original 1440px frame, reflowing on narrow screens. */
+.custom-made-selection { container-type: inline-size; padding-top: 6.875%; padding-bottom: 20%; }
+.custom-made-intro { margin-top: 1.25%; font-size: clamp(12px, 1.6667vw, 24px); }
+.custom-made-designs { width: 76%; gap: 3%; margin-top: 6%; }
+.custom-made-note { margin-top: 16%; font-size: clamp(11px, 1.1111vw, 16px); line-height: 1.6; max-width: 78%; }
+@media (max-width: 767px) {
+  .custom-made-selection { padding-top: 38px; padding-bottom: 80px; }
+  .custom-made-intro { max-width: 80%; margin: 20px auto 0; line-height: 1.6; }
+  .custom-made-designs { width: 96%; gap: 0; margin-top: 36px; }
+  .custom-made-note { margin-top: 54px; }
+}
+
 @layer base {
   * {
     @apply border-rose-100;

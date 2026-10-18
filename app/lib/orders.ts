@@ -43,12 +43,4 @@ export function ownsOrder(session: Stripe.Checkout.Session, user: Member) {
   return session.metadata?.source === 'valleys-darley' && (session.metadata.memberId || session.metadata.lineUserId) === user.sub;
 }
 
-export function orderState(session: Stripe.Checkout.Session) {
-  if (session.payment_status !== 'paid') return 'waiting';
-  const status = session.metadata?.fulfillmentStatus;
-  return status === 'preparing' || status === 'shipped' || status === 'completed' ? status : 'new';
-}
-
-export const orderStateLabels: Record<ReturnType<typeof orderState>, string> = {
-  waiting: 'รอยืนยันการชำระเงิน', new: 'ชำระแล้ว · รอดำเนินการ', preparing: 'กำลังเตรียมสินค้า', shipped: 'จัดส่งแล้ว', completed: 'เสร็จสิ้น',
-};
+export { orderState, orderStateLabels } from './order-state';
