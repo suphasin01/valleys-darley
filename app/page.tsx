@@ -9,8 +9,8 @@ const asset = (id: number | string) => `/images/figma/preview-${id}.webp`;
 const features = [
  { id:"swirl-bow", name:"classic swirl bow necklace", image:9, crop:{width:"153.10%",height:"432.32%",left:"-53.18%",top:"-175.06%"} },
  { id:"ribbon-earring", name:"pleated gemstone ribbon earring", image:10, crop:{width:"99.11%",height:"257.09%",left:"-.35%",top:"-94.32%"} },
- { id:"pearl-ring", name:"rosette ribbon mother of pearl ring", image:11, crop:{width:"98.69%",height:"270.87%",left:".60%",top:"-80.57%"} },
- { id:"heart-locket", name:"the ruffle heart locket necklace", image:12, crop:{width:"102.29%",height:"257.08%",left:"-.54%",top:"-94.32%"} },
+ { id:"pearl-ring", name:"rosette ribbon mother of pearl ring", image:11, crop:{width:"95.9253%",height:"270.8575%",left:".6755%",top:"-79.9165%"} },
+ { id:"heart-locket", name:"the ruffle heart locket necklace", image:12, crop:{width:"99.11%",height:"257.09%",left:"-.35%",top:"-94.32%"} },
 ];
 export default async function Home() {
  const locale=await getLocale();
@@ -51,7 +51,7 @@ export default async function Home() {
    <p className="mb-[3%] text-[clamp(.65rem,1.67vw,1.5rem)] font-semibold">{th?"ค้นพบเครื่องประดับของเรา":"DISCOVER OUR JEWELRY"}</p>
    <div className="grid grid-cols-2 gap-x-[3%] gap-y-[6vw]">
     {features.flatMap(item=>{ const product=content.products.find(p=>p.id===item.id&&p.published); if(!product)return []; const original=editorialImage(product)!==product.image; return [<Link key={item.id} href={`/products/${item.id}`} className="group">
-     <FigmaImage src={original?asset(item.image):product.image} alt={product.name} className="aspect-[642/341] rounded-[8px] transition-transform duration-700 group-hover:scale-[1.02]" crop={original?item.crop:undefined}/>
+     <FigmaImage src={original?asset(item.image):product.image} alt={product.name} className={`${item.id === 'ribbon-earring' || item.id === 'heart-locket' ? 'aspect-[642/330]' : 'aspect-[642/341]'} rounded-[8px] transition-transform duration-700 group-hover:scale-[1.02]`} crop={original?item.crop:undefined}/>
      <p className="mt-[4%] text-[clamp(.65rem,1.67vw,1.5rem)]">{product.name}</p>
     </Link>];})}
    </div>

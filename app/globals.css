@@ -184,9 +184,9 @@
   body:has(.figma-home) .prototype-cart-label + svg { display: none; }
   .figma-home > div:first-child { height: 5.4167cqw; padding: 0; font-size: 1.6667cqw; }
   .figma-home > section:first-of-type { height: 63.4722cqw; }
-  .figma-home h1 { top: 3.2639cqw; font-size: 2.2222cqw; }
+  .figma-home h1 { top: 3.2639cqw; left: 33.6111%; right: auto; width: 46.3889%; text-align: left; font-size: 2.2222cqw; }
   .figma-home .figma-cta { font-size: 2.2222cqw; padding: 1.3889cqw 2.2222cqw; min-height: 0; }
-  .figma-home > section:first-of-type .figma-cta { bottom: 5cqw; }
+  .figma-home > section:first-of-type .figma-cta { bottom: 5cqw; left: 52.1181%; width: 23.4028cqw; height: 3.9583cqw; padding-block: 0; }
   .figma-home > section:nth-of-type(2) { position: relative; display: block; height: 67.0139cqw; padding: 0; }
   .figma-home > section:nth-of-type(2) > a { position: absolute; width: 52.7083%; left: -.2778%; top: -1.8056cqw; }
   .figma-home > section:nth-of-type(2) > a + a { width: 52.4306%; left: 48.125%; top: 0; }
@@ -207,7 +207,7 @@
   .figma-home > section:nth-of-type(5) { padding: 4.0972cqw 4.5139% 5.5556cqw; }
   .figma-home > section:nth-of-type(5) h2 { font-size: 2.7778cqw; margin-bottom: 4.2361cqw; }
   .figma-home > section:nth-of-type(5) > p:first-of-type { font-size: 1.6667cqw; margin-bottom: 5.9028cqw; }
-  .figma-home > section:nth-of-type(5) .grid { column-gap: 2.1528cqw; row-gap: 10cqw; }
+  .figma-home > section:nth-of-type(5) .grid { width: 91.3194cqw; column-gap: 2.1528cqw; row-gap: 10cqw; }
   .figma-home > section:nth-of-type(5) .grid p { font-size: 1.6667cqw; margin-top: 1cqw; }
   body:has(.figma-home) footer { max-width: 1440px; margin-inline: auto; }
 }
