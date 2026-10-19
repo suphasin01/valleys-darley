@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { copy, type Locale } from "../lib/i18n";
 import { requestCartOpen } from '../lib/cart-storage';
+import { shopMenuLinks, toggleMenuSection, type MenuSection } from '../lib/store-menu';
 
 export function BrandLogo({ className = "" }: { className?: string }) {
   return <span className={`brand-script inline-block whitespace-nowrap ${className}`}><img src="/images/figma/brand-hd.png" alt="Valley's Darling" width={1291} height={259} className="block h-[1.2em] w-[8.2em] max-w-full object-contain mix-blend-multiply" /></span>;
@@ -12,14 +13,13 @@ export function BrandLogo({ className = "" }: { className?: string }) {
 
 export function Header({ locale }: { locale: Locale }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [collectionOpen, setCollectionOpen] = useState(false);
+  const [menuSection, setMenuSection] = useState<MenuSection>(null);
   const menuButton = useRef<HTMLButtonElement>(null);
   const menuPanel = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const isAdmin = pathname === "/admin" || pathname.startsWith("/admin/");
   const t = copy[locale];
   const menuItems = [
-    { label: t.shop, href: "/collections" },
     { label: t.customMade, href: "/custom-made" }, { label: t.about, href: "/about" },
     { label: t.help, href: "/help" },
   ];
@@ -37,7 +37,7 @@ export function Header({ locale }: { locale: Locale }) {
     <>
       <header className="editorial-page sticky top-0 z-50 h-[64px] border-b border-black/60 bg-white text-black md:h-[9.3vw] md:max-h-[134px]">
         <div className="relative mx-auto flex h-full max-w-[1480px] items-center justify-between gap-2 px-3 sm:px-5 md:px-9">
-          <button ref={menuButton} type="button" onClick={() => setIsOpen(true)} aria-label={t.menu} aria-expanded={isOpen} aria-controls="store-navigation" className="grid h-11 min-w-11 place-items-center rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 xl:ml-7 xl:justify-items-start">
+          <button ref={menuButton} type="button" onClick={() => { setMenuSection(null); setIsOpen(true); }} aria-label={t.menu} aria-expanded={isOpen} aria-controls="store-navigation" className="grid h-11 min-w-11 place-items-center rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 xl:ml-7 xl:justify-items-start">
             <span className="relative block h-3.5 w-5 border-y border-current before:absolute before:left-0 before:top-1/2 before:h-px before:w-3 before:-translate-y-1/2 before:bg-current xl:hidden" />
             <span className="hidden text-[clamp(1rem,2.5vw,2.25rem)] font-medium xl:block">{locale === 'th' ? 'เมนู' : 'menu'}</span>
           </button>
@@ -61,12 +61,12 @@ export function Header({ locale }: { locale: Locale }) {
         <button type="button" onClick={() => setIsOpen(false)} aria-label={t.closeMenu} className="absolute inset-0 h-full w-full bg-black/25" />
         <div className={`store-navigation-panel absolute bottom-0 left-0 flex flex-col overflow-y-auto bg-[#f1e9eb] transition-transform duration-300 ${isOpen ? "translate-x-0" : "-translate-x-full"}`}>
           <nav aria-label="Main navigation" className="py-10 text-2xl leading-[1.5]">
-            {menuItems.map((item, index) => <div key={item.href}>
+            <button type="button" aria-expanded={menuSection === 'shop'} aria-controls="shop-navigation" onClick={() => setMenuSection(current => toggleMenuSection(current, 'shop'))} className={`block min-h-11 w-full border-y px-10 py-1.5 text-left hover:bg-white focus-visible:bg-white ${menuSection === 'shop' ? 'border-black/50 bg-white font-semibold' : 'border-transparent'}`}>{t.shop}</button>
+            <div id="shop-navigation" hidden={menuSection !== 'shop'}>{shopMenuLinks.map(([label, href]) => <Link key={label} href={href} onClick={() => setIsOpen(false)} className="block min-h-10 px-10 py-1 text-lg hover:bg-white focus-visible:bg-white">{label}</Link>)}</div>
+            <button type="button" aria-expanded={menuSection === 'collection'} aria-controls="collection-navigation" onClick={() => setMenuSection(current => toggleMenuSection(current, 'collection'))} className={`block min-h-11 w-full border-y px-10 py-1.5 text-left hover:bg-white focus-visible:bg-white ${menuSection === 'collection' ? 'border-black/50 bg-white font-semibold' : 'border-transparent'}`}>COLLECTION</button>
+            <div id="collection-navigation" hidden={menuSection !== 'collection'}><Link href="/collections/be-present" onClick={() => setIsOpen(false)} className="block min-h-10 px-10 py-1 text-lg hover:bg-white focus-visible:bg-white">BE PRESENT</Link></div>
+            {menuItems.map(item => <div key={item.href}>
               <Link href={item.href} onClick={() => setIsOpen(false)} className="block px-10 py-1.5 hover:bg-white focus-visible:bg-white">{item.label}</Link>
-              {index === 0 && <>
-                <button type="button" aria-expanded={collectionOpen} aria-controls="collection-navigation" onClick={() => setCollectionOpen(!collectionOpen)} className="block w-full px-10 py-1.5 text-left hover:bg-white focus-visible:bg-white">COLLECTION</button>
-                <div id="collection-navigation" hidden={!collectionOpen}><Link href="/collections/be-present" onClick={() => setIsOpen(false)} className="block px-10 py-1 text-lg hover:bg-white focus-visible:bg-white">BE PRESENT</Link></div>
-              </>}
             </div>)}
           </nav>
           <div className="mt-auto px-4 pb-3 pt-10 text-base">
