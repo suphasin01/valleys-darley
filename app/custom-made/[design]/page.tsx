@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CustomMadeTitle } from "../../components/CustomMadeTitle";
 import { CustomDesignForm } from "../../components/CustomDesignForm";
+import { GemstoneDesignReference } from '../../components/GemstoneDesignReference';
 
 const designs: Record<string, { name: string; left: string; top: string }> = {
   "heart-locket": { name: "The Ruffle Heart Locket Necklace", left: "-64.69%", top: "-112.81%" },
@@ -17,6 +18,6 @@ export default async function CustomDesignPage({ params }: { params: Promise<{ d
     <Link href="/custom-made" className="text-xs underline underline-offset-4">‹ Back to custom made</Link>
     <div className="mt-8"><CustomMadeTitle /></div>
     {design === 'swirl-bow' ? <h2 className="relative mx-auto mt-10 aspect-[883/144] w-full max-w-[883px] md:w-[71.33%] md:translate-x-[3.454%]"><img src="/images/figma/swirl-title.webp" width={711} height={76} alt={selected.name} className="absolute left-[9.74%] top-[22.22%] h-auto w-[80.52%] md:left-0" /></h2> : <h2 className="brand-script mt-10 text-center text-[clamp(36px,5.5vw,80px)] leading-tight">{selected.name}</h2>}
-    <CustomDesignForm key={design} id={design} design={selected} />
+    {design === 'gemstone-locket' ? <GemstoneDesignReference {...selected} /> : <CustomDesignForm key={design} id={design} design={selected} />}
   </main>;
 }

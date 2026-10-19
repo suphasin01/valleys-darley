@@ -16,7 +16,7 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
         <p className="text-[9px] uppercase tracking-[0.22em]">{t.beginHere}</p>
         <h1 className="brand-script mt-5 text-6xl leading-[0.9] md:text-9xl">{content.contact.heading}</h1>
         <p className="mt-10 max-w-md text-xs leading-6 text-black/55">{content.contact.body}</p>
-        {custom && ["heart-locket", "swirl-bow", "gemstone-locket"].includes(custom) && <CustomQuoteSummary design={custom} />}
+        {custom && ["heart-locket", "swirl-bow"].includes(custom) && <CustomQuoteSummary design={custom} />}
         <a href={content.contact.url} target="_blank" rel="noreferrer" className="mt-8 bg-black px-9 py-4 text-[10px] tracking-[0.18em] text-white">{content.contact.cta}</a>
         <Link href="/custom-made" className="mt-5 text-[9px] tracking-[0.15em] underline underline-offset-4">{t.discoverCustom}</Link>
       </section>
