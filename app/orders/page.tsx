@@ -14,7 +14,7 @@ export default async function Orders({ searchParams }: { searchParams: Promise<{
   const {status:rawStatus}=await searchParams;
   const tabs=[['all',th?'ทั้งหมด':'All'],['waiting',th?'รอชำระ':'Awaiting payment'],['paid',th?'กำลังเตรียม':'Processing'],['shipped',th?'จัดส่งแล้ว':'Shipped'],['completed',th?'สำเร็จ':'Completed']] as const;
   const status=tabs.some(([key])=>key===rawStatus)?rawStatus:'all';
-  const matches=(o:typeof orders[number],key:string)=>key==='all'||(key==='waiting'?o.status!=='expired'&&o.payment_status!=='paid':key==='paid'?['new','preparing'].includes(orderState(o)):orderState(o)===key);
+  const matches=(o:typeof orders[number],key:string)=>key==='all'||(key==='waiting'?o.status!=='expired'&&o.payment_status!=='paid':key==='paid'?['new','preparing','packed'].includes(orderState(o)):orderState(o)===key);
   const visible=orders.filter(o=>matches(o,status!));
   return <main className="min-h-[75svh] bg-[#f5f0ed] px-5 py-12 md:py-20"><div className="mx-auto max-w-4xl"><div className="flex flex-wrap justify-between gap-4"><div><p className="text-xs tracking-[.25em] text-black/40">VALLEY&apos;S DARLING / ORDERS</p><h1 className="mt-3 font-serif text-4xl">{th?'คำสั่งซื้อของฉัน':'My orders'}</h1><p className="mt-3 text-xs text-black/50">{th?'แสดงรายการล่าสุด สูงสุด 100 รายการต่อบัญชีชำระเงิน':'Latest orders, up to 100 per payment account'}</p></div><Link href="/account" className="text-sm underline">{th?'บัญชีและที่อยู่':'Account & address'}</Link></div>
     {stripeTestMode()&&<p className="mt-6 rounded-xl bg-amber-50 p-4 text-sm text-amber-900">{th?'รายการทดสอบ ไม่มีการเรียกเก็บเงินจริง':'Test orders — no real payments'}</p>}
