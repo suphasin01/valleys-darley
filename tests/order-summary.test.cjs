@@ -11,6 +11,7 @@ const { orderSummary } = require('../app/lib/order-summary.ts');
 const React = require('react');
 const { renderToStaticMarkup } = require('react-dom/server');
 const { OrderSummaryCard } = require('../app/components/OrderSummaryCard.tsx');
+const { AccountOverview } = require('../app/components/AccountOverview.tsx');
 const products = [
   { id: 'ring', name: 'Pearl Ring', image: '/ring.webp' },
   { id: 'pearl', name: 'Pearl', image: '/pearl.webp' },
@@ -37,4 +38,15 @@ test('summary links go to the owned order route; tracking is shown only after pa
   assert.ok(html.includes('/tracking/cs_test_ORDER001'));
   assert.ok(html.includes('450.00'));
   assert.equal(orderSummary({ ...session, status: 'expired' }, products).status, 'Payment expired');
+});
+test('account empty and unavailable states keep the real customer workflow available', () => {
+  const props = { profile: { name: 'Sample', email: 'sample@example.com', phone: '', address: '', subdistrict: '', district: '', province: '', postalCode: '' }, provider: 'google', orders: [], unavailable: false };
+  const empty = renderToStaticMarkup(React.createElement(AccountOverview, props));
+  assert.ok(empty.includes('No orders yet.'));
+  assert.ok(empty.includes('/register?edit=1&amp;next=%2Faccount'));
+  assert.ok(empty.includes('href="/orders"'));
+  assert.ok(empty.includes('action="/api/auth/logout"'));
+  const unavailable = renderToStaticMarkup(React.createElement(AccountOverview, { ...props, unavailable: true }));
+  assert.ok(unavailable.includes('Orders are temporarily unavailable.'));
+  assert.ok(!unavailable.includes('No orders yet.'));
 });
