@@ -185,15 +185,69 @@
 .figma-cta { display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:.6em 1em; border-radius:8px; font-size:clamp(.7rem,2.22vw,2rem); line-height:1.5; box-shadow:0 1px 2px #0000000d; transition:background-color .3s,color .3s; }
 .figma-cta:hover { background:#211815; color:white; }
 .store-navigation-panel { top: 64px; width: min(88vw, 472px); }
-.be-present-hero { container-type: inline-size; min-height: 169.5833vw; }
-.be-present-copy { width: 48%; margin-left: 28.125%; padding-top: 9.0278%; font-size: clamp(14px, 1.6667vw, 24px); }
-.be-present-copy h1 { font-size: clamp(42px, 6.6667vw, 96px); }
+.be-present-page { container-type: inline-size; }
+.be-present-hero { container-type: inline-size; min-height: 169.5833cqw; }
+.be-present-seal { position: absolute; left: -2.5%; top: 52.2917cqw; width: 47.0833%; height: auto; }
+.be-present-shop { position: absolute; top: 74.1667cqw; left: 43.6806%; width: 19.7917%; min-height: 6.1111cqw; border-radius: 6px; background: #f1e9eb; padding: 12px; font-size: clamp(14px,1.6667vw,24px); }
+.be-present-worlds,.be-present-lily { position: absolute; left: 14.4444%; width: 29.4444%; font-size: clamp(14px,1.6667vw,24px); line-height: 1.5; text-align: justify; }
+.be-present-worlds { top: 102.1528cqw; }
+.be-present-lily { top: 122.7083cqw; }
+.be-present-worlds p + p,.be-present-lily p + p { margin-top: 2.5cqw; }
+.be-present-copy { width: 43.3333%; margin-left: 28.3333%; padding-top: 8.0556%; font-size: clamp(14px, 1.6667vw, 24px); }
+.be-present-copy h1 { height: 8.3333cqw; padding-top: 1.3889cqw; }
+.be-present-copy h1 img { width: 31.4583cqw; max-width: 100%; }
+.be-present-copy > div { margin-top: 1.6667cqw; }
+.be-present-copy > div p + p { margin-top: 2.5cqw; }
+.be-present-story { position: relative; container-type: inline-size; }
+.be-present-story-label { position: absolute; top: -3.0556cqw; left: -.625%; width: 55.9722%; }
+.be-present-story-label img { display: block; width: 100%; height: auto; }
+.be-present-story-rule { display: flex; align-items: center; justify-content: flex-end; border-block: 1px solid #222; height: 6.3889cqw; padding-inline: 36px; text-align: right; text-transform: uppercase; font-size: clamp(14px,1.3889vw,20px); }
+.be-present-book { display: grid; grid-template-columns: 1fr 1fr; margin: 20.2778cqw 24px 0; background: white; }
+.be-present-book-picture { min-width: 0; padding: 24px 24px 0; background: linear-gradient(to right,#fff 94%,#ddd 99%,#fff); }
+.be-present-book-picture > img { width: 100%; height: auto; aspect-ratio: 659/815; object-fit: contain; object-position: top; }
+.be-present-book-left-controls { position: relative; display: flex; align-items: center; justify-content: center; min-height: 60px; color: #777; font-size: 14px; }
+.be-present-book-left-controls button { position: absolute; left: 6%; min-height: 44px; text-transform: uppercase; font-size: 12px; }
+.be-present-book-page { position: relative; display: flex; flex-direction: column; min-width: 0; padding: 48px 12% 88px 16%; background: linear-gradient(to right,#ddd,white 4%); }
+.be-present-book-intro { display: block; width: 100%; max-width: 384px; height: auto; margin-inline: auto; }
+.be-present-book-copy { margin-block: auto; }
+.be-present-book article { width: 400px; max-width: 100%; }
+.be-present-book-first-copy { margin-top: auto; padding-top: 48px; }
+.be-present-book article h3 { text-align: center; text-transform: uppercase; font-size: clamp(18px,1.75vw,25px); font-weight: 600; }
+.be-present-book article > div { margin-top: 28px; font-size: clamp(13px,1.35vw,20px); line-height: 1.7; text-align: justify; }
+.be-present-book article p { white-space: pre-line; }
+.be-present-book article p + p { margin-top: 28px; }
+.be-present-book-last { background: linear-gradient(to right,#ddd,#f1e9eb 4%); }
+.be-present-book-next { position: absolute; right: 0; bottom: 0; min-height: 64px; width: 100%; padding: 16px 14% 16px 24px; text-align: right; text-transform: uppercase; font-size: 14px; color: #666; }
+.be-present-book-corner { position: absolute; right: 0; bottom: 0; width: 0; height: 0; background: linear-gradient(135deg,#f6f1f3 48%,#cbbfc5 50%); box-shadow: -3px -3px 7px #0002; transition: width .2s,height .2s; }
+.be-present-book-page:hover .be-present-book-corner,.be-present-book-page:focus-within .be-present-book-corner { width: 76px; height: 76px; }
+.be-present-book button:focus-visible { outline: 2px solid #382e32; outline-offset: -4px; }
+@media (max-width: 767px) {
+  .be-present-seal { position: relative; inset: auto; width: min(100%,400px); margin: 16px auto -30px; }
+  .be-present-shop { position: relative; inset: auto; display: flex; width: fit-content; min-height: 48px; margin: 0 auto 48px; padding: 12px 28px; }
+  .be-present-worlds,.be-present-lily { position: relative; inset: auto; width: 100%; margin-top: 36px; font-size: 16px; text-align: left; }
+  .be-present-worlds p + p,.be-present-lily p + p { margin-top: 24px; }
+  .be-present-story-rule { height: 60px; padding: 20px; font-size: 14px; }
+  .be-present-story-label { position: relative; inset: auto; width: 100%; margin-top: -16px; }
+  .be-present-book { grid-template-columns: 1fr; margin: 0 16px; }
+  .be-present-book-picture { padding: 16px 16px 0; background: white; }
+  .be-present-book-left-controls { min-height: 50px; }
+  .be-present-book-page { min-height: 470px; padding: 36px 28px 84px; background: linear-gradient(#e6e3e4,white 3%); }
+  .be-present-book-last { background: #f1e9eb; }
+  .be-present-book-intro { max-width: 260px; }
+  .be-present-book article > div { font-size: 15px; }
+  .be-present-book-first-copy { padding-top: 40px; }
+  .be-present-book-corner { width: 44px; height: 44px; }
+  .be-present-book-next { font-size: 12px; }
+}
 @media (max-width: 767px) {
   .be-present-hero { min-height: 0; padding: 36px 20px 60px; }
   .be-present-portrait { opacity: .35; height: 100%; object-fit: cover; object-position: 60% top; }
   .be-present-copy { margin: 0; width: 100%; padding: 0; }
+  .be-present-copy h1 { height: auto; padding: 0; }
+  .be-present-copy h1 img { width: 100%; }
+  .be-present-copy > div { margin-top: 32px; }
+  .be-present-copy > div p + p { margin-top: 24px; }
 }
-@media (min-width: 1440px) { .be-present-hero { min-height: 2442px; } }
 @media (min-width: 768px) { .store-navigation-panel { top: min(9.3vw, 134px); width: min(32.7778vw, 472px); min-width: 280px; } }
 @media (min-width: 1024px) { .store-navigation-panel { top: 88px; } body:has(.figma-home) .store-navigation-panel { top: min(9.3056vw, 134px); } }
 
