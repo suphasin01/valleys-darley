@@ -2,5 +2,5 @@
 import { usePathname } from 'next/navigation';
 export function StorefrontOnly({ children }: { children: React.ReactNode }) {
   const path = usePathname();
-  return path === '/admin' || path.startsWith('/admin/') || path === '/loading-preview' || path === '/checkout/cart' || path.startsWith('/checkout/cart/') ? null : children;
+  return path === '/admin' || path.startsWith('/admin/') || path === '/loading-preview' || path === '/checkout' || path === '/checkout/cart' || path.startsWith('/checkout/cart/') ? null : children;
 }
