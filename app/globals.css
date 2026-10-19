@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+@media print {
+  body:has(.receipt-print[open]) { visibility: hidden; }
+  body:has(.receipt-print[open]) .receipt-print[open],
+  body:has(.receipt-print[open]) .receipt-print[open] * { visibility: visible; }
+  .receipt-print[open] { position: absolute; inset: 0; width: 100%; max-width: none; max-height: none; margin: 0; overflow: visible; box-shadow: none; }
+  .receipt-print[open]::backdrop { background: transparent; }
+}
+
 /* Custom-made selection: original 1440px frame, reflowing on narrow screens. */
 .custom-made-selection { container-type: inline-size; padding-top: 6.875%; padding-bottom: 20%; }
 .custom-made-intro { margin-top: 1.25%; font-size: clamp(12px, 1.6667vw, 24px); }
