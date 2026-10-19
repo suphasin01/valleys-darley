@@ -7,6 +7,7 @@ import { ProductGuide } from '../../components/ProductGuide';
 import { notFound } from "next/navigation";
 import { getCmsContent, localizedContent } from "../../lib/cms";
 import { getLocale } from "../../lib/locale";
+import { productAction } from '../../lib/product-action';
 
 export const dynamic = "force-dynamic";
 
@@ -17,6 +18,7 @@ export default async function ProductPage({ params, searchParams }: { params: Pr
   const product = products.find(item => item.id === id && item.published);
   if (!product) notFound();
   const isAr = product.link.startsWith("/ar");
+  const action = productAction(product.link);
   const photo = editorialImage(product);
   const { checkout } = await searchParams;
   const hasPrice = Number.isSafeInteger(product.priceBaht) && (product.priceBaht || 0) >= 10;
@@ -35,7 +37,7 @@ export default async function ProductPage({ params, searchParams }: { params: Pr
         {checkout === "canceled" && <p role="status" className="mt-5 text-sm text-black/60">{locale === "th" ? "ยกเลิกการชำระเงินแล้ว ยังไม่มีการเรียกเก็บเงิน" : "Checkout was canceled. You have not been charged."}</p>}
         {guideKind && <div className="mt-6 flex w-full items-center justify-between gap-4"><span className="text-sm uppercase">Size &amp; fit</span><ProductGuide kind={guideKind} /></div>}
         <AddToCart product={product} />
-        <Link href={product.link} className="mt-6 inline-flex min-h-11 items-center text-xs tracking-[.08em] underline underline-offset-4">{isAr ? locale === "th" ? "ลองสวมด้วย AR" : "TRY ON WITH AR" : locale === "th" ? "สอบถามเกี่ยวกับชิ้นนี้" : "ENQUIRE ABOUT THIS PIECE"} ↗</Link>
+        <Link href={action.href} className="mt-6 inline-flex min-h-11 items-center text-xs tracking-[.08em] underline underline-offset-4">{action.chooseDesign ? locale === "th" ? "เลือกแบบเครื่องประดับ" : "CHOOSE YOUR DESIGN" : locale === "th" ? "สอบถามเกี่ยวกับชิ้นนี้" : "ENQUIRE ABOUT THIS PIECE"} ↗</Link>
         <div className="mt-8 flex flex-wrap items-center gap-2">{guideKind ? <ProductGuide kind={guideKind} label="Size guide" /> : <Link href="/help#size-guide" className="inline-flex min-h-11 items-center text-xs uppercase underline underline-offset-4">Size guide</Link>}<span className="text-xs uppercase">and</span><ProductGuide kind="care" label="Care instruction" /></div>
       </div>
     </div>
