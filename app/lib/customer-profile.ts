@@ -3,10 +3,11 @@ import { createCipheriv, createDecipheriv, createHash, createHmac, randomBytes, 
 import { promisify } from 'node:util';
 import { get, list, put } from '@vercel/blob';
 import { authSecretReady, type Member } from './auth';
+import { validateDemographics, type Gender } from './customer-demographics';
 
 const scrypt = promisify(scryptCallback);
 export const preferencesVersion = '2026-10-09';
-export type CustomerProfile = { birthDate?: string; preferences?: {marketing: boolean; personalization: boolean; version: string; recordedAt: string}; name: string; email: string; phone: string; address: string; subdistrict: string; district: string; province: string; postalCode: string; updatedAt: string; privacy?: { version: string; acknowledgedAt: string; provider: string } };
+export type CustomerProfile = { gender?: Gender; country?: 'TH'; birthDate?: string; preferences?: {marketing: boolean; personalization: boolean; version: string; recordedAt: string}; name: string; email: string; phone: string; address: string; subdistrict: string; district: string; province: string; postalCode: string; updatedAt: string; privacy?: { version: string; acknowledgedAt: string; provider: string } };
 type CustomerRecord = { sub: string; profile: CustomerProfile; password?: { salt: string; hash: string }; failed?: number; lockedUntil?: number };
 export const customerStorageReady = () => authSecretReady() && Boolean(process.env.BLOB_READ_WRITE_TOKEN);
 function encryptionKey() {
@@ -40,9 +41,12 @@ async function writeRecord(record: CustomerRecord, overwrite = true) {
   await put(pathname(record.sub), encrypt(record), { access: 'public', addRandomSuffix: false, allowOverwrite: overwrite, contentType: 'application/json', cacheControlMaxAge: 60 });
 }
 export function validateProfile(form: FormData): CustomerProfile | null {
+  const demographics = validateDemographics(form);
+  if (!demographics) return null;
   const field = (key: string, max: number) => { const value = form.get(key); return typeof value === 'string' && value.trim().length <= max ? value.trim() : ''; };
   const profile: CustomerProfile = { name: field('name', 100), email: field('email', 254).toLowerCase(), phone: field('phone', 20).replace(/[\s()-]/g, ''), address: field('address', 250), subdistrict: field('subdistrict', 100), district: field('district', 100), province: field('province', 100), postalCode: field('postalCode', 5), updatedAt: new Date().toISOString() };
   if (!profile.name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profile.email) || !/^(?:0\d{8,9}|\+66\d{8,9})$/.test(profile.phone) || !profile.address || !profile.subdistrict || !profile.district || !profile.province || !/^\d{5}$/.test(profile.postalCode)) return null;
+  Object.assign(profile, demographics);
   if (form.has('birthDate')) {
     const birth = form.get('birthDate');
     if (typeof birth !== 'string') return null;
@@ -74,7 +78,7 @@ export async function listCustomerProfiles(cursor?: string) {
 }
 export async function saveCustomerProfile(user: Member, profile: CustomerProfile) {
   const existing = await readRecord(user.sub);
-  await writeRecord({ ...existing, sub: user.sub, profile: { ...profile, birthDate: profile.birthDate ?? existing?.profile.birthDate, preferences: profile.preferences ?? existing?.profile.preferences, privacy: existing?.profile.privacy || profile.privacy } });
+  await writeRecord({ ...existing, sub: user.sub, profile: { ...profile, gender: profile.gender ?? existing?.profile.gender, country: profile.country ?? existing?.profile.country, birthDate: profile.birthDate ?? existing?.profile.birthDate, preferences: profile.preferences ?? existing?.profile.preferences, privacy: existing?.profile.privacy || profile.privacy } });
 }
 function emailSub(email: string) { return `email:${createHash('sha256').update(email.trim().toLowerCase()).digest('hex')}`; }
 export async function registerEmail(profile: CustomerProfile, password: string) {

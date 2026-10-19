@@ -6,7 +6,7 @@ export default function Privacy() {
   return <LegalDocument title="Privacy Policy">
     <LegalSection title="Who we are"><p>Valley’s Darling is a jewellery brand based in Thailand. We are responsible for the personal information you share with us on this website, on LINE and Instagram, and when you order from us.</p></LegalSection>
     <LegalSection title="What we collect">
-      <p>Account details: your name, email, website password (stored as a hash), and the birth date, telephone number and other profile details you choose to provide.</p>
+      <p>Account details: your name, email, website password (stored as a hash), and the birth date, gender, telephone number and other profile details you choose to provide. Birth date and gender are optional.</p>
       <p>Order details: your shipping and billing address, telephone number, the items you buy, order notes and payment status.</p>
       <p>Custom-made details: engraving text, sizes, design notes, and any photos or videos you send us for custom pieces, claims or repairs.</p>
       <p>Messages: what you send us by email, LINE, Instagram or our contact form.</p>

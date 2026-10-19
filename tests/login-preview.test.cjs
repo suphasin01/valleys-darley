@@ -2,7 +2,7 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 test('login uses the original 3x Figma badge at its 192x126 layout size', async () => {
-  const source = fs.readFileSync('app/login/page.tsx', 'utf8');
+  const source = fs.readFileSync('app/components/AuthTitle.tsx', 'utf8');
   const metadata = await require('sharp')('public/images/figma/login-badge.webp').metadata();
   assert.equal(metadata.width, 576); assert.equal(metadata.height, 378);
   assert.ok(source.includes('/images/figma/login-badge.webp'));
