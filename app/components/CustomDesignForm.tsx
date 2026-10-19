@@ -5,15 +5,17 @@ import { useState } from "react";
 import { FigmaImage } from "./FigmaImage";
 import { CustomLocketGallery } from './CustomLocketGallery';
 import { ProductGuide } from './ProductGuide';
+import { heartGemstones } from '../lib/heart-artwork';
 
 type Choices = { plating: string; gemstone: string; finish: string; star: string; engraving: string; font: string; size: string; note: string };
 const initial: Choices = { plating: "18K gold plated", gemstone: "Aquamarine", finish: "High polish", star: "Sapphire", engraving: "", font: "La Graziela", size: "", note: "" };
-const options = {
+const baseOptions = {
   plating: ["18K gold plated", "Rhodium"], gemstone: ["Aquamarine", "Pink Tourmaline", "Green Amethyst"],
   finish: ["High polish", "Matte"], star: ["Sapphire", "Yellow sapphire"], font: ["La Graziela"],
 };
 
 export function CustomDesignForm({ id, design }: { id: string; design: { name: string; left: string; top: string } }) {
+  const options = { ...baseOptions, gemstone: id === 'heart-locket' ? [...heartGemstones] : baseOptions.gemstone };
   const [choices, setChoices] = useState<Choices>(initial);
   const [status, setStatus] = useState("");
   const [restored, setRestored] = useState(false);
@@ -36,14 +38,15 @@ export function CustomDesignForm({ id, design }: { id: string; design: { name: s
       setChoices(next); setRestored(true); setStatus("Saved design restored.");
     } catch { setStatus("The saved design could not be read."); }
   }
-  const summary = [design.name, `Plating: ${choices.plating}`, `Gemstone: ${choices.gemstone}`, `Finish: ${choices.finish}`, `Star gemstone: ${choices.star}`, `Engraving: ${choices.engraving || "None"}`, `Font: ${choices.font}`, `Size: ${choices.size || "Please advise"}`, choices.note ? `Note: ${choices.note}` : ""].filter(Boolean).join("\n");
+  const specifications = [['Product', design.name], ['Plating', choices.plating], ['Centre stone', choices.gemstone], ['Finish', choices.finish], ['Star stones', choices.star], ['Engraving', choices.engraving || 'None'], ['Font', choices.font], ['Size', choices.size || 'Please advise']];
+  const summary = [...specifications.map(([label, value]) => `${label}: ${value}`), choices.note ? `Note: ${choices.note}` : ''].filter(Boolean).join('\n');
   return <section className="mx-auto mt-10 max-w-[1263px]">
     {id === 'heart-locket' ? <CustomLocketGallery plating={choices.plating} gemstone={choices.gemstone} finish={choices.finish} star={choices.star} engraving={choices.engraving} /> : <>
     <FigmaImage src="/images/figma/preview-0.webp" alt={design.name} className="mx-auto aspect-[384/379] w-[min(80%,420px)]" crop={{ left: design.left, top: design.top, width: "419.08%", height: "238.69%" }} />
     <p className="mt-8 text-center text-xs uppercase">Custom-made jewelry, crafted around your imagination.</p>
     <p className="mt-3 text-center text-xs text-black/50">Design reference shown. Selected specifications are listed below.</p></>}
     <div className="mt-12 grid gap-x-8 gap-y-7 sm:grid-cols-2 lg:grid-cols-4">
-      {([['plating', 'Plating'], ['gemstone', 'Gemstone'], ['finish', 'Finish'], ['star', 'Star gemstone']] as const).map(([field, label]) => <label key={field} className="block text-sm uppercase"><span className="bg-[#f1e9eb] px-3 py-2">{label}</span><select value={choices[field]} onChange={e => set(field, e.target.value)} className="mt-3 min-h-11 w-full border-b border-black/25 bg-white px-2 text-sm">{options[field].map(value => <option key={value}>{value}</option>)}</select></label>)}
+      {([['plating', 'Plating'], ['gemstone', 'Gemstone'], ['finish', 'Finish'], ['star', 'Star gemstone']] as const).map(([field, label]) => <label key={field} className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 text-xs uppercase"><span className="whitespace-nowrap bg-[#f1e9eb] px-3 py-2">{label}</span><select value={choices[field]} onChange={e => set(field, e.target.value)} className="min-h-11 w-full border-b border-black/25 bg-white px-2 text-xs">{options[field].map(value => <option key={value}>{value}</option>)}</select></label>)}
     </div>
     <div className="mt-12 grid items-end gap-6 sm:grid-cols-[auto_1fr_2fr]">
       <span className="w-fit bg-[#f1e9eb] px-3 py-2 text-sm uppercase">Engraving</span>
@@ -54,7 +57,7 @@ export function CustomDesignForm({ id, design }: { id: string; design: { name: s
       <label className="text-sm">Size<input value={choices.size} onChange={e => set('size', e.target.value)} maxLength={60} placeholder="Chain length" className="ml-3 min-h-11 w-40 border-b border-black/25 px-2" /></label>
       <ProductGuide kind="necklace" label="Size guide" /><ProductGuide kind="care" label="Care instruction" />
     </div>
-    <section className="mt-12"><h3 className="text-sm uppercase">Details describe</h3><dl className="mt-4 text-sm">{summary.split('\n').map((line, index) => <div key={index} className="border-b border-black/10 py-2"><dd>{line}</dd></div>)}<div className="border-b border-black/10 py-2"><dt className="inline">Production: </dt><dd className="inline">Made to order. Timing and price confirmed by our team.</dd></div></dl></section>
+    <section className="mx-auto mt-12 max-w-[1000px]"><h3 className="text-sm uppercase">Details describe</h3><dl className="mt-8 text-xs uppercase sm:text-sm">{[...specifications, ['Production', 'Made to order. Timing and price confirmed by our team.']].map(([label, value]) => <div key={label} className="grid grid-cols-[minmax(90px,1fr)_3fr] gap-4 border-b border-black/10 py-2"><dt className="text-black/50">{label}</dt><dd className="break-words">{value}</dd></div>)}</dl></section>
     <label className="mt-6 block text-sm">Note<textarea maxLength={300} value={choices.note} onChange={e => set('note', e.target.value)} placeholder="Anything else you would like us to know?" className="mt-2 min-h-24 w-full border border-black/20 p-3" /></label>
     <div className="mt-6 flex flex-wrap justify-end gap-3 text-sm"><button onClick={restore} type="button" className="min-h-11 border border-black/20 px-5">{restored ? "Restore again" : "Restore saved design"}</button><button onClick={() => {
       try { localStorage.removeItem(`valleys-custom-${id}`); sessionStorage.removeItem(`valleys-quote-${id}`); setRestored(false); setStatus("Saved design cleared from this device."); }

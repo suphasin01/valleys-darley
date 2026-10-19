@@ -1,0 +1,278 @@
+{
+  "source": "Figma native SVG export: Ruffle Locket / variants (488:39092)",
+  "sourceSha256": "c678fd97f9a523e4d15d60220617a399ba40f10522ae1cc8abe5161d0e51edb4",
+  "variants": [
+    {
+      "variant": "Plating=Gold, Gemstone=Aquamarine, Finish=High Polish, Star=Sapphire, Open=None",
+      "front": {
+        "file": "heart-gold-aquamarine-high-polish-sapphire.webp",
+        "imageId": "image0_488_39092",
+        "sha256": "979e89866fbd96bf6ed7b45434a883f6925deb85dceb44b42621771034463b13",
+        "width": 900,
+        "height": 900
+      },
+      "inside": {
+        "file": "heart-gold-high-polish-inside.webp",
+        "imageId": "image1_488_39092",
+        "sha256": "423e4ecbd024a3b4c3fe860fd024eca04558de3b6efb963ceb2fc79f55f3a7b3",
+        "width": 800,
+        "height": 800
+      }
+    },
+    {
+      "variant": "Plating=Gold, Gemstone=Aquamarine, Finish=High Polish, Star=Yellow sapphire, Open=None",
+      "front": {
+        "file": "heart-gold-aquamarine-high-polish-yellow-sapphire.webp",
+        "imageId": "image2_488_39092",
+        "sha256": "20210dbcd6092ab2ea1d308ac3e376012ddfd679cf3a9aae6cc09b98c3e7bf44",
+        "width": 900,
+        "height": 900
+      },
+      "inside": {
+        "file": "heart-gold-high-polish-inside.webp",
+        "imageId": "image1_488_39092",
+        "sha256": "423e4ecbd024a3b4c3fe860fd024eca04558de3b6efb963ceb2fc79f55f3a7b3",
+        "width": 800,
+        "height": 800
+      }
+    },
+    {
+      "variant": "Plating=Gold, Gemstone=Aquamarine, Finish=Matte, Star=Sapphire, Open=None",
+      "front": {
+        "file": "heart-gold-aquamarine-matte-sapphire.webp",
+        "imageId": "image3_488_39092",
+        "sha256": "99f2d8d092274e762634827461bbd9860c64c74d54bcbefde22ea370a60bdf64",
+        "width": 900,
+        "height": 900
+      },
+      "inside": {
+        "file": "heart-gold-matte-inside.webp",
+        "imageId": "image4_488_39092",
+        "sha256": "0d34bc6c32e6ce879a29c40f8458f1eab206f548c827c6f505080c2dda7adbdf",
+        "width": 800,
+        "height": 800
+      }
+    },
+    {
+      "variant": "Plating=Gold, Gemstone=Aquamarine, Finish=Matte, Star=Yellow sapphire, Open=None",
+      "front": {
+        "file": "heart-gold-aquamarine-matte-yellow-sapphire.webp",
+        "imageId": "image5_488_39092",
+        "sha256": "a8bd64124d723472e892bbd37e0875b90244c40c8e3c8e07d4bef7f298915dde",
+        "width": 900,
+        "height": 900
+      },
+      "inside": {
+        "file": "heart-gold-matte-inside.webp",
+        "imageId": "image4_488_39092",
+        "sha256": "0d34bc6c32e6ce879a29c40f8458f1eab206f548c827c6f505080c2dda7adbdf",
+        "width": 800,
+        "height": 800
+      }
+    },
+    {
+      "variant": "Plating=Gold, Gemstone=Pink Tourmaline, Finish=High Polish, Star=Sapphire, Open=None",
+      "front": {
+        "file": "heart-gold-pink-tourmaline-high-polish-sapphire.webp",
+        "imageId": "image6_488_39092",
+        "sha256": "69e91dc1480c477d3aebaf0caeb071c6c3c84d2d6eed2ff323077db51898dfcb",
+        "width": 900,
+        "height": 900
+      },
+      "inside": {
+        "file": "heart-gold-high-polish-inside.webp",
+        "imageId": "image1_488_39092",
+        "sha256": "423e4ecbd024a3b4c3fe860fd024eca04558de3b6efb963ceb2fc79f55f3a7b3",
+        "width": 800,
+        "height": 800
+      }
+    },
+    {
+      "variant": "Plating=Gold, Gemstone=Pink Tourmaline, Finish=High Polish, Star=Yellow sapphire, Open=None",
+      "front": {
+        "file": "heart-gold-pink-tourmaline-high-polish-yellow-sapphire.webp",
+        "imageId": "image7_488_39092",
+        "sha256": "9eb404baf42398ab378ddbc66a302ece67515ddafd9711a9deed7ea86f076c50",
+        "width": 900,
+        "height": 900
+      },
+      "inside": {
+        "file": "heart-gold-high-polish-inside.webp",
+        "imageId": "image1_488_39092",
+        "sha256": "423e4ecbd024a3b4c3fe860fd024eca04558de3b6efb963ceb2fc79f55f3a7b3",
+        "width": 800,
+        "height": 800
+      }
+    },
+    {
+      "variant": "Plating=Gold, Gemstone=Pink Tourmaline, Finish=Matte, Star=Sapphire, Open=None",
+      "front": {
+        "file": "heart-gold-pink-tourmaline-matte-sapphire.webp",
+        "imageId": "image8_488_39092",
+        "sha256": "c33053f4fd5ff358817be8a872c261e5bd3da0a61e6f209b6c98992e5530337b",
+        "width": 900,
+        "height": 900
+      },
+      "inside": {
+        "file": "heart-gold-matte-inside.webp",
+        "imageId": "image4_488_39092",
+        "sha256": "0d34bc6c32e6ce879a29c40f8458f1eab206f548c827c6f505080c2dda7adbdf",
+        "width": 800,
+        "height": 800
+      }
+    },
+    {
+      "variant": "Plating=Gold, Gemstone=Pink Tourmaline, Finish=Matte, Star=Yellow sapphire, Open=None",
+      "front": {
+        "file": "heart-gold-pink-tourmaline-matte-yellow-sapphire.webp",
+        "imageId": "image9_488_39092",
+        "sha256": "05796ec98693278689f0c0015192ef9a4f330dd8db673cedcb0436f53008693a",
+        "width": 900,
+        "height": 900
+      },
+      "inside": {
+        "file": "heart-gold-matte-inside.webp",
+        "imageId": "image4_488_39092",
+        "sha256": "0d34bc6c32e6ce879a29c40f8458f1eab206f548c827c6f505080c2dda7adbdf",
+        "width": 800,
+        "height": 800
+      }
+    },
+    {
+      "variant": "Plating=Rhodium, Gemstone=Aquamarine, Finish=High Polish, Star=Sapphire, Open=None",
+      "front": {
+        "file": "heart-rhodium-aquamarine-high-polish-sapphire.webp",
+        "imageId": "image10_488_39092",
+        "sha256": "0ba9c7e7673cab837b714ed9f9e372a8b7adb93c5a06d101193f36ea657700fa",
+        "width": 900,
+        "height": 900
+      },
+      "inside": {
+        "file": "heart-rhodium-high-polish-inside.webp",
+        "imageId": "image11_488_39092",
+        "sha256": "7ca950ec9aec41b3728bb9265d4834f1f073929da48214081cc654c1320658cb",
+        "width": 800,
+        "height": 800
+      }
+    },
+    {
+      "variant": "Plating=Rhodium, Gemstone=Aquamarine, Finish=High Polish, Star=Yellow sapphire, Open=None",
+      "front": {
+        "file": "heart-rhodium-aquamarine-high-polish-yellow-sapphire.webp",
+        "imageId": "image12_488_39092",
+        "sha256": "8fb9804b181e3e897269ac71dfde43d6fe14ad4f9b6548fb43c54e10d62ddc2b",
+        "width": 900,
+        "height": 900
+      },
+      "inside": {
+        "file": "heart-rhodium-high-polish-inside.webp",
+        "imageId": "image11_488_39092",
+        "sha256": "7ca950ec9aec41b3728bb9265d4834f1f073929da48214081cc654c1320658cb",
+        "width": 800,
+        "height": 800
+      }
+    },
+    {
+      "variant": "Plating=Rhodium, Gemstone=Aquamarine, Finish=Matte, Star=Sapphire, Open=None",
+      "front": {
+        "file": "heart-rhodium-aquamarine-matte-sapphire.webp",
+        "imageId": "image13_488_39092",
+        "sha256": "bc4fad56bf3c6d8976d6d93943be770cb6cf401035315790523d482723d3ca89",
+        "width": 900,
+        "height": 900
+      },
+      "inside": {
+        "file": "heart-rhodium-matte-inside.webp",
+        "imageId": "image14_488_39092",
+        "sha256": "6489a362a952af0ba438fba3887627caf0418718378d508bcbfd7238d86c600d",
+        "width": 800,
+        "height": 800
+      }
+    },
+    {
+      "variant": "Plating=Rhodium, Gemstone=Aquamarine, Finish=Matte, Star=Yellow sapphire, Open=None",
+      "front": {
+        "file": "heart-rhodium-aquamarine-matte-yellow-sapphire.webp",
+        "imageId": "image15_488_39092",
+        "sha256": "accbd2fbc4d0163a3d2c2f840b80f02e09e2251582c3e4d887c9da893d7b8fd8",
+        "width": 900,
+        "height": 900
+      },
+      "inside": {
+        "file": "heart-rhodium-matte-inside.webp",
+        "imageId": "image14_488_39092",
+        "sha256": "6489a362a952af0ba438fba3887627caf0418718378d508bcbfd7238d86c600d",
+        "width": 800,
+        "height": 800
+      }
+    },
+    {
+      "variant": "Plating=Rhodium, Gemstone=Pink Tourmaline, Finish=High Polish, Star=Sapphire, Open=None",
+      "front": {
+        "file": "heart-rhodium-pink-tourmaline-high-polish-sapphire.webp",
+        "imageId": "image16_488_39092",
+        "sha256": "2c73514480463a7d991c4ab1f3971b179dcd0667416b4fa282ec3192e08f3243",
+        "width": 900,
+        "height": 900
+      },
+      "inside": {
+        "file": "heart-rhodium-high-polish-inside.webp",
+        "imageId": "image11_488_39092",
+        "sha256": "7ca950ec9aec41b3728bb9265d4834f1f073929da48214081cc654c1320658cb",
+        "width": 800,
+        "height": 800
+      }
+    },
+    {
+      "variant": "Plating=Rhodium, Gemstone=Pink Tourmaline, Finish=High Polish, Star=Yellow sapphire, Open=None",
+      "front": {
+        "file": "heart-rhodium-pink-tourmaline-high-polish-yellow-sapphire.webp",
+        "imageId": "image17_488_39092",
+        "sha256": "ef72719057eca3934523e26762bb815a21193619251afb17ff4c2b3b8bc7b955",
+        "width": 900,
+        "height": 900
+      },
+      "inside": {
+        "file": "heart-rhodium-high-polish-inside.webp",
+        "imageId": "image11_488_39092",
+        "sha256": "7ca950ec9aec41b3728bb9265d4834f1f073929da48214081cc654c1320658cb",
+        "width": 800,
+        "height": 800
+      }
+    },
+    {
+      "variant": "Plating=Rhodium, Gemstone=Pink Tourmaline, Finish=Matte, Star=Sapphire, Open=None",
+      "front": {
+        "file": "heart-rhodium-pink-tourmaline-matte-sapphire.webp",
+        "imageId": "image18_488_39092",
+        "sha256": "794ddd35aedf720b7af9b35629626328be0fb5a5a13e202c6af85b0effb2f15c",
+        "width": 900,
+        "height": 900
+      },
+      "inside": {
+        "file": "heart-rhodium-matte-inside.webp",
+        "imageId": "image14_488_39092",
+        "sha256": "6489a362a952af0ba438fba3887627caf0418718378d508bcbfd7238d86c600d",
+        "width": 800,
+        "height": 800
+      }
+    },
+    {
+      "variant": "Plating=Rhodium, Gemstone=Pink Tourmaline, Finish=Matte, Star=Yellow sapphire, Open=None",
+      "front": {
+        "file": "heart-rhodium-pink-tourmaline-matte-yellow-sapphire.webp",
+        "imageId": "image19_488_39092",
+        "sha256": "0aa3825d89ba3b59a85369d29fd06df4da2157534f7a79e75eb7b54451b706ae",
+        "width": 900,
+        "height": 900
+      },
+      "inside": {
+        "file": "heart-rhodium-matte-inside.webp",
+        "imageId": "image14_488_39092",
+        "sha256": "6489a362a952af0ba438fba3887627caf0418718378d508bcbfd7238d86c600d",
+        "width": 800,
+        "height": 800
+      }
+    }
+  ]
+}
