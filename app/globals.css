@@ -64,6 +64,8 @@
 }
 
 .editorial-page { font-family: var(--font-editorial), var(--font-editorial-thai), Georgia, serif; }
+.footer-home-brand { display: none; }
+body:has(.figma-home) .footer-home-brand { display: block; }
 @media (max-height: 760px) and (min-width: 640px) {
   .editorial-page .shopping-bag-content { padding-bottom: 32px; }
   .shopping-bag-content .shopping-bag-header { padding-top: 24px; padding-bottom: 24px; }
