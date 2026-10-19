@@ -11,7 +11,7 @@ export function BrandLoading({ preview = false }: { preview?: boolean }) {
           <source media="(prefers-reduced-motion: reduce)" srcSet="/images/figma/loading-locket-still.webp" />
           <img src="/images/figma/loading-locket.gif" width={162} height={156} alt="" aria-hidden="true" className="brand-loading-jewel" />
         </picture>
-        <p className="brand-loading-message">A little something is loading, darling.</p>
+        <p className="brand-loading-message">a little something is loading, darling</p>
         <div aria-hidden="true" className="brand-loading-track"><span className="brand-loading-line" /></div>
         <span className="sr-only">Your page will appear when ready.</span>
       </div>

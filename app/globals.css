@@ -64,11 +64,12 @@
 }
 .brand-loading { position: fixed; inset: 64px 0 0; z-index: 40; overflow: hidden; background: white; }
 .brand-loading-background { position: absolute; width: 100%; height: 100%; inset: 0; object-fit: cover; object-position: center; }
-.brand-loading-content { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; transform: translateY(-5%); }
+.brand-loading-content { position: absolute; top: 31.76%; left: 52.12%; width: min(100%, 480px); display: flex; flex-direction: column; align-items: center; transform: translateX(-50%); }
+.brand-loading-content picture { display: block; line-height: 0; }
 .brand-loading-jewel { width: 162px; height: 156px; object-fit: fill; }
-.brand-loading-message { margin-top: 42px; font-size: 16px; text-align: center; text-transform: uppercase; }
-.brand-loading-track { width: min(344px, 78vw); height: 13px; margin-top: 16px; border: 1px solid black; border-radius: 999px; overflow: hidden; background: #f1e9eb; }
-.brand-loading-line { display: block; height: 100%; width: 65%; border-radius: inherit; background: #9b9b9b; transform-origin: left; animation: brand-loading 2.4s ease-in-out infinite alternate; }
+.brand-loading-message { margin-top: -21px; font-size: 16px; line-height: 64px; letter-spacing: -.25px; text-align: center; }
+.brand-loading-track { width: min(345px, 78vw); height: 15px; border: 1px solid black; border-radius: 999px; overflow: hidden; background: #f1e9eb; }
+.brand-loading-line { display: block; height: 100%; width: 65%; border-radius: inherit; background: #828282; transform-origin: left; animation: brand-loading 2.4s ease-in-out infinite alternate; }
 @keyframes brand-loading { from { transform: scaleX(.08); } to { transform: scaleX(1.5); } }
 @media (min-width: 768px) { .brand-loading { top: min(9.3vw, 134px); } }
 @media (min-width: 1024px) {
@@ -76,9 +77,10 @@
   body:has(.figma-home) .brand-loading { top: min(9.3056vw, 134px); }
 }
 @media (max-width: 600px) {
+  .brand-loading-content { left: 50%; }
   .brand-loading-background { object-position: 47% center; }
   .brand-loading-jewel { width: 140px; height: 135px; }
-  .brand-loading-message { margin-top: 28px; font-size: 13px; }
+  .brand-loading-message { margin-top: -12px; font-size: 14px; line-height: 52px; }
 }
 @media (prefers-reduced-motion: reduce) { .brand-loading-line { animation: none; transform: scaleX(.65); } }
 .editorial-page :lang(th) { line-height: 1.8; }
