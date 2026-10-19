@@ -3,6 +3,14 @@
 @tailwind utilities;
 
 @media print {
+  body:has(.saved-design-dialog[open]) { visibility: hidden; }
+  body:has(.saved-design-dialog[open]) *:not(.saved-design-dialog):not(.saved-design-dialog *):not(:has(.saved-design-dialog[open])) { display: none !important; }
+  body:has(.saved-design-dialog[open]) *:has(.saved-design-dialog[open]) { display: block !important; min-height: 0 !important; height: auto !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; }
+  body:has(.saved-design-dialog[open]) .saved-design-dialog[open],
+  body:has(.saved-design-dialog[open]) .saved-design-dialog[open] * { visibility: visible; }
+  .saved-design-dialog[open] { position: static; width: 180mm; max-width: 100%; max-height: none; margin: 0 auto; overflow: visible; padding: 10mm; box-shadow: none; }
+  .saved-design-dialog[open]::backdrop { background: transparent; }
+  .saved-design-dialog[open] .saved-design-controls { display: none; }
   body:has(.receipt-print[open]) { visibility: hidden; }
   body:has(.receipt-print[open]) .receipt-print[open],
   body:has(.receipt-print[open]) .receipt-print[open] * { visibility: visible; }

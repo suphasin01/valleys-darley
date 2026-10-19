@@ -1,13 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { FigmaImage } from "./FigmaImage";
 import { CustomLocketGallery } from './CustomLocketGallery';
 import { ProductGuide } from './ProductGuide';
 import { heartGemstones } from '../lib/heart-artwork';
 import { swirlGemstones } from '../lib/swirl-artwork';
 import { SwirlBowGallery } from './SwirlBowGallery';
+import { SavedDesignDialog } from './SavedDesignDialog';
+import { heartArtwork } from '../lib/heart-artwork';
+import { swirlArtwork } from '../lib/swirl-artwork';
 
 type Choices = { plating: string; gemstone: string; finish: string; star: string; engraving: string; font: string; size: string; note: string };
 const initial: Choices = { plating: "18K gold plated", gemstone: "Aquamarine", finish: "High polish", star: "Sapphire", engraving: "", font: "La Graziela", size: "", note: "" };
@@ -23,9 +26,10 @@ export function CustomDesignForm({ id, design }: { id: string; design: { name: s
   const [choices, setChoices] = useState<Choices>(initial);
   const [status, setStatus] = useState("");
   const [restored, setRestored] = useState(false);
+  const savedDialog = useRef<HTMLDialogElement>(null);
   function set(field: keyof Choices, value: string) { setChoices(previous => ({ ...previous, [field]: value })); setStatus(""); }
   function save() {
-    try { localStorage.setItem(`valleys-custom-${id}`, JSON.stringify(choices)); setStatus("Your design has been saved on this device."); }
+    try { localStorage.setItem(`valleys-custom-${id}`, JSON.stringify(choices)); setStatus("Your design has been saved on this device."); savedDialog.current?.showModal(); }
     catch { setStatus("Unable to save on this device. Please allow site storage."); }
   }
   function restore() {
@@ -44,6 +48,9 @@ export function CustomDesignForm({ id, design }: { id: string; design: { name: s
   }
   const specifications = [['Product', design.name], ['Plating', choices.plating], [isSwirl ? 'Gemstone' : 'Centre stone', choices.gemstone], ['Finish', choices.finish], ...(!isSwirl ? [['Star stones', choices.star], ['Engraving', choices.engraving || 'None'], ['Font', choices.font]] : []), ['Size', choices.size || 'Please advise']];
   const summary = [...specifications.map(([label, value]) => `${label}: ${value}`), choices.note ? `Note: ${choices.note}` : ''].filter(Boolean).join('\n');
+  const heart = id === 'heart-locket' ? heartArtwork(choices) : null;
+  const swirl = isSwirl ? swirlArtwork(choices) : null;
+  const savedArtwork = heart ? { front: heart.front, reverse: heart.inside, reverseLabel: 'Inside the lid' } : swirl ? { front: swirl.front, reverse: swirl.underneath, reverseLabel: 'Underneath' } : null;
   return <section className="mx-auto mt-10 max-w-[1263px]">
     {id === 'heart-locket' ? <CustomLocketGallery plating={choices.plating} gemstone={choices.gemstone} finish={choices.finish} star={choices.star} engraving={choices.engraving} /> : isSwirl ? <SwirlBowGallery plating={choices.plating} gemstone={choices.gemstone} finish={choices.finish} /> : <>
     <FigmaImage src="/images/figma/preview-0.webp" alt={design.name} className="mx-auto aspect-[384/379] w-[min(80%,420px)]" crop={{ left: design.left, top: design.top, width: "419.08%", height: "238.69%" }} />
@@ -72,5 +79,6 @@ export function CustomDesignForm({ id, design }: { id: string; design: { name: s
     }} className="flex min-h-11 items-center bg-black px-8 text-white">Request a custom quote</Link></div>
     <p role="status" className="mt-4 text-sm">{status}</p>
     <p className="mt-3 text-right text-xs text-black/60">No payment is taken until your custom specifications and price are confirmed.</p>
+    <SavedDesignDialog ref={savedDialog} name={design.name} specifications={[...specifications, ['Production', 'Made to order. Timing and price confirmed by our team.']]} note={choices.note} artwork={savedArtwork} />
   </section>;
 }
