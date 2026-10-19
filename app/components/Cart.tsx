@@ -3,17 +3,10 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import type { CmsProduct } from '../lib/cms';
-import { parseCart, resolveCart, type CartItem } from '../lib/cart';
+import { resolveCart, type CartItem } from '../lib/cart';
 import { editorialImage } from '../lib/editorial-images';
+import { readCart, saveCart, requestCartOpen } from '../lib/cart-storage';
 
-const storageKey = 'valleys-cart-v1';
-function readCart(): CartItem[] {
-  try { return parseCart(JSON.parse(localStorage.getItem(storageKey) || '[]')) || []; } catch { return []; }
-}
-function saveCart(items: CartItem[]) {
-  localStorage.setItem(storageKey, JSON.stringify(items));
-  window.dispatchEvent(new Event('valleys-cart-change'));
-}
 export function AddToCart({ product }: { product: CmsProduct }) {
   const [variantId, setVariant] = useState(String(product.variants?.find(v => v.available > 0)?.id || ''));
   const [quantity, setQuantity] = useState(1);
@@ -30,7 +23,7 @@ export function AddToCart({ product }: { product: CmsProduct }) {
       if (!existing && items.length >= 20) { setMessage('Your bag holds up to 20 different selections.'); return; }
       if (existing) existing.quantity += quantity;
       else items.push({ productId: product.id, variantId, quantity });
-      saveCart(items); setMessage('Added to your bag.');
+      saveCart(items); setMessage('Added to your bag.'); requestCartOpen();
     } catch { setMessage('Your browser could not save the bag. Please enable site storage.'); }
   }
   return <div className="mt-8 w-full space-y-4">

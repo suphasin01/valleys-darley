@@ -5,6 +5,7 @@ import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
 import { StorefrontOnly } from "./components/StorefrontOnly";
 import { getLocale } from "./lib/locale";
+import { CartDrawer } from './components/CartDrawer';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -41,6 +42,7 @@ export default async function RootLayout({
         <StorefrontOnly><Header locale={locale} /></StorefrontOnly>
         <div>{children}</div>
         <StorefrontOnly><Footer locale={locale} /></StorefrontOnly>
+        <StorefrontOnly><CartDrawer /></StorefrontOnly>
       </body>
     </html>
   );

@@ -56,6 +56,12 @@
 }
 
 .editorial-page { font-family: var(--font-editorial), var(--font-editorial-thai), Georgia, serif; }
+@media (max-height: 760px) and (min-width: 640px) {
+  .editorial-page .shopping-bag-content { padding-bottom: 32px; }
+  .shopping-bag-content .shopping-bag-header { padding-top: 24px; padding-bottom: 24px; }
+  .shopping-bag-summary { padding-top: 48px; }
+  .shopping-bag-actions { margin-top: 32px; }
+}
 .brand-loading { position: fixed; inset: 64px 0 0; z-index: 40; overflow: hidden; background: white; }
 .brand-loading-background { position: absolute; width: 100%; height: 100%; inset: 0; object-fit: cover; object-position: center; }
 .brand-loading-content { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; transform: translateY(-5%); }
