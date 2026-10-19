@@ -1,24 +1,40 @@
 import Link from 'next/link';
-import { getLocale } from '../lib/locale';
+import { LegalDocument, LegalSection } from '../components/LegalDocument';
 
 export const metadata = { title: "Privacy Policy | Valley's Darling" };
-export default async function Privacy() {
-  const th = await getLocale() === 'th';
-  const sections = th ? [
-    ['ข้อมูลที่เราเก็บ', 'Valley’s Darling เก็บชื่อ อีเมล เบอร์โทร ที่อยู่จัดส่ง และข้อมูลคำสั่งซื้อ เมื่อสมัครผ่าน Google, LINE หรือ Facebook เราใช้รหัสบัญชี ชื่อ และอีเมลที่บริการนั้นอนุญาตให้ส่ง เพื่อยืนยันตัวตน เราไม่ขอรหัสผ่านบัญชีโซเชียล ไม่อ่านอีเมล Gmail และไม่เข้าถึงแชทหรือรายชื่อเพื่อน'],
-    ['การใช้ข้อมูล', 'ใช้เพื่อสร้างบัญชี ยืนยันตัวตน จัดการคำสั่งซื้อ ชำระเงิน จัดส่ง ติดตามพัสดุ และตอบคำถามเรื่องการสั่งซื้อ ที่อยู่ต้องกรอกเองแม้สมัครผ่านโซเชียล เราไม่ขายข้อมูลลูกค้าและไม่ใช้ข้อมูล Google เพื่อโฆษณา'],
-    ['ผู้ให้บริการที่เกี่ยวข้อง', 'เว็บไซต์และข้อมูลจัดเก็บผ่าน Vercel การชำระเงินดำเนินการผ่าน Stripe ซึ่งรับข้อมูลการชำระเงินโดยตรง ร้านไม่จัดเก็บหมายเลขบัตรเต็มหรือรหัส CVV ข้อมูลที่จำเป็นต่อการจัดส่งอาจส่งให้ผู้ให้บริการขนส่ง ผู้ให้บริการเหล่านี้อาจประมวลผลข้อมูลนอกประเทศไทย'],
-    ['ความปลอดภัยและคุกกี้', 'ข้อมูลโปรไฟล์จัดเก็บแบบเข้ารหัส รหัสผ่านเว็บเก็บเป็นค่าแฮช คุกกี้ใช้เพื่อเข้าสู่ระบบ ป้องกันการปลอมคำขอ และจำภาษาที่เลือก การออกจากระบบจะยกเลิกคุกกี้เซสชันในเบราว์เซอร์'],
-    ['การเก็บรักษาและสิทธิของคุณ', 'เก็บข้อมูลเท่าที่จำเป็นสำหรับบัญชี คำสั่งซื้อ การช่วยเหลือ และข้อผูกพันที่เกี่ยวข้อง คุณแก้ไขที่อยู่ในหน้าบัญชี และติดต่อร้านเพื่อขอเข้าถึง แก้ไข หรือลบข้อมูลได้ เราจะตรวจสอบตัวตนก่อนดำเนินการ ข้อมูลคำสั่งซื้อบางส่วนอาจต้องเก็บเพื่อข้อผูกพันทางบัญชีหรือข้อพิพาท'],
-    ['ติดต่อและขอลบข้อมูล', 'ส่งคำขอไปที่ valleydarley@gmail.com โดยระบุช่องทางที่ใช้สมัครและอีเมลติดต่อ ไม่ต้องส่งรหัสผ่านหรือข้อมูลบัตร การยกเลิกสิทธิใน Google/LINE/Facebook ไม่ได้ลบข้อมูลคำสั่งซื้อที่ร้านเก็บไว้โดยอัตโนมัติ โปรดติดต่อร้านเพื่อดำเนินการ'],
-  ] : [
-    ['Information collected', 'Valley’s Darling collects your name, email, telephone, delivery address and order information. Social sign-in uses the account identifier, name and email made available by Google, LINE or Facebook. We do not request your social password or read Gmail messages, chats or friend lists.'],
-    ['How information is used', 'Information supports accounts, authentication, orders, payment, shipping, parcel tracking and customer support. You must supply a delivery address even with social sign-in. We do not sell customer information or use Google user data for advertising.'],
-    ['Service providers', 'Vercel hosts the website and stored data. Stripe processes payment details directly; the store does not retain full card numbers or CVV. Necessary delivery information may be shared with shipping providers. These services may process information outside Thailand.'],
-    ['Security and cookies', 'Stored profiles are encrypted and website passwords are hashed. Cookies support sign-in, request protection and your language preference. Signing out clears the browser session cookie.'],
-    ['Retention and your choices', 'Information is retained as needed for your account, orders, support and applicable obligations. Edit delivery details in your account or contact us to request access, correction or deletion. We verify identity before acting. Certain order records may need to be retained for accounting obligations or disputes.'],
-    ['Contact and deletion requests', 'Email valleydarley@gmail.com with your sign-in method and contact email. Do not send passwords or card details. Revoking Google, LINE or Facebook access does not automatically delete order records retained by the store; contact us to request deletion.'],
-  ];
-  sections.push(th ? ['ข้อมูลและตัวเลือกเพิ่มเติม', 'วันเกิดเป็นข้อมูลที่เลือกกรอกได้ ตัวเลือกการตลาดและการปรับประสบการณ์เป็นทางเลือกแยกกัน ไม่บังคับสำหรับสมัครหรือสั่งซื้อ เราบันทึกตัวเลือก เวอร์ชันข้อความ และเวลา คุณเปลี่ยนหรือถอนตัวเลือกในหน้าบัญชีได้ การเลือกช่องนี้ไม่ได้เริ่มส่งข่าวสารโดยอัตโนมัติ'] : ['Optional information and preferences', 'Birth date is optional. Marketing and personalization are separate optional choices and are not required to register or order. We record your choices, the notice version and the time. You can change or withdraw these choices through Edit details in your account. Selecting a choice does not automatically start a newsletter or tracking service.']);
-  return <main className="bg-[#f5f0ed] px-6 py-16 text-[#2c2221]"><article className="mx-auto max-w-3xl rounded-3xl bg-white p-7 md:p-12"><p className="text-xs tracking-widest">VALLEY’S DARLING</p><h1 className="mt-4 font-serif text-4xl">{th ? 'นโยบายความเป็นส่วนตัว' : 'Privacy Policy'}</h1><p className="mt-4 text-sm text-black/50">{th ? 'ปรับปรุงล่าสุด 9 ตุลาคม 2569' : 'Last updated 9 October 2026'}</p>{sections.map(([title, body]) => <section key={title} className="mt-8"><h2 className="text-xl">{title}</h2><p className="mt-3 text-sm leading-7 text-black/65">{body}</p></section>)}<Link href="/register" className="mt-10 inline-block underline">{th ? 'กลับไปสมัครสมาชิก' : 'Back to registration'}</Link></article></main>;
+export default function Privacy() {
+  return <LegalDocument title="Privacy Policy">
+    <LegalSection title="Who we are"><p>Valley’s Darling is a jewellery brand based in Thailand. We are responsible for the personal information you share with us on this website, on LINE and Instagram, and when you order from us.</p></LegalSection>
+    <LegalSection title="What we collect">
+      <p>Account details: your name, email, website password (stored as a hash), and the birth date, telephone number and other profile details you choose to provide.</p>
+      <p>Order details: your shipping and billing address, telephone number, the items you buy, order notes and payment status.</p>
+      <p>Custom-made details: engraving text, sizes, design notes, and any photos or videos you send us for custom pieces, claims or repairs.</p>
+      <p>Messages: what you send us by email, LINE, Instagram or our contact form.</p>
+      <p>Social sign-in: the account identifier, name and email made available by Google or LINE. We do not request your social password, read Gmail messages, or access chats or friend lists.</p>
+    </LegalSection>
+    <LegalSection title="Order history"><p>We keep your order history in our customer system. This helps us check past orders, handle support, claims, repairs and length-extension requests, and help you when you shop with us again. Customer information is accessible only through authorised accounts.</p></LegalSection>
+    <LegalSection title="How we use it">
+      <p>To process, make and ship your order, including custom-made pieces.</p>
+      <p>To calculate shipping and provide order and shipping updates, including your tracking number.</p>
+      <p>To manage your account, saved delivery details and order history.</p>
+      <p>To handle questions, claims, repairs, returns and refunds.</p>
+      <p>To protect our website and meet applicable accounting and legal obligations.</p>
+    </LegalSection>
+    <LegalSection title="Your choices"><p>Birth date is optional. Marketing and personalization are separate optional choices, not requirements to register or order. We record your choices, the notice version and the time. You can change or withdraw them through Edit details in your account. Selecting a choice does not automatically start a newsletter or tracking service. We do not sell customer information or use Google user data for advertising.</p></LegalSection>
+    <LegalSection title="Who we share it with">
+      <p>Shipping companies, including Thailand Post, receive the information needed for delivery and tracking.</p>
+      <p>Stripe processes payment information directly. We do not see or store your full card number or CVV.</p>
+      <p>Vercel hosts our website and stored data. Service providers receive information only as needed to provide their service.</p>
+      <p>Information may also be disclosed when required by law. We never sell or rent your information.</p>
+    </LegalSection>
+    <LegalSection title="International transfers"><p>Some service providers are based outside Thailand, so your information may be processed or stored abroad.</p></LegalSection>
+    <LegalSection title="Cookies"><p>Necessary cookies support sign-in, request protection and site preferences. Your shopping bag and saved custom designs use browser storage. You can clear cookies and site data in your browser settings; this may sign you out or remove locally saved designs. We do not enable analytics or marketing tracking merely because you create an account.</p></LegalSection>
+    <LegalSection title="How we keep it safe"><p>Our website uses encrypted connections (HTTPS). Stored customer profiles are encrypted and website passwords are hashed. We do not ask you to send passwords or card details by email or chat. Signing out clears the session cookie in your browser.</p></LegalSection>
+    <LegalSection title="How long we keep it"><p>We retain information as needed for your account, orders, support and applicable obligations. Certain order records may need to be retained for accounting obligations or disputes, even after a deletion request.</p></LegalSection>
+    <LegalSection title="Your rights"><p>You can contact us to request access, a copy, correction or deletion of your information, or to withdraw optional consent. We verify identity before acting. You can update delivery information and preferences in <Link href="/account">your account</Link>. Revoking Google or LINE access does not automatically delete order records held by the store; please contact us to request deletion.</p></LegalSection>
+    <LegalSection title="Children"><p>If you are under 20, please ask a parent or guardian before creating an account or placing an order.</p></LegalSection>
+    <LegalSection title="Contact us"><p><a href="mailto:valleydarley@gmail.com">valleydarley@gmail.com</a></p><p><Link href="/help#contact">Contact the store</Link></p><p>For privacy or deletion requests, include your sign-in method and contact email. Do not send your password or card details.</p></LegalSection>
+    <LegalSection title="Updates to this policy"><p>We may update this policy from time to time. The latest version will be posted here.</p><p>Last updated: October 2026.</p></LegalSection>
+    <p className="pt-4"><Link href="/register" className="underline underline-offset-4">Back to registration</Link></p>
+  </LegalDocument>;
 }
