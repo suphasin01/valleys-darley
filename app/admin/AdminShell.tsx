@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 
-const links = [['/admin', 'ภาพรวม / จัดการเว็บไซต์', '⌂'], ['/admin/orders', 'รายการสั่งซื้อ', '▤'], ['/admin/payments', 'การชำระเงิน', '฿'], ['/admin/shipping', 'ติดตามการจัดส่ง', '▱'], ['/admin/customers', 'ข้อมูลลูกค้า', '♙']] as const;
+const links = [['/admin', 'ภาพรวม / จัดการเว็บไซต์', '⌂'], ['/admin/orders', 'รายการสั่งซื้อ', '▤'], ['/admin/payments', 'การชำระเงิน', '฿'], ['/admin/shipping', 'ติดตามการจัดส่ง', '▱'], ['/admin/customers', 'ข้อมูลลูกค้า', '♙'], ['/admin/inquiries', 'ข้อความ / Newsletter', '✉']] as const;
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const path = usePathname();
   const [open, setOpen] = useState(false);

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { FigmaImage } from '../components/FigmaImage';
 import { JewelryCareCopy } from '../components/JewelryCareCopy';
+import { HelpContactForm } from '../components/HelpContactForm';
 
 export const metadata = { title: "Help | Valley's Darling" };
 export default function HelpPage() {
@@ -19,6 +20,6 @@ export default function HelpPage() {
     </div>
     <section id="size-guide" className="scroll-mt-40"><h2 className="border-y border-black py-4 text-center text-[32px] font-bold">size guide</h2><FigmaImage src="/images/figma/help-necklace-size.png" alt="Necklace length and fit guide" className="mx-auto my-12 aspect-[1334/1667] w-[93%] max-w-[1334px]" /></section>
     <section id="ring-size" className="mx-auto max-w-[1440px] scroll-mt-40 px-[5%]"><h2 className="brand-script mb-12 text-center text-[56px] leading-tight md:text-[96px]">A guide for the Ring</h2><FigmaImage src="/images/figma/help-ring-size.png" alt="Ring sizing chart and measuring instructions" className="aspect-[1291/1474]" crop={{width:'100%',height:'109.5%',left:'0',top:'-9.49%'}} /></section>
-    <section className="relative mt-16 min-h-[600px] bg-[#f1e9eb] px-5 py-28 md:py-52"><FigmaImage src="/images/figma/help-ribbon.png" alt="" className="absolute inset-0 opacity-60" crop={{width:'106.72%',height:'107.17%',left:'0',top:'-7.15%'}} /><div className="relative mx-auto max-w-[626px] bg-white/85 p-8 text-center"><h2 className="text-[32px]">Contact us</h2><p className="mt-5 text-xl">Need a little help finding your piece?</p><a href="mailto:valleydarley@gmail.com" className="editorial-button mt-8">Email us</a><p className="mt-4 text-sm">Opens your email app. You can attach photos with your message.</p></div></section>
+    <section id="newsletter" className="help-contact relative mt-16 scroll-mt-24 overflow-hidden bg-[#f4eef0] px-5 py-28 [container-type:inline-size] md:pb-[14%] md:pt-[29.444%]"><FigmaImage src="/images/figma/help-ribbon.png" alt="" className="pointer-events-none absolute left-[-8.3333%] top-[-56.1806cqw] h-[166.7361cqw] w-[133.9507%] opacity-[.144]" crop={{width:'106.72%',height:'107.17%',left:'0',top:'-7.15%'}} /><HelpContactForm /></section>
   </main>;
 }
