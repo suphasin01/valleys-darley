@@ -65,6 +65,10 @@
 
 .editorial-page { font-family: var(--font-editorial), var(--font-editorial-thai), Georgia, serif; }
 .footer-home-brand { display: none; }
+.catalog-photo-hover { transition: opacity 200ms ease-out; }
+@media (hover: hover) and (pointer: fine) { .catalog-card:hover .catalog-photo-hover[data-ready="true"] { opacity: 1; } }
+.catalog-card:focus-visible .catalog-photo-hover[data-ready="true"] { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .catalog-photo-hover { transition: none; } }
 body:has(.figma-home) .footer-home-brand { display: block; }
 @media (max-height: 760px) and (min-width: 640px) {
   .editorial-page .shopping-bag-content { padding-bottom: 32px; }
