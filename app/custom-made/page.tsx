@@ -5,7 +5,7 @@ import { CustomMadeTitle } from "../components/CustomMadeTitle";
 export const metadata = { title: "Custom Made — Valley’s Darling" };
 const designs = [
   { id: "heart-locket", name: "The Ruffle Heart Locket Necklace", left: "-64.69%", top: "-112.81%" },
-  { id: "swirl-bow", name: "The Swirl Bow Locket Necklace", left: "-122.35%", top: "-19.43%" },
+  { id: "swirl-bow", name: "The Swirl Bow Necklace", left: "-122.35%", top: "-19.43%" },
   { id: "gemstone-locket", name: "The Gemstone Locket Necklace", left: "-194.85%", top: "-104.46%" },
 ];
 export default function CustomMadePage() {

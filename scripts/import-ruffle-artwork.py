@@ -1,6 +1,6 @@
 """Import untouched bitmap fills from a browser-exported, ID-labelled Figma SVG.
 
-Usage: python3 scripts/import-ruffle-artwork.py exported.zip public/images/figma
+Usage: python3 scripts/import-ruffle-artwork.py exported.zip public/images/figma [heart|swirl]
 Requires the project's existing sharp package; never contacts Figma or edits its file.
 """
 import base64
@@ -17,15 +17,18 @@ import zipfile
 SVG = '{http://www.w3.org/2000/svg}'
 HREF = '{http://www.w3.org/1999/xlink}href'
 archive, destination = Path(sys.argv[1]), Path(sys.argv[2])
+design = sys.argv[3] if len(sys.argv) > 3 else 'heart'
+assert design in ['heart', 'swirl']
+component = 'Ruffle Locket' if design == 'heart' else 'Swirl Bow'
 with zipfile.ZipFile(archive) as bundle:
-    source = bundle.read('Ruffle Locket/variants.svg')
+    source = bundle.read(component + '/variants.svg')
 root = ET.fromstring(source)
 nodes = {node.get('id'): node for node in root.iter() if node.get('id')}
 variants, files = [], {}
 
 
 def bitmap(group, label, filename):
-    rect = next(node for node in group if node.tag == SVG + 'rect' and node.get('id', '').split('_')[0] == label)
+    rect = next(node for node in group.iter() if node.tag == SVG + 'rect' and node.get('id', '').split('_')[0] == label)
     pattern = nodes[re.fullmatch(r'url\(#([^\)]+)\)', rect.get('fill')).group(1)]
     use = pattern.find(SVG + 'use')
     image = nodes[use.get(HREF)[1:]]
@@ -41,22 +44,28 @@ def bitmap(group, label, filename):
             'width': int(image.get('width')), 'height': int(image.get('height'))}
 
 
-for group in root.findall(SVG + 'g/' + SVG + 'g'):
+for group in root.iter(SVG + 'g'):
     label = group.get('id', '')
     if not label.endswith('Open=None'):
         continue
     properties = dict(part.split('=', 1) for part in label.split(', '))
     assert properties['Plating'] in ['Gold', 'Rhodium']
-    assert properties['Gemstone'] in ['Aquamarine', 'Pink Tourmaline']
+    assert properties['Gemstone'] in (['Aquamarine', 'Pink Tourmaline'] if design == 'heart' else ['Aquamarine', 'Green Amethyst'])
     assert properties['Finish'] in ['High Polish', 'Matte']
-    assert properties['Star'] in ['Sapphire', 'Yellow sapphire']
-    metal, stone, finish, star = [properties[key].lower().replace(' ', '-') for key in ['Plating', 'Gemstone', 'Finish', 'Star']]
-    front = bitmap(group, 'locket image', f'heart-{metal}-{stone}-{finish}-{star}.webp')
-    inside = bitmap(group, 'lid inside', f'heart-{metal}-{finish}-inside.webp')
-    variants.append({'variant': label, 'front': front, 'inside': inside})
+    metal, stone, finish = [properties[key].lower().replace(' ', '-') for key in ['Plating', 'Gemstone', 'Finish']]
+    if design == 'heart':
+        assert properties['Star'] in ['Sapphire', 'Yellow sapphire']
+        star = properties['Star'].lower().replace(' ', '-')
+        front = bitmap(group, 'locket image', f'heart-{metal}-{stone}-{finish}-{star}.webp')
+        inside = bitmap(group, 'lid inside', f'heart-{metal}-{finish}-inside.webp')
+        variants.append({'variant': label, 'front': front, 'inside': inside})
+    else:
+        front = bitmap(group, 'locket image', f'swirl-{metal}-{stone}-{finish}-front.webp')
+        underneath = bitmap(group, 'lid inside', f'swirl-{metal}-{stone}-{finish}-underneath.webp')
+        variants.append({'variant': label, 'front': front, 'underneath': underneath})
 
-assert len(variants) == 16 and len(files) == 20, 'Expected all 16 front and four inside artworks'
-manifest = {'source': 'Figma native SVG export: Ruffle Locket / variants (488:39092)',
+assert (len(variants), len(files)) == ((16, 20) if design == 'heart' else (8, 16)), 'Incomplete source artwork set'
+manifest = {'source': 'Figma native SVG export: ' + component + ' / variants (' + ('488:39092' if design == 'heart' else '652:131912') + ')',
             'sourceSha256': hashlib.sha256(source).hexdigest(), 'variants': variants}
 destination.mkdir(parents=True, exist_ok=True)
 with tempfile.TemporaryDirectory(prefix='valleys-ruffle-') as temporary:
@@ -66,5 +75,5 @@ with tempfile.TemporaryDirectory(prefix='valleys-ruffle-') as temporary:
         png.write_bytes(record['content'])
         conversions.append({'input': str(png), 'output': str(destination / filename)})
     subprocess.run(['node', '-e', "const fs=require('node:fs'),sharp=require('sharp');const files=JSON.parse(fs.readFileSync(0,'utf8'));Promise.all(files.map(f=>sharp(f.input).webp({lossless:true}).toFile(f.output))).then(()=>console.log('Imported '+files.length+' original bitmap fills')).catch(e=>{console.error(e.message);process.exitCode=1})"], input=json.dumps(conversions), text=True, check=True)
-(destination / 'heart-artwork-manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
-print('Verified 16 named variants; no rendered UI or SVG paths used as images.')
+(destination / (design + '-artwork-manifest.json')).write_text(json.dumps(manifest, indent=2) + '\n')
+print(f'Verified {len(variants)} named variants; no rendered UI or SVG paths used as images.')

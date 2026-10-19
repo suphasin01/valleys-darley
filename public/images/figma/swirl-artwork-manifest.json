@@ -1,0 +1,142 @@
+{
+  "source": "Figma native SVG export: Swirl Bow / variants (652:131912)",
+  "sourceSha256": "807bd27ca11ba63ad7b116993d801d4811366d5038942f2c25aeafa6f092a7e1",
+  "variants": [
+    {
+      "variant": "Plating=Gold, Gemstone=Aquamarine, Finish=High Polish, Open=None",
+      "front": {
+        "file": "swirl-gold-aquamarine-high-polish-front.webp",
+        "imageId": "image0_652_131912",
+        "sha256": "fef7483eec91011065916106461093d6f5d0add4d09db012dd59e700334e8310",
+        "width": 600,
+        "height": 600
+      },
+      "underneath": {
+        "file": "swirl-gold-aquamarine-high-polish-underneath.webp",
+        "imageId": "image1_652_131912",
+        "sha256": "0962a9f21015d6a5690843019f41e8e9898c59d06c3d9d324892c496d808970b",
+        "width": 600,
+        "height": 600
+      }
+    },
+    {
+      "variant": "Plating=Gold, Gemstone=Aquamarine, Finish=Matte, Open=None",
+      "front": {
+        "file": "swirl-gold-aquamarine-matte-front.webp",
+        "imageId": "image2_652_131912",
+        "sha256": "3ad84238268ce462d134d40c5185b9e4df966c1ecce6fbd6d9d827011732ae0b",
+        "width": 600,
+        "height": 600
+      },
+      "underneath": {
+        "file": "swirl-gold-aquamarine-matte-underneath.webp",
+        "imageId": "image3_652_131912",
+        "sha256": "1f80c769cd8d74f6c675270301e54fcf761890154e59b017126ff7bf60d79691",
+        "width": 600,
+        "height": 600
+      }
+    },
+    {
+      "variant": "Plating=Gold, Gemstone=Green Amethyst, Finish=High Polish, Open=None",
+      "front": {
+        "file": "swirl-gold-green-amethyst-high-polish-front.webp",
+        "imageId": "image4_652_131912",
+        "sha256": "5a9d38d4a44b358f6c34d8096a039bd0428253b89610983f07c704e62e9259f4",
+        "width": 600,
+        "height": 600
+      },
+      "underneath": {
+        "file": "swirl-gold-green-amethyst-high-polish-underneath.webp",
+        "imageId": "image5_652_131912",
+        "sha256": "2dd27ca4557bed32d528a7d0fdd2f9aaa7e77a060685b7ae7de95ddedf71927f",
+        "width": 600,
+        "height": 600
+      }
+    },
+    {
+      "variant": "Plating=Gold, Gemstone=Green Amethyst, Finish=Matte, Open=None",
+      "front": {
+        "file": "swirl-gold-green-amethyst-matte-front.webp",
+        "imageId": "image6_652_131912",
+        "sha256": "53550935cd76d82856a6e9763659173df4852cbf06fcc92b9ab01c7a252dcc4c",
+        "width": 600,
+        "height": 600
+      },
+      "underneath": {
+        "file": "swirl-gold-green-amethyst-matte-underneath.webp",
+        "imageId": "image7_652_131912",
+        "sha256": "45b1794eafff35455c81ffe733228c0a4730cda1f6b2a080a63be60176591be3",
+        "width": 600,
+        "height": 600
+      }
+    },
+    {
+      "variant": "Plating=Rhodium, Gemstone=Aquamarine, Finish=High Polish, Open=None",
+      "front": {
+        "file": "swirl-rhodium-aquamarine-high-polish-front.webp",
+        "imageId": "image8_652_131912",
+        "sha256": "adaf27b94e243cf17f94bf925a4fc9c4447ef0d8ad958a5aae6c0d78c9376f79",
+        "width": 600,
+        "height": 600
+      },
+      "underneath": {
+        "file": "swirl-rhodium-aquamarine-high-polish-underneath.webp",
+        "imageId": "image9_652_131912",
+        "sha256": "edb19485a1b94386c56823253945519ba258241cfcc93ad17d4e67102f88d002",
+        "width": 600,
+        "height": 600
+      }
+    },
+    {
+      "variant": "Plating=Rhodium, Gemstone=Aquamarine, Finish=Matte, Open=None",
+      "front": {
+        "file": "swirl-rhodium-aquamarine-matte-front.webp",
+        "imageId": "image10_652_131912",
+        "sha256": "3b6ddbc407221696bbd808f5813d239d2e667d6e309138e9079d96da4800be00",
+        "width": 600,
+        "height": 600
+      },
+      "underneath": {
+        "file": "swirl-rhodium-aquamarine-matte-underneath.webp",
+        "imageId": "image11_652_131912",
+        "sha256": "9e105fc7efe139b7cd05aff9cdcde500407f9dc6d8affa6fe7dea1a5fdd84423",
+        "width": 600,
+        "height": 600
+      }
+    },
+    {
+      "variant": "Plating=Rhodium, Gemstone=Green Amethyst, Finish=High Polish, Open=None",
+      "front": {
+        "file": "swirl-rhodium-green-amethyst-high-polish-front.webp",
+        "imageId": "image12_652_131912",
+        "sha256": "fea2e883b6c52e6ad7a13aeecd1ecfe0785753e6a717b7d6412ceca030ee4355",
+        "width": 600,
+        "height": 600
+      },
+      "underneath": {
+        "file": "swirl-rhodium-green-amethyst-high-polish-underneath.webp",
+        "imageId": "image13_652_131912",
+        "sha256": "3c2d8347a3b2b947861ba4597fed9c4dd9e160532d873980a0e639549dd80835",
+        "width": 600,
+        "height": 600
+      }
+    },
+    {
+      "variant": "Plating=Rhodium, Gemstone=Green Amethyst, Finish=Matte, Open=None",
+      "front": {
+        "file": "swirl-rhodium-green-amethyst-matte-front.webp",
+        "imageId": "image14_652_131912",
+        "sha256": "7bfbbc7f616c5f5523722d688f73d07ebce56ed16bc52e3c5200aa9182be1405",
+        "width": 600,
+        "height": 600
+      },
+      "underneath": {
+        "file": "swirl-rhodium-green-amethyst-matte-underneath.webp",
+        "imageId": "image15_652_131912",
+        "sha256": "bc4629aed911b8a93bd1ff561249d77f80f64c3a23fdd512e4a9e36b544f3237",
+        "width": 600,
+        "height": 600
+      }
+    }
+  ]
+}

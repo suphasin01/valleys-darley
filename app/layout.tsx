@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 const script = Pinyon_Script({ weight: "400", subsets: ["latin"], variable: "--font-brand-script", display: "swap" });
-const editorial = Cormorant_SC({ weight: ["400", "500", "600"], subsets: ["latin"], variable: "--font-editorial", display: "swap" });
+const editorial = Cormorant_SC({ weight: ["400", "500", "600", "700"], subsets: ["latin"], variable: "--font-editorial", display: "swap" });
 const thai = Noto_Serif_Thai({ weight: ["400", "500"], subsets: ["thai", "latin"], variable: "--font-editorial-thai", display: "swap" });
 
 export const metadata: Metadata = {
