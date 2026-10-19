@@ -12,9 +12,11 @@
   .saved-design-dialog[open]::backdrop { background: transparent; }
   .saved-design-dialog[open] .saved-design-controls { display: none; }
   body:has(.receipt-print[open]) { visibility: hidden; }
+  body:has(.receipt-print[open]) *:not(.receipt-print):not(.receipt-print *):not(:has(.receipt-print[open])) { display: none !important; }
+  body:has(.receipt-print[open]) *:has(.receipt-print[open]) { display: block !important; min-height: 0 !important; height: auto !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; }
   body:has(.receipt-print[open]) .receipt-print[open],
   body:has(.receipt-print[open]) .receipt-print[open] * { visibility: visible; }
-  .receipt-print[open] { position: absolute; inset: 0; width: 100%; max-width: none; max-height: none; margin: 0; overflow: visible; box-shadow: none; }
+  .receipt-print[open] { position: static; width: 180mm; max-width: 100%; max-height: none; margin: 0 auto; padding: 10mm; overflow: visible; box-shadow: none; }
   .receipt-print[open]::backdrop { background: transparent; }
 }
 
