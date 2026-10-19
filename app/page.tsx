@@ -3,6 +3,7 @@ import { getCmsContent, localizedContent } from "./lib/cms";
 import { getLocale } from "./lib/locale";
 import { FigmaImage } from "./components/FigmaImage";
 import { editorialImage } from "./lib/editorial-images";
+import { HomeEntrance } from "./components/HomeEntrance";
 
 export const dynamic = "force-dynamic";
 const asset = (id: number | string) => `/images/figma/preview-${id}.webp`;
@@ -17,6 +18,7 @@ export default async function Home() {
  const content=localizedContent(await getCmsContent(),locale);
  const th=locale==="th";
  return <main className="editorial-page figma-home overflow-hidden bg-white text-black">
+  <HomeEntrance />
   <div className="flex min-h-8 items-center justify-center bg-[#f1e9eb] px-4 py-[1.5%] text-center text-[clamp(.6rem,1.67vw,1.5rem)] font-semibold">{th?"ยินดีต้อนรับสู่ Valley’s Darling":"enjoy free international shipping on orders over 300 USD."}</div>
   <section className="relative aspect-[1440/914]">
    <FigmaImage src={asset(5)} alt="Gemstone ribbon earrings in morning light" priority className="absolute inset-0"/>

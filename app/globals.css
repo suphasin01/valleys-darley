@@ -70,6 +70,10 @@
 .brand-loading-message { margin-top: -21px; font-size: 16px; line-height: 64px; letter-spacing: -.25px; text-align: center; }
 .brand-loading-track { width: min(345px, 78vw); height: 15px; border: 1px solid black; border-radius: 999px; overflow: hidden; background: #f1e9eb; }
 .brand-loading-line { display: block; height: 100%; width: 65%; border-radius: inherit; background: #828282; transform-origin: left; animation: brand-loading 2.4s ease-in-out infinite alternate; }
+.brand-loading-entrance { transition: opacity 300ms ease-out; }
+.brand-loading-entrance .brand-loading-line { width: 100%; animation: brand-entrance-fill 4s linear both; }
+.brand-loading-leaving { opacity: 0; pointer-events: none; }
+@keyframes brand-entrance-fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 @keyframes brand-loading { from { transform: scaleX(.08); } to { transform: scaleX(1.5); } }
 @media (min-width: 768px) { .brand-loading { top: min(9.3vw, 134px); } }
 @media (min-width: 1024px) {
@@ -83,6 +87,7 @@
   .brand-loading-message { margin-top: -12px; font-size: 14px; line-height: 52px; }
 }
 @media (prefers-reduced-motion: reduce) { .brand-loading-line { animation: none; transform: scaleX(.65); } }
+@media (prefers-reduced-motion: reduce) { .brand-loading-entrance { transition: none; } .brand-loading-entrance .brand-loading-line { animation: none; transform: none; } }
 .editorial-page :lang(th) { line-height: 1.8; }
 .help-page #contact { font-size: 14px; line-height: 27px; }
 .help-page #contact h2 { font-size: 18px; font-weight: 600; }

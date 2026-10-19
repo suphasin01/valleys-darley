@@ -1,10 +1,10 @@
 import { Header } from './Header';
 
 /** Route fallback disappears as soon as the route is ready; the meter is indeterminate. */
-export function BrandLoading({ preview = false }: { preview?: boolean }) {
+export function BrandLoading({ preview = false, entrance = false, leaving = false }: { preview?: boolean; entrance?: boolean; leaving?: boolean }) {
   return <>
     {preview && <Header locale="en" />}
-    <section role="status" aria-live="polite" aria-label="Loading Valley's Darling" className="brand-loading editorial-page text-black">
+    <section role="status" aria-live="polite" aria-label="Loading Valley's Darling" className={`brand-loading editorial-page text-black${entrance || preview ? ' brand-loading-entrance' : ''}${leaving ? ' brand-loading-leaving' : ''}`}>
       <img src="/images/figma/loading-background.webp" alt="" aria-hidden="true" className="brand-loading-background" />
       <div className="brand-loading-content">
         <picture>
