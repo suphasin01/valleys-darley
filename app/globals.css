@@ -84,6 +84,20 @@
 }
 @media (prefers-reduced-motion: reduce) { .brand-loading-line { animation: none; transform: scaleX(.65); } }
 .editorial-page :lang(th) { line-height: 1.8; }
+.help-page #contact { font-size: 14px; line-height: 27px; }
+.help-page #contact h2 { font-size: 18px; font-weight: 600; }
+.help-page #after-sales { font-size: 14px; line-height: 27px; }
+.help-page #after-sales h2 { margin-bottom: 32px; font-size: 16px; font-weight: 600; }
+.help-page #after-sales > :not(h2) { margin-top: 0; }
+.help-page #after-sales h3 { font-weight: 600; }
+.help-page #shipping > h2 { max-width: 450px; margin-inline: auto; font-size: clamp(56px, 6.67vw, 96px); line-height: .95; }
+.help-page #shipping > h3 { font-size: 18px; font-weight: 600; }
+.help-page #shipping ul { font-size: 16px; line-height: 1.5; }
+@media (min-width: 768px) {
+  .help-page #after-sales { padding-top: min(8.333vw, 120px); font-size: clamp(12px, .9722vw, 14px); }
+  .help-page .help-intro + section { max-width: 880px; margin-top: 112px; font-size: 16px; line-height: 1.7; }
+  .help-page .help-intro + section > h2 { font-size: 18px; }
+}
 .auth-design label { font-size: 20px; }
 .auth-design input:not([type=checkbox]) { border-radius: 8px; border-color: #e0e0e0; min-height: 44px; }
 .auth-design button[type=submit], .auth-design form > button { border-radius: 8px; background: #f1e9eb; color: #272425; font-size: 20px; font-weight: 600; }

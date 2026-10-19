@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef } from 'react';
 import { FigmaImage } from './FigmaImage';
+import { JewelryCareCopy } from './JewelryCareCopy';
 
 export function ProductGuide({ kind, label = 'Size chart' }: { kind: 'ring' | 'necklace' | 'care'; label?: string }) {
   const dialog = useRef<HTMLDialogElement>(null);
@@ -29,10 +30,7 @@ export function ProductGuide({ kind, label = 'Size chart' }: { kind: 'ring' | 'n
       {kind === 'care' ? <>
         <FigmaImage src="/images/figma/help-care.png" alt="Keep dry; avoid cosmetics and chemicals; store in a pouch; polish gently; handle with care" className="mx-auto mb-10 aspect-[946/372] w-[80%] max-w-[650px]" crop={{ width: '154.44%', height: '490.62%', left: '-30.55%', top: '-98.79%' }} />
         <div className="mx-auto max-w-[820px] space-y-5 text-sm leading-[1.7]">
-          <section><h3 className="font-semibold uppercase">Natural bead products care</h3><p>How to care for stone, pearl and crystal jewelry</p><p className="mt-3">While wearing, avoid contact with cosmetics, creams, lotions, powders, sprays and perfumes. These may reduce the shine of the materials, and some substances in cosmetics can react with certain components, causing tarnishing, color peeling and dark rust spots.</p><p>While wearing your jewelry, avoid high heat or open flames, as these may affect the stringing materials inside. Also avoid knocking it against metal or hard objects, as this can cause scratches.</p></section>
-          <section><h3 className="font-semibold uppercase">How to clean your jewelry</h3><p>Wipe your jewelry with a silver polishing cloth (included with every order) to remove oil and sweat residue. We recommend wiping after every wear to prevent oils from building up over time inside the piece.</p></section>
-          <section><h3 className="font-semibold uppercase">How to store</h3><p>Keep your jewelry in a fabric pouch or zip-lock bag to prevent scratches, and store it in a dry, non-humid place. Humidity can cause some materials to react with the air, leading to discoloration or rust-like stains.</p></section>
-          <section className="pt-4"><h3 className="font-semibold uppercase">How to care for metal jewelry</h3><p>Avoid knocking your pieces against metal or hard objects, as this can cause scratches. Avoid direct contact with perfume, sprays, lotions, alcohol and detergents, as these can cause discoloration and quick deterioration. Avoid wearing your jewelry while bathing with soap, as its alkaline properties can dull the piece. We also recommend removing your jewelry while exercising.</p></section>
+          <JewelryCareCopy />
         </div>
       </> : <>
         <img src={kind === 'ring' ? '/images/figma/product-ring-guide.webp' : '/images/figma/product-necklace-guide.webp'} width={3277} height={4096} alt={kind === 'ring' ? 'How to measure your ring size, with the original size table' : 'Necklace length and fit illustration'} loading="lazy" className="block h-auto w-full" />
