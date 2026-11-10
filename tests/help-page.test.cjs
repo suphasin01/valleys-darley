@@ -15,9 +15,9 @@ const { ProductGuide } = require('../app/components/ProductGuide.tsx');
 test('Help preserves section destinations, original artwork and working contact links', () => {
   const html = renderToStaticMarkup(React.createElement(Help));
   for (const id of ['contact', 'after-sales', 'shipping', 'returns', 'care', 'size-guide', 'ring-size']) assert.ok(html.includes(`id="${id}"`));
-  for (const file of ['help-title.webp', 'help-care.png', 'help-necklace-size.png', 'help-ring-size.png', 'help-ribbon.png']) {
+  for (const file of ['care-icons.png', 'size-guide-necklace.png', 'size-guide-ring.png']) {
     assert.ok(html.includes(file));
-    assert.ok(fs.statSync(`public/images/figma/${file}`).size > 1000);
+    assert.ok(fs.statSync(`public/assets/ui/${file}`).size > 1000);
   }
   assert.ok(html.includes('href="mailto:valleydarley@gmail.com"'));
   assert.ok(html.includes('href="/orders"'));

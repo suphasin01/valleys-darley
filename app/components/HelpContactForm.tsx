@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react';
 import { privacyVersion } from '../lib/privacy';
 
-export function HelpContactForm() {
+export function HelpContactForm({ title = 'sign up for our newsletter', defaultMessage = '', showNewsletter = true }: { title?:string; defaultMessage?:string; showNewsletter?:boolean } = {}) {
   const id = useId(), busy = useRef(false);
   const [token, setToken] = useState(''), [newsletter, setNewsletter] = useState(false);
   const [state, setState] = useState<'loading' | 'ready' | 'pending' | 'saved' | 'unavailable'>('loading');
@@ -44,21 +44,21 @@ export function HelpContactForm() {
     finally { busy.current = false; }
   }
   return <div className="relative mx-auto max-w-[626px]">
-    <h2 className="mb-12 text-center text-[26px] leading-tight md:text-[32px]">sign up for our newsletter</h2>
+    <h2 className="mb-12 text-center text-[26px] leading-tight md:text-[32px]">{title}</h2>
     <form onSubmit={submit} className="space-y-6" aria-busy={state === 'pending'}>
       <div className="grid grid-cols-2 gap-5 md:gap-8">
         <div><label htmlFor={`${id}-first`}>First name</label><input id={`${id}-first`} name="firstName" placeholder="Jane" autoComplete="given-name" maxLength={100} required /></div>
         <div><label htmlFor={`${id}-last`}>Last name</label><input id={`${id}-last`} name="lastName" placeholder="Smitherton" autoComplete="family-name" maxLength={100} required /></div>
       </div>
       <div><label htmlFor={`${id}-email`}>Email address</label><input id={`${id}-email`} name="email" type="email" placeholder="email@example.com" autoComplete="email" maxLength={254} required /></div>
-      <div><label htmlFor={`${id}-message`}>Your message</label><textarea id={`${id}-message`} name="message" placeholder="Enter your question or message" maxLength={3000} required={!newsletter} rows={6} /></div>
+      <div><label htmlFor={`${id}-message`}>Your message</label><textarea id={`${id}-message`} name="message" defaultValue={defaultMessage} placeholder="Enter your question or message" maxLength={3000} required={!newsletter} rows={8} /></div>
       <div className="hidden" aria-hidden="true"><label htmlFor={`${id}-website`}>Leave this field empty</label><input id={`${id}-website`} name="website" autoComplete="off" tabIndex={-1} /></div>
       <div className="space-y-3 text-xs leading-relaxed">
-        <label className="flex items-start gap-3"><input name="newsletter" type="checkbox" value="yes" checked={newsletter} onChange={event => setNewsletter(event.target.checked)} /><span>I would like to receive newsletters and collection updates. Optional; email us to withdraw.</span></label>
+        {showNewsletter && <label className="flex items-start gap-3"><input name="newsletter" type="checkbox" value="yes" checked={newsletter} onChange={event => setNewsletter(event.target.checked)} /><span>I would like to receive newsletters and collection updates. Optional; email us to withdraw.</span></label>}
         <label className="flex items-start gap-3"><input name="privacyAcknowledged" type="checkbox" value="yes" required /><span>I have read and acknowledge the <Link href="/privacy" className="underline">Privacy Policy</Link>.</span></label>
       </div>
       <button type="submit" disabled={!token || state === 'pending' || state === 'saved'} className="min-h-14 w-full bg-[#f1e9eb] px-6 py-4 text-sm uppercase transition-colors hover:bg-[#e8dce0] disabled:cursor-not-allowed disabled:opacity-60">{state === 'pending' ? 'Submitting…' : state === 'saved' ? 'Received' : 'Submit'}</button>
-      {state === 'saved' && <p role="status" className="text-sm leading-relaxed">Thank you. Your request and newsletter preference have been recorded for our team. This does not create a store account.</p>}
+      {state === 'saved' && <p role="status" className="text-sm leading-relaxed">{showNewsletter ? 'Thank you. Your request and newsletter preference have been recorded for our team. This does not create a store account.' : 'Thank you. Your custom design request has been recorded for our team. This is an enquiry, not a confirmed order or payment.'}</p>}
       {error && <p role="alert" className="text-sm leading-relaxed text-red-800">{error}</p>}
       {state === 'unavailable' && <p role="status" className="text-sm">The form is temporarily unavailable. Please email us directly.</p>}
       <p className="text-center text-xs">You can also reach us at <a href="mailto:valleydarley@gmail.com" className="underline">valleydarley@gmail.com</a>.</p>

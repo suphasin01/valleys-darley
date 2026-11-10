@@ -13,7 +13,7 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
   if (await member()) redirect(next);
   const locale = await getLocale();
   const t = copy[locale];
-  return <section className="editorial-page bg-white px-5 pb-24 pt-16 text-black md:pb-40 md:pt-32">
+  return <section className="editorial-page supplied-auth bg-white px-5 pb-24 pt-16 text-black md:pb-40 md:pt-32">
     <div className="mx-auto max-w-[626px]">
       <div className="auth-design flex flex-col">
         <AuthTitle>LOG IN</AuthTitle>

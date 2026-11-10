@@ -7,12 +7,12 @@ const React = require('react');
 const { renderToStaticMarkup } = require('react-dom/server');
 const { catalogArtwork } = require('../app/lib/editorial-images.ts');
 const { CatalogPhoto } = require('../app/components/CatalogPhoto.tsx');
-test('only the verified original ring gets the native Preview hover fallback', () => {
+test('supplied studio photos and detail hovers replace original demo photography', () => {
   const artwork = catalogArtwork({ id: 'pearl-ring', image: '/images/ar-ring-silver-v2.png' });
-  assert.equal(artwork.primary, '/images/figma/shop-ring.png');
-  assert.equal(artwork.hover, '/images/figma/ring-gallery-2.webp');
+  assert.equal(artwork.primary, '/assets/products/rosette-ribbon-mother-of-pearl-ring/card.jpg');
+  assert.equal(artwork.hover, '/assets/products/rosette-ribbon-mother-of-pearl-ring/shared/02.jpg');
   assert.ok(fs.statSync('public' + artwork.hover).size > 1000);
-  assert.equal(catalogArtwork({ id: 'heart-locket', image: '/images/product-closeup-2.png' }).hover, undefined);
+  assert.equal(catalogArtwork({ id: 'heart-locket', image: '/images/product-closeup-2.png' }).hover, '/assets/products/ruffle-heart-locket-necklace/02.jpg');
 });
 test('CMS-uploaded photography wins and never inherits unrelated demo imagery', () => {
   assert.deepEqual(catalogArtwork({ id: 'pearl-ring', image: '/images/new-upload.webp' }), { primary: '/images/new-upload.webp', hover: undefined });

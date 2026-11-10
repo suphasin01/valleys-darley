@@ -14,9 +14,9 @@ const { editorialGallery } = require('../app/lib/editorial-images.ts');
 const { ProductGuide } = require('../app/components/ProductGuide.tsx');
 const { AddToCart } = require('../app/components/Cart.tsx');
 const ring = { id: 'pearl-ring', name: 'Ring', image: '/images/ar-ring-silver-v2.png', published: true };
-test('the original demo uses the three exported gallery photos while CMS uploads win', () => {
+test('the original product uses seven supplied gallery photos while CMS uploads win', () => {
   const images = editorialGallery(ring);
-  assert.equal(images.length, 3);
+  assert.equal(images.length, 7);
   for (const image of images) assert.ok(fs.statSync(path.join(__dirname, '../public', image)).size > 1000);
   assert.deepEqual(editorialGallery({ ...ring, image: '/uploaded-ring.webp', images: ['/extra.webp', '/extra.webp'] }), ['/uploaded-ring.webp', '/extra.webp']);
   assert.deepEqual(editorialGallery({ ...ring, images: ['/shop-extra.webp'] }), [images[0], '/shop-extra.webp']);

@@ -14,7 +14,7 @@ export function CheckoutReview({ lines, profile, shipping, payment, testMode, er
     ['Subdistrict', profile.subdistrict, ''], ['District', profile.district, ''],
     ['Province', profile.province, ''], ['Postal code', profile.postalCode, ''], ['Phone', profile.phone, 'col-span-2'],
   ] : [];
-  return <main className="editorial-page min-h-screen bg-white text-black">
+  return <main className="editorial-page supplied-checkout min-h-screen bg-white text-black">
     <header className="border-b border-black/15"><div className="mx-auto flex min-h-24 max-w-[1440px] items-center justify-between px-6 md:min-h-32 md:px-[5%]"><Link href="/" aria-label="Valley's Darling home"><BrandLogo className="text-[24px] md:text-[34px]" /></Link><Link href="/cart" aria-label="Return to cart" className="p-3 text-[#cdbac2]"><svg aria-hidden="true" viewBox="0 0 24 24" className="h-7 w-7 fill-none stroke-current" strokeWidth="1.3"><path d="M5 8h14l1 13H4L5 8Z"/><path d="M8 9V6a4 4 0 0 1 8 0v3"/></svg></Link></div></header>
     <div className="mx-auto grid max-w-[1440px] lg:grid-cols-[52fr_48fr]">
       <section className="px-6 py-10 md:px-[7%] lg:py-16">

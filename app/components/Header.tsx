@@ -4,14 +4,21 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { copy, type Locale } from "../lib/i18n";
-import { requestCartOpen } from '../lib/cart-storage';
+import { readCart, requestCartOpen } from '../lib/cart-storage';
+import { StoreSearch } from './StoreSearch';
 import { shopMenuLinks, toggleMenuSection, type MenuSection } from '../lib/store-menu';
 
 export function BrandLogo({ className = "" }: { className?: string }) {
-  return <span className={`brand-script inline-block whitespace-nowrap ${className}`}><img src="/images/figma/brand-hd.png" alt="Valley's Darling" width={1291} height={259} className="block h-[1.2em] w-[8.2em] max-w-full object-contain mix-blend-multiply" /></span>;
+  return <span className={`brand-script supplied-brand inline-block whitespace-nowrap ${className}`}>Valley&apos;s Darling</span>;
 }
 
 export function Header({ locale }: { locale: Locale }) {
+  const [cartCount, setCartCount] = useState(0);
+  useEffect(() => {
+    const update = () => setCartCount(readCart().reduce((sum,item)=>sum+item.quantity,0));
+    update(); window.addEventListener('valleys-cart-change',update); window.addEventListener('storage',update);
+    return () => {window.removeEventListener('valleys-cart-change',update);window.removeEventListener('storage',update);};
+  }, []);
   const [isOpen, setIsOpen] = useState(false);
   const [menuSection, setMenuSection] = useState<MenuSection>(null);
   const menuButton = useRef<HTMLButtonElement>(null);
@@ -35,17 +42,20 @@ export function Header({ locale }: { locale: Locale }) {
 
   return (
     <>
-      <header className="editorial-page sticky top-0 z-50 h-[64px] border-b border-black/60 bg-white text-black md:h-[9.3vw] md:max-h-[134px]">
-        <div className="relative mx-auto flex h-full max-w-[1480px] items-center justify-between gap-2 px-3 sm:px-5 md:px-9">
+      <header className="editorial-page supplied-header sticky top-0 z-50 border-b border-black/60 bg-white text-black">
+        <div className="supplied-header-inner">
+          <div className="supplied-header-left">
           <button ref={menuButton} type="button" onClick={() => { setMenuSection(null); setIsOpen(true); }} aria-label={t.menu} aria-expanded={isOpen} aria-controls="store-navigation" className="grid h-11 min-w-11 place-items-center rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 xl:ml-7 xl:justify-items-start">
             <span className="relative block h-3.5 w-5 border-y border-current before:absolute before:left-0 before:top-1/2 before:h-px before:w-3 before:-translate-y-1/2 before:bg-current xl:hidden" />
             <span className="hidden text-[clamp(1rem,2.5vw,2.25rem)] font-medium xl:block">{locale === 'th' ? 'เมนู' : 'menu'}</span>
           </button>
-          <Link href={isAdmin ? "/admin" : "/"} className="min-w-0 lg:absolute lg:left-1/2 lg:-translate-x-1/2" aria-label={isAdmin ? "Admin home" : "Valley's Darling home"}>
+          <StoreSearch />
+          </div>
+          <Link href={isAdmin ? "/admin" : "/"} className="supplied-header-brand min-w-0" aria-label={isAdmin ? "Admin home" : "Valley's Darling home"}>
             <BrandLogo className="text-[16px] min-[375px]:text-[20px] sm:text-[25px] md:text-[clamp(2rem,4.44vw,4rem)]" />
           </Link>
-          <div className="flex items-center gap-1 sm:gap-2 xl:gap-5"><Link href="/account" className="hidden text-[clamp(1rem,2.22vw,2rem)] font-medium lg:block">{locale === 'th' ? 'บัญชี' : 'account'}</Link><Link href="/cart" aria-label="Shopping bag" aria-haspopup="dialog" aria-controls="store-shopping-bag" onClick={event => { if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return; if (requestCartOpen()) event.preventDefault(); }} className="grid h-11 w-11 place-items-center">
-            <span className="prototype-cart-label hidden">cart</span><svg viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current" strokeWidth="1.35" aria-hidden="true"><path d="M6.5 8.5h11l-.7 11h-9.6l-.7-11Z" /><path d="M9 9V6.8a3 3 0 0 1 6 0V9" /></svg>
+          <div className="supplied-header-right"><Link href="/account">{locale === 'th' ? 'บัญชี' : 'account'}</Link><Link href="/cart" aria-label={`Shopping bag (${cartCount} items)`} aria-haspopup="dialog" aria-controls="store-shopping-bag" onClick={event => { if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return; if (requestCartOpen()) event.preventDefault(); }} className="supplied-cart-button">
+            <span>cart ({cartCount})</span>
           </Link></div>
         </div>
       </header>

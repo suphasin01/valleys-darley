@@ -1,14 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function ProductGallery({ images, name, remote, contain, th }: { images: string[]; name: string; remote: boolean; contain: boolean; th: boolean }) {
   const [selected, setSelected] = useState(0);
+  const touch = useRef<number | null>(null);
   useEffect(() => { setSelected(0); }, [images]);
   const active = images[selected] || images[0];
   const step = (direction: number) => setSelected(value => (value + direction + images.length) % images.length);
-  return <div className="min-w-0" role="region" aria-label="Product gallery" onKeyDown={event => {
+  return <div className="min-w-0" role="region" aria-label="Product gallery" onTouchStart={event=>{touch.current=event.touches[0]?.clientX??null;}} onTouchEnd={event=>{if(touch.current!==null && images.length>1){const distance=(event.changedTouches[0]?.clientX??touch.current)-touch.current;if(Math.abs(distance)>45)step(distance<0?1:-1);}touch.current=null;}} onKeyDown={event => {
     if (images.length < 2) return;
     if (event.key === 'ArrowRight') { event.preventDefault(); step(1); }
     if (event.key === 'ArrowLeft') { event.preventDefault(); step(-1); }

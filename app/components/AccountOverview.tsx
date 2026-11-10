@@ -6,7 +6,7 @@ import { AccountAddress } from './AccountAddress';
 type Profile = { name: string; phone: string; address: string; subdistrict: string; district: string; province: string; postalCode: string; email: string };
 
 export function AccountOverview({ profile, provider, orders, unavailable }: { profile: Profile; provider: string; orders: OrderSummary[]; unavailable: boolean }) {
-  return <main className="editorial-page mx-auto min-h-[75svh] max-w-[1440px] bg-white px-6 pb-24 pt-12 text-black md:px-[7%] md:pt-24">
+  return <main className="editorial-page supplied-account mx-auto min-h-[75svh] max-w-[1440px] bg-white px-6 pb-24 pt-12 text-black md:px-[7%] md:pt-24">
     <h1 className="sr-only">My account</h1>
     <div className="grid gap-14 md:grid-cols-[1fr_2fr] md:gap-[12%]">
       <section className="min-w-0"><h2 className="text-sm uppercase">Profile</h2><p className="mt-4 text-xl uppercase">{profile.name}</p><p className="mt-3 break-words text-base">{profile.email}</p><p className="mt-3 text-xs text-black/50">Signed in with {provider.toUpperCase()}</p>

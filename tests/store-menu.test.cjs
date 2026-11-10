@@ -6,9 +6,9 @@ require.extensions['.ts'] = (module, filename) => module._compile(ts.transpileMo
 const { shopMenuLinks, toggleMenuSection } = require('../app/lib/store-menu.ts');
 test('Shop submenu contains the six Preview destinations', () => {
   assert.deepEqual(shopMenuLinks.map(([label]) => label), ['SHOP ALL', 'NEW IN', 'NECKLACE', 'RING', 'EARRINGS', 'BRACELET']);
-  assert.equal(shopMenuLinks[0][1], '/collections');
-  assert.equal(shopMenuLinks[1][1], '/collections#new-in');
-  for (const [,href] of shopMenuLinks) assert.ok(href.startsWith('/collections'));
+  assert.equal(shopMenuLinks[0][1], '/shop');
+  assert.equal(shopMenuLinks[1][1], '/shop/new-in');
+  assert.deepEqual(shopMenuLinks.map(([,href])=>href), ['/shop','/shop/new-in','/shop/necklace','/shop/ring','/shop/earrings','/shop/bracelet']);
 });
 test('Shop and Collection behave as an exclusive toggle, matching Preview', () => {
   for (const current of [null, 'shop', 'collection']) for (const requested of ['shop', 'collection']) assert.equal(toggleMenuSection(current, requested), current === requested ? null : requested);

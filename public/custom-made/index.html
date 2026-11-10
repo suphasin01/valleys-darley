@@ -1,0 +1,232 @@
+<title>Valley's Darling Custom Made</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+SC:wght@400;500;600;700&family=Pinyon+Script&display=swap">
+<style>@font-face{font-family:"La Graziela";src:url("/fonts/la-graziela.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}</style>
+<style>
+/* Layout: brand header, then one framed blush panel; pieces fly in one by one, reveal at centre, settle into a row of four */
+:root{
+  --paper:#ffffff;
+  --blush:#f2ebee;
+  --blush-deep:#e8dde2;
+  --ink:#1b1719;
+  --mute:#6f6468;
+  --line:#b9a8b0;
+  --cart:#f1e9eb;
+  --glow:255,246,250;
+  --f-script:"La Graziela","Pinyon Script","Snell Roundhand",cursive;
+  --f-sc:"Cormorant SC","Cormorant Garamond",Georgia,serif;
+  color-scheme:light;
+}
+html,body{background:var(--paper);color:var(--ink)}
+body{font-family:var(--f-sc);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1180px;margin:0 auto}
+
+/* header */
+.top{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding-block:18px;border-bottom:1px solid var(--ink)}
+.top .l,.top .r{display:flex;align-items:center;gap:28px;font-size:18px;letter-spacing:.04em}
+.top .r{justify-content:flex-end}
+.top a{color:var(--ink);text-decoration:none}
+.logo{font-family:var(--f-script);font-size:34px;line-height:1;white-space:nowrap}
+.cart{background:var(--cart);padding:12px 18px}
+.srch{width:20px;height:20px;display:block}
+.top button{all:unset;cursor:pointer}
+.top button:focus-visible,.top a:focus-visible,.replay:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+
+/* panel */
+.panel{position:relative;margin-block:32px 48px;background:var(--blush);padding:56px clamp(16px,4vw,56px) 64px;isolation:isolate}
+.panel::before,.panel::after{content:"";position:absolute;pointer-events:none;border:1px solid var(--line)}
+.panel::before{inset:14px}
+.panel::after{inset:20px;border-color:var(--blush-deep)}
+.badge{width:176px;height:96px;margin:0 auto;border:1px solid var(--ink);border-radius:50%;display:grid;place-items:center;text-align:center;font-size:17px;line-height:1.15;letter-spacing:.08em;font-weight:600;background:var(--paper)}
+.lede{max-width:56ch;margin:22px auto 0;text-align:center;font-size:17px;line-height:1.5;color:var(--mute);text-wrap:balance}
+
+.row{position:relative;z-index:1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(12px,3vw,40px);margin-top:44px}
+.slot{display:grid;justify-items:center;gap:18px;min-width:0}
+.spot{position:relative;width:100%;aspect-ratio:1/1;max-width:230px}
+.spot .rest{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transform:scale(var(--k,1));transition:opacity .25s}
+.label{background:var(--paper);padding:10px 14px;min-width:0;max-width:100%;text-align:center;font-size:15px;letter-spacing:.06em;line-height:1.25;transition:opacity .5s,transform .5s}
+.slot.wait .label{opacity:0;transform:translateY(6px)}
+.slot.wait .rest{opacity:0}
+
+.slot.idle .spot:hover{animation:hop .55s cubic-bezier(.3,1.6,.5,1)}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes hop{0%{transform:translateY(0) scale(1)}40%{transform:translateY(-14px) scale(1.04)}100%{transform:translateY(0) scale(1)}}
+
+.foot{display:flex;justify-content:center;margin-top:36px}
+.replay{all:unset;cursor:pointer;background:var(--paper);border:1px solid var(--ink);padding:12px 28px;font-size:15px;font-weight:700;letter-spacing:.1em}
+.replay[disabled]{opacity:.4;cursor:default}
+
+/* stage: the flying piece and the reveal */
+.stage{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden}
+.halo{position:absolute;left:50%;top:50%;width:min(78vw,640px);aspect-ratio:1;transform:translate(-50%,-50%) scale(.6);border-radius:50%;
+  background:radial-gradient(closest-side,rgba(var(--glow),.95),rgba(var(--glow),.55) 45%,rgba(var(--glow),0));opacity:0}
+.sprite{position:absolute;left:0;top:0;width:600px;height:600px;transform-origin:50% 50%;will-change:transform,opacity;opacity:0}
+.sprite img{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity .48s ease-in-out}
+.sprite img.on{opacity:1}
+.sprite.cut img{transition:none}
+.spark{position:absolute;width:26px;height:26px;opacity:0}
+.spark path{fill:var(--paper)}
+.spark .c{fill:#fff7d6}
+
+@media (max-width:760px){
+  .row{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .top{grid-template-columns:auto 1fr auto}
+  .top .l,.top .r{gap:14px;font-size:15px}
+  .logo{font-size:26px;text-align:center}
+  .top .acc{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .slot.idle .spot,.slot.idle .spot:hover{animation:none}
+}
+/* inside the website (iframe) the site header is already shown */
+.embedded .top{display:none}
+.slot{cursor:pointer}
+/* Figma "custom made" (149:113): full-width blush panel in a dark frame, framed title, white label boxes */
+.embedded body{padding:0}
+.embedded .wrap{max-width:none}
+.embedded .panel{margin:0;padding:72px clamp(16px,6vw,96px) 72px;min-height:1230px}
+.panel::before{inset:12px;border:4px solid #6b5a52;border-radius:28px}
+.panel::after{inset:24px;border:1.5px solid #6b5a52;border-radius:18px}
+.badge{width:290px;height:158px;border:0;border-radius:0;background:url(../assets/ui/frame.png) center/100% 100% no-repeat;font-size:30px;font-weight:700;letter-spacing:.02em;color:#111}
+.lede{max-width:none;font-size:22px;font-weight:600;color:#111;text-transform:uppercase;letter-spacing:.02em}
+.row{margin-top:150px}
+.label{text-transform:uppercase;font-size:13px;font-weight:600;letter-spacing:.04em;box-shadow:0 1px 3px rgba(0,0,0,.15);cursor:pointer}
+.tail{max-width:760px;margin:120px auto 0;text-align:center;font-size:19px;font-weight:600;text-transform:uppercase;line-height:1.5}
+.replay{font-size:12px;padding:8px 18px;opacity:.7}
+@media (max-width:760px){.badge{width:210px;height:114px;font-size:22px}.lede{font-size:16px}.row{margin-top:48px}.tail{font-size:15px;margin-top:48px}}
+</style>
+<script>if(window.self!==window.top)document.documentElement.classList.add('embedded')</script>
+
+<div class="wrap">
+  <header class="top">
+    <div class="l"><a href="#" aria-label="Menu">MENU</a>
+      <button type="button" aria-label="Search"><svg class="srch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="10" cy="10" r="7"/><path d="M15.5 15.5 21 21"/></svg></button></div>
+    <div class="logo">Valley's Darling</div>
+    <div class="r"><a class="acc" href="#">ACCOUNT</a><a class="cart" href="#">CART</a></div>
+  </header>
+
+  <section class="panel" id="panel" aria-label="Custom made">
+    <div class="badge">CUSTOM<br>MADE</div>
+    <p class="lede">custom-made jewelry, crafted around your imagination.</p>
+
+    <div class="row" id="row">
+      <div class="slot" data-key="locket" style="--d:0s"><div class="spot"><img class="rest" alt="Ruffle heart locket" src="img/locket_24.webp"></div><div class="label">The ruffle heart locket necklace</div></div>
+      <div class="slot" data-key="swirl" style="--d:.6s"><div class="spot"><img class="rest" alt="Swirl bow necklace" src="img/swirl_00.webp"></div><div class="label">Classic swirl bow necklace</div></div>
+      <div class="slot" data-key="earrings" style="--d:1.2s"><div class="spot"><img class="rest" alt="Pleated gemstone earrings" src="img/earrings_00.webp"></div><div class="label">Pleated gemstone ribbon earrings</div></div>
+      <div class="slot" data-key="ring" style="--d:1.8s"><div class="spot"><img class="rest" alt="Ruffle ring" src="img/ring_00.webp"></div><div class="label">Rosette ribbon mother of pearl ring</div></div>
+    </div>
+
+    <p class="tail">choose your own colour, size, stone or have a name engraved on the piece. each creation is made to order, especially for you.</p>
+    <div class="foot" hidden><button class="replay" id="replay" type="button">PLAY AGAIN</button></div>
+    <div class="stage" id="stage" aria-hidden="true"><div class="halo" id="halo"></div></div>
+  </section>
+</div>
+
+<script>
+(()=>{
+// per piece: frame count, how the reveal plays, and size factors (slot = content fit for the row, big = centre reveal)
+const P={
+  locket:  {n:25,mode:'open', slot:.50,big:1.10},
+  swirl:   {n:48,mode:'spin', slot:.50,big:1.0},
+  earrings:{n:48,mode:'spin', slot:.37,big:.95},
+  ring:    {n:48,mode:'spin', slot:.45,big:.93}
+};
+const ORDER=['locket','swirl','earrings','ring'];
+const pad=i=>String(i).padStart(2,'0');
+const src=(k,i)=>`img/${k}_${pad(i)}.webp`;
+const panel=document.getElementById('panel'), stage=document.getElementById('stage'), halo=document.getElementById('halo');
+const slots=[...document.querySelectorAll('.slot')], replay=document.getElementById('replay');
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// row size: P.slot is the sprite scale when a spot is 230px wide; it shrinks with the spot on small screens
+const spotPx=()=>slots[0].querySelector('.spot').getBoundingClientRect().width;
+const slotScale=k=>P[k].slot*spotPx()/230;
+// the rest image is drawn at spot width, so to match the sprite it scales by slotScale*600/w = P.slot*600/230
+function sizeRest(){ for(const s of slots){ const k=s.dataset.key; s.querySelector('.rest').style.setProperty('--k', String(P[k].slot*600/230)); } }
+
+// preload every frame once
+const cache={};
+function load(){ const all=[]; for(const k of ORDER){ cache[k]=[]; for(let i=0;i<P[k].n;i++){ const im=new Image(); im.decoding='async'; im.src=src(k,i); cache[k].push(im); all.push(im.decode?im.decode().catch(()=>{}):Promise.resolve()); } } return Promise.all(all); }
+
+function sprite(k){
+  const d=document.createElement('div'); d.className='sprite cut';
+  for(let i=0;i<P[k].n;i++){ const im=document.createElement('img'); im.alt=''; im.src=src(k,i); d.appendChild(im); }
+  d.firstChild.classList.add('on'); stage.appendChild(d); return d;
+}
+const show=(d,i)=>{ const ims=d.children; for(let j=0;j<ims.length;j++) ims[j].classList.toggle('on',j===i); };
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+// one full turn at a steady speed, frame chosen from elapsed time so it never stalls
+function spin(d,n,dur){ return new Promise(res=>{ const t0=performance.now(); let last=-1;
+  const f=now=>{ const p=Math.min(1,(now-t0)/dur); const i=Math.round(p*n)%n; if(i!==last){ show(d,i); last=i; } if(p<1) requestAnimationFrame(f); else { show(d,0); res(); } };
+  requestAnimationFrame(f); }); }
+
+// geometry in stage coordinates
+function centreOf(el){ const a=el.getBoundingClientRect(), b=stage.getBoundingClientRect(); return {x:a.left-b.left+a.width/2, y:a.top-b.top+a.height/2}; }
+function stageMid(){ const b=stage.getBoundingClientRect(), r=document.getElementById('row').getBoundingClientRect(); return {x:b.width/2, y:(r.top-b.top)+Math.min(r.height,b.height)/2 - 10}; }
+const T=(x,y,s,r=0)=>`translate(${x-300}px,${y-300}px) rotate(${r}deg) scale(${s})`;
+function bigScale(k){ const b=stage.getBoundingClientRect(); const fit=Math.min(b.width*.86, b.height*.62, 560)/600; return fit*P[k].big; }
+
+function sparkle(cx,cy,r){
+  const out=[];
+  for(let i=0;i<7;i++){
+    const s=document.createElementNS('http://www.w3.org/2000/svg','svg'); s.setAttribute('viewBox','0 0 26 26'); s.classList.add('spark');
+    s.innerHTML='<path d="M13 0 C14 9 17 12 26 13 C17 14 14 17 13 26 C12 17 9 14 0 13 C9 12 12 9 13 0Z"/><circle class="c" cx="13" cy="13" r="2"/>';
+    const a=Math.PI*2*i/7+Math.random()*.6, rr=r*(.55+Math.random()*.45), sz=.5+Math.random()*.9;
+    s.style.left=(cx+Math.cos(a)*rr-13)+'px'; s.style.top=(cy+Math.sin(a)*rr*.8-13)+'px'; stage.appendChild(s);
+    s.animate([{opacity:0,transform:`scale(0) rotate(0deg)`},{opacity:1,transform:`scale(${sz}) rotate(45deg)`,offset:.45},{opacity:0,transform:`scale(0) rotate(90deg)`}],{duration:1100+Math.random()*700,delay:i*140,easing:'ease-in-out'});
+    out.push(s);
+  }
+  setTimeout(()=>out.forEach(s=>s.remove()),2600);
+}
+
+async function playPiece(k,slot,idx){
+  const d=sprite(k);
+  const end=centreOf(slot.querySelector('.spot')), mid=stageMid(), b=stage.getBoundingClientRect();
+  const fromLeft=idx%2===1; const start={x: fromLeft? -260 : b.width+260, y: mid.y-60};
+  const S=bigScale(k);
+  // 1. float in from the side on a soft arc
+  // 1+2. float in and grow to full size at the centre in one smooth, decelerating move (no overshoot)
+  halo.style.top=mid.y+'px';
+  halo.animate([{opacity:0,transform:'translate(-50%,-50%) scale(.6)'},{opacity:1,transform:'translate(-50%,-50%) scale(1)'}],{duration:1100,delay:700,easing:'ease-out',fill:'forwards'});
+  await d.animate([
+    {transform:T(start.x,start.y,S*.45,fromLeft?-14:14),opacity:0},
+    {transform:T((start.x+mid.x)/2,mid.y-60,S*.68,fromLeft?-6:6),opacity:1,offset:.45},
+    {transform:T(mid.x,mid.y,S,0),opacity:1}
+  ],{duration:1800,easing:'cubic-bezier(.33,.0,.2,1)',fill:'forwards'}).finished;
+  if(P[k].mode==='open'){ for(let i=0;i<P[k].n;i++){ show(d,i); await wait(52); } await wait(650); }
+  else { await spin(d,P[k].n,3000); await wait(250); }
+  // 3. float back into its place in the row
+  halo.animate([{opacity:1,transform:'translate(-50%,-50%) scale(1)'},{opacity:0,transform:'translate(-50%,-50%) scale(.8)'}],{duration:700,easing:'ease-in',fill:'forwards'});
+  const ss=slotScale(k);
+  await d.animate([
+    {transform:T(mid.x,mid.y,S)},
+    {transform:T((mid.x+end.x)/2,Math.min(mid.y,end.y)-60,(S+ss)/2,0),offset:.5},
+    {transform:T(end.x,end.y,ss)}
+  ],{duration:1050,easing:'cubic-bezier(.45,.05,.3,1)',fill:'forwards'}).finished;
+  slot.classList.remove('wait'); await wait(220); d.remove();
+}
+
+let running=false;
+async function run(){
+  if(running) return; running=true; replay.disabled=true;
+  sizeRest();
+  for(const s of slots){ s.classList.remove('idle'); s.classList.add('wait'); }
+  await load();
+  for(let i=0;i<ORDER.length;i++){ const s=slots.find(x=>x.dataset.key===ORDER[i]); await playPiece(ORDER[i],s,i); }
+  for(const s of slots) s.classList.add('idle');
+  running=false; replay.disabled=false;
+}
+
+sizeRest(); addEventListener('resize',sizeRest);
+if(reduce){ slots.forEach(s=>s.classList.add('idle')); replay.hidden=true; return; }
+replay.addEventListener('click',run);
+// start when the panel comes into view; the row stays fully visible until then
+const io=new IntersectionObserver(es=>{ if(es.some(e=>e.isIntersecting)){ io.disconnect(); run(); } },{threshold:.35});
+io.observe(panel);
+})();
+
+// click a piece to design it
+for(const s of document.querySelectorAll('.slot'))s.addEventListener('click',()=>{(window.top||window).location.href='/custom-made/'+s.dataset.key});
+</script>

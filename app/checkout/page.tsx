@@ -7,12 +7,14 @@ import { stripeCheckoutReady, stripeTestMode, shippingFeeSatang } from '../lib/s
 import { getCustomerProfile } from '../lib/customer-profile';
 import { purchaseSelection } from '../lib/purchase';
 import { CheckoutReview } from '../components/CheckoutReview';
+import { CheckoutEntry } from '../components/CheckoutEntry';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Check Out — Valley’s Darling', robots: { index: false, follow: false } };
 export default async function Checkout({ searchParams }: { searchParams: Promise<{ product?: string; quantity?: string; variant?: string; error?: string }> }) {
   const { product: id, quantity: rawQuantity, variant: rawVariant, error } = await searchParams;
-  if (!id || !/^[a-z0-9-]{1,80}$/.test(id)) notFound();
+  if (!id) return <CheckoutEntry/>;
+  if (!/^[a-z0-9-]{1,80}$/.test(id)) notFound();
   const product = (await getCmsContent()).products.find(item => item.id === id && item.published);
   if (!product) notFound();
   const variant = rawVariant ?? String(product.variants?.find(item => item.available > 0)?.id || product.variants?.[0]?.id || '');

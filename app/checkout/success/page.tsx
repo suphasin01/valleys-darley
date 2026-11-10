@@ -23,12 +23,14 @@ export default async function CheckoutSuccess({ searchParams }: { searchParams: 
       }
     } catch { /* Invalid or unavailable sessions do not imply payment. */ }
   }
-  return <main className="editorial-page flex min-h-[70svh] items-center justify-center bg-white px-6 py-20 text-[#261e1c]"><div className="w-full max-w-xl p-8 text-center md:p-14">
+  return <main className="editorial-page supplied-confirmation flex min-h-[70svh] items-center justify-center bg-white px-6 py-20 text-[#261e1c]"><div className="w-full max-w-xl p-8 text-center md:p-14">
     <p className="text-[10px] uppercase tracking-[.25em]">VALLEY&apos;S DARLING · CHECKOUT</p>
     {stripeTestMode() && <p role="status" className="mt-5 bg-amber-50 p-4 text-sm text-amber-900">Test mode · No real charge or shipment.</p>}
-    <h1 className="mt-7 text-4xl">{!user ? "Sign in to view your order" : paid ? "Payment confirmed" : pending ? "Confirming your payment" : "Payment not confirmed"}</h1>
+    <h1 className="mt-7 text-4xl">{!user ? "Sign in to view your order" : paid ? "Thank you for your order" : pending ? "Confirming your payment" : "Payment not confirmed"}</h1>
+    {paid && <p className="mt-8 text-lg uppercase">Your order has been placed</p>}
     <p className="mt-5 text-sm leading-7 text-black/60">{!user ? "Use the same account you used at checkout to view your order status." : paid ? `${productName} · ฿${(total / 100).toLocaleString("en-US", { minimumFractionDigits: 2 })}` : pending ? "Your payment is still being processed. Please check your order again shortly." : "We could not confirm a successful payment. If you have been charged, contact us with your Stripe transaction reference."}</p>
     {paid && <p className="mt-4 text-xs leading-6 text-black/50">Your order will be prepared using the delivery details confirmed on Stripe Checkout.</p>}
+    {paid && sessionId && <Link href={`/orders/${encodeURIComponent(sessionId)}`} className="confirmation-primary mx-auto mt-9">View my order</Link>}
     <div className="mt-9 flex flex-wrap justify-center gap-3">{!user && <Link href={`/login?next=${encodeURIComponent(`/checkout/success?session_id=${sessionId || ''}`)}`} className="bg-[#f1e9eb] px-6 py-3 text-xs">Sign in</Link>}<Link href={user ? "/orders" : "/collections"} className="border border-[#261e1c] px-6 py-3 text-xs">{user ? "My orders" : "Shop jewelry"}</Link><Link href="/contact" className="border border-[#261e1c] px-6 py-3 text-xs">Contact us</Link></div>
   </div></main>;
 }

@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Pinyon_Script, Cormorant_SC, Noto_Serif_Thai } from "next/font/google";
 import "./globals.css";
+import "./supplied-ui.css";
+import "./storefront-adapters.css";
 import { Header } from "./components/Header";
-import { Footer } from "./components/Footer";
+import { SuppliedFooter } from "./components/SuppliedFooter";
 import { StorefrontOnly } from "./components/StorefrontOnly";
 import { getLocale } from "./lib/locale";
 import { CartDrawer } from './components/CartDrawer';
@@ -41,7 +43,7 @@ export default async function RootLayout({
       >
         <StorefrontOnly><Header locale={locale} /></StorefrontOnly>
         <div>{children}</div>
-        <StorefrontOnly><Footer locale={locale} /></StorefrontOnly>
+        <StorefrontOnly><SuppliedFooter /></StorefrontOnly>
         <StorefrontOnly><CartDrawer /></StorefrontOnly>
       </body>
     </html>

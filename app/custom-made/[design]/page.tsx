@@ -3,6 +3,11 @@ import { notFound } from "next/navigation";
 import { CustomMadeTitle } from "../../components/CustomMadeTitle";
 import { CustomDesignForm } from "../../components/CustomDesignForm";
 import { GemstoneDesignReference } from '../../components/GemstoneDesignReference';
+import { studioPiece } from '../../lib/custom-studio';
+import { getCmsContent } from '../../lib/cms';
+import { CustomStudio } from '../../components/CustomStudio';
+
+export const dynamic = 'force-dynamic';
 
 const designs: Record<string, { name: string; left: string; top: string }> = {
   "heart-locket": { name: "The Ruffle Heart Locket Necklace", left: "-64.69%", top: "-112.81%" },
@@ -10,8 +15,14 @@ const designs: Record<string, { name: string; left: string; top: string }> = {
   "gemstone-locket": { name: "The Gemstone Locket Necklace", left: "-194.85%", top: "-104.46%" },
 };
 
-export default async function CustomDesignPage({ params }: { params: Promise<{ design: string }> }) {
+export default async function CustomDesignPage({ params, searchParams }: { params: Promise<{ design: string }>; searchParams: Promise<{legacy?:string}> }) {
   const { design } = await params;
+  const studio = studioPiece(design);
+  if (studio) {
+    const product=(await getCmsContent()).products.find(item=>item.id===studio.id && item.published);
+    if (!product) notFound();
+    if ((await searchParams).legacy !== '1' || !['heart-locket','swirl-bow'].includes(design)) return <CustomStudio pieceKey={studio.key}/>;
+  }
   const selected = designs[design];
   if (!selected) notFound();
   return <main className="editorial-page mx-auto max-w-[1440px] bg-white px-5 pb-20 pt-5 text-black md:px-[7%]">

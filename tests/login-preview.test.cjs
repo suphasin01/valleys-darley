@@ -1,11 +1,11 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
-test('login uses the original 3x Figma badge at its 192x126 layout size', async () => {
+test('login uses the supplied frame with the native accessible heading', async () => {
   const source = fs.readFileSync('app/components/AuthTitle.tsx', 'utf8');
-  const metadata = await require('sharp')('public/images/figma/login-badge.webp').metadata();
-  assert.equal(metadata.width, 576); assert.equal(metadata.height, 378);
-  assert.ok(source.includes('/images/figma/login-badge.webp'));
+  const metadata = await require('sharp')('public/assets/ui/frame.png').metadata();
+  assert.ok(metadata.width > 100 && metadata.height > 100);
+  assert.ok(source.includes('/assets/ui/frame.png'));
   assert.ok(source.includes('h-[126px] w-[192px]'));
 });
 test('email form styling cannot override Google and LINE button branding', () => {

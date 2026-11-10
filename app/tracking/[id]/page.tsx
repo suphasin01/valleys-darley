@@ -5,6 +5,7 @@ import { member } from '../../lib/auth';
 import { getLocale } from '../../lib/locale';
 import { stripeClient } from '../../lib/stripe';
 import { normalizeTrackingNumber, trackThailandPost } from '../../lib/thailand-post';
+import { postalEventTime } from '../../lib/shipping-state';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { robots: { index: false, follow: false } };
@@ -36,11 +37,7 @@ export default async function TrackingPage({ params }: { params: Promise<{ id: s
     catch { error = 'unavailable'; }
   }
   const officialUrl = `https://track.thailandpost.co.th/?trackNumber=${encodeURIComponent(barcode)}`;
-  const eventKey = (date: string) => {
-    const match = /^(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2})/.exec(date);
-    return match ? Number(`${match[3]}${match[2]}${match[1]}${match[4]}${match[5]}`) : 0;
-  };
-  const timeline = [...events].sort((a, b) => eventKey(b.date) - eventKey(a.date));
+  const timeline = [...events].sort((a, b) => postalEventTime(b.date) - postalEventTime(a.date));
   return <main className="min-h-[75svh] bg-[#f4f1ec] px-5 py-12 text-[#211a16] md:px-10 md:py-20"><div className="mx-auto max-w-3xl">
     <Link href={admin ? '/admin/orders' : '/account'} className="text-xs text-black/55 underline">← {locale === 'th' ? 'กลับไปคำสั่งซื้อ' : 'Back to orders'}</Link>
     <p className="mt-10 text-[10px] uppercase tracking-[.25em] text-black/45">THAILAND POST · TRACK &amp; TRACE</p>

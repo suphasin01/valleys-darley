@@ -1,63 +1,79 @@
 import Link from "next/link";
-import { getCmsContent, localizedContent } from "./lib/cms";
-import { getLocale } from "./lib/locale";
-import { FigmaImage } from "./components/FigmaImage";
-import { editorialImage } from "./lib/editorial-images";
-import { HomeEntrance } from "./components/HomeEntrance";
-
-export const dynamic = "force-dynamic";
-const asset = (id: number | string) => `/images/figma/preview-${id}.webp`;
-const features = [
- { id:"swirl-bow", name:"classic swirl bow necklace", image:9, crop:{width:"153.10%",height:"432.32%",left:"-53.18%",top:"-175.06%"} },
- { id:"ribbon-earring", name:"pleated gemstone ribbon earring", image:10, crop:{width:"99.11%",height:"257.09%",left:"-.35%",top:"-94.32%"} },
- { id:"pearl-ring", name:"rosette ribbon mother of pearl ring", image:11, crop:{width:"95.9253%",height:"270.8575%",left:".6755%",top:"-79.9165%"} },
- { id:"heart-locket", name:"the ruffle heart locket necklace", image:12, crop:{width:"99.11%",height:"257.09%",left:"-.35%",top:"-94.32%"} },
+import { getCmsContent } from './lib/cms';
+import { editorialImage } from './lib/editorial-images';
+import { HomeEntrance } from './components/HomeEntrance';
+export const dynamic = 'force-dynamic';
+const CUSTOM_PIECES = [
+ {key:'heart-locket',name:'Heart locket',image:'/assets/home/custom-locket.webp',href:'/custom-made/heart-locket'},
+ {key:'swirl-bow',name:'Swirl bow necklace',image:'/assets/home/custom-swirl.webp',href:'/custom-made/swirl-bow'},
+ {key:'ribbon-earring',name:'Ribbon earrings',image:'/assets/home/custom-earrings.webp',href:'/custom-made/earrings'},
+ {key:'pearl-ring',name:'Rosette ring',image:'/assets/home/custom-ring.webp',href:'/custom-made/ring'},
 ];
+
+// Layout from Figma "Landing page" (1:2418)
+const CARDS = [
+  ["swirl-bow", "classic swirl bow necklace", "/assets/home/card-swirl.jpg"],
+  ["ribbon-earring", "pleated gemstone ribbon earrings", "/assets/home/card-earrings.jpg"],
+  ["pearl-ring", "rosette ribbon mother of pearl ring", "/assets/home/card-ring.jpg"],
+  ["heart-locket", "the ruffle heart locket necklace", "/assets/home/card-locket.jpg"],
+];
+
 export default async function Home() {
- const locale=await getLocale();
- const content=localizedContent(await getCmsContent(),locale);
- const th=locale==="th";
- return <main className="editorial-page figma-home overflow-hidden bg-white text-black">
-  <HomeEntrance />
-  <div className="flex min-h-8 items-center justify-center bg-[#f1e9eb] px-4 py-[1.5%] text-center text-[clamp(.6rem,1.67vw,1.5rem)] font-semibold">{th?"ยินดีต้อนรับสู่ Valley’s Darling":"enjoy free international shipping on orders over 300 USD."}</div>
-  <section className="relative aspect-[1440/914]">
-   <FigmaImage src={asset(5)} alt="Gemstone ribbon earrings in morning light" priority className="absolute inset-0"/>
-   <h1 className="absolute inset-x-0 top-[5%] text-center text-[clamp(.65rem,2.22vw,2rem)] font-semibold">{th?"ยินดีต้อนรับสู่โลกใบเล็กของเรา":"WELCOME TO OUR LITTLE WORLD"}</h1>
-   <Link href="/about" className="figma-cta absolute bottom-[8%] left-1/2 -translate-x-1/2 bg-white">{th?"ค้นพบโลกของเรา":"discover the world"}</Link>
-  </section>
-  <section aria-label="Our editorial story" className="grid grid-cols-2 gap-[1.7%] px-[1.4%] pt-[1.7%]">
-   <Link href="/about"><FigmaImage src={asset(4)} alt="A woman in a pink room beneath a chandelier" className="aspect-[759/1011]" crop={{width:"100%",height:"100.12%",left:0,top:"2.11%"}}/></Link>
-   <Link href="/about"><FigmaImage src={asset(3)} alt="Mother of pearl ring worn beside a birthday cake" className="aspect-[755/1006]"/></Link>
-  </section>
-  <section className="relative pb-[18%] text-center">
-   <FigmaImage src={asset(6)} className="aspect-[1535/260] opacity-80" crop={{width:"167.07%",height:"619.41%",left:"-17.77%",top:"-.07%"}}/>
-   <FigmaImage src={asset(7)} alt="Keepsakes of wonder and Romance" className="mx-auto mt-[7%] aspect-[847.62/265.389] w-[59%] rotate-[-9.16deg]" crop={{width:"200.42%",height:"799.84%",left:"-45.51%",top:"-501.75%"}}/>
-   <p className="mx-auto mt-[13%] max-w-[74%] text-[clamp(.75rem,2.22vw,2rem)] font-semibold leading-tight">{th?content.home.storyBody:"this collection is inspired by the ribbon — reshaped into rosettes and countless other forms"}</p>
-   <Link href="/collections" className="figma-cta mt-[6%] bg-[#f1e9eb]">{th?"ดูคอลเลกชัน":"explore collection"}</Link>
-  </section>
-  <section className="bg-[#f1e9eb]">
-   <div className="flex items-center justify-between gap-4 border-y border-black/30 px-[2.2%] py-[1.3%]">
-    <h2 className="min-w-0 text-[clamp(1.25rem,6.5vw,6.5rem)] leading-none">{th?content.customMade.heading:"custom made"}</h2>
-    <p className="min-w-0 max-w-[38%] flex-1 break-words text-right text-[clamp(.6rem,2.5vw,2.25rem)] font-semibold leading-tight">{th?"เครื่องประดับสั่งทำ ที่สร้างจากจินตนาการของคุณ":<>custom-made jewelry,<br/>crafted around your imagination.</>}</p>
-   </div>
-   <div className="mx-auto grid w-[89%] grid-cols-3 gap-[2%] pb-[1%] pt-[9.5%]">
-    {[{left:"-64.69%",top:"-112.81%"},{left:"-122.35%",top:"-19.43%"},{left:"-194.85%",top:"-104.46%"}].map((crop,i)=><Link key={i} href={`/custom-made/${["heart-locket","swirl-bow","gemstone-locket"][i]}`} className="transition-transform duration-500 hover:scale-105"><FigmaImage src={asset(0)} alt={["Heart locket design","Ribbon bow locket design","Gemstone locket design"][i]} className="aspect-[384/379]" crop={{...crop,width:"419.08%",height:"238.69%"}}/></Link>)}
-   </div>
-   <div className="flex items-center justify-between gap-5 px-[11.6%] pb-[7%] pt-[7%]">
-    <Link href="/custom-made" className="figma-cta shrink-0 bg-white">{th?content.customMade.cta:"create yours"}</Link>
-    <p className="max-w-[55%] text-right text-[clamp(.7rem,2.5vw,2.25rem)] font-semibold leading-tight">{th?content.customMade.body:"choose your own colour, size, stone or have a name engraved on the piece. each creation is made to order, especially for you."}</p>
-   </div>
-  </section>
-  <section className="px-[5.4%] pb-[8%] pt-[1.5%]">
-   <h2 className="mb-[5%] text-right text-[clamp(.85rem,2.78vw,2.5rem)] font-semibold">{th?"บางสิ่งที่เราจินตนาการไว้แล้ว":"a few things we've already imagined."}</h2>
-   <p className="mb-[3%] text-[clamp(.65rem,1.67vw,1.5rem)] font-semibold">{th?"ค้นพบเครื่องประดับของเรา":"DISCOVER OUR JEWELRY"}</p>
-   <div className="grid grid-cols-2 gap-x-[3%] gap-y-[6vw]">
-    {features.flatMap(item=>{ const product=content.products.find(p=>p.id===item.id&&p.published); if(!product)return []; const original=editorialImage(product)!==product.image; return [<Link key={item.id} href={`/products/${item.id}`} className="group">
-     <FigmaImage src={original?asset(item.image):product.image} alt={product.name} className={`${item.id === 'ribbon-earring' || item.id === 'heart-locket' ? 'aspect-[642/330]' : 'aspect-[642/341]'} rounded-[8px] transition-transform duration-700 group-hover:scale-[1.02]`} crop={original?item.crop:undefined}/>
-     <p className="mt-[4%] text-[clamp(.65rem,1.67vw,1.5rem)]">{product.name}</p>
-    </Link>];})}
-   </div>
-   <p className="mt-[10%] text-[clamp(.6rem,1.39vw,1.25rem)]">{th?"สร้างสรรค์ด้วยมือ ด้วยความรักและความตั้งใจในกรุงเทพฯ":"handcrafted with love and intentions based in bangkok thailand"}</p>
-  </section>
- </main>;
+  const { products } = await getCmsContent();
+  return (
+    <main className="supplied-ui"><HomeEntrance /><div className="home">
+      <div className="ship-bar left">handcrafted with love in Bangkok, Thailand.</div>
+      <section className="hero">
+        <img src="/assets/home/hero.jpg" alt="Gemstone ribbon earrings in the sunlight" className="hero-img" fetchPriority="high" />
+        <h1 className="hero-title">welcome to our little world</h1>
+        <Link href="/about" className="btn hero-btn">discover the world</Link>
+      </section>
+
+      <section className="home-duo">
+        <img src="/assets/home/girl.jpg" alt="a girl in a white dress sitting under a chandelier" />
+        <img src="/assets/home/ring-cake.jpg" alt="a hand wearing the rosette ring beside a cake" />
+      </section>
+      <img src="/assets/about/bows.png" alt="" className="home-bows" />
+
+      <section className="home-collection">
+        <p className="home-keepsakes"><span>Keepsakes of wonder</span><span>and Romance</span></p>
+        <p className="home-collection-text">this collection is inspired by the ribbon — reshaped into rosettes and countless other forms</p>
+        <Link href="/collections?collection=be-present" className="btn">explore collection</Link>
+      </section>
+
+      <section className="home-custom">
+        <div className="home-custom-head">
+          <h2>custom made</h2>
+          <p>custom-made jewelry,<br />crafted around your imagination.</p>
+        </div>
+        <div className="home-custom-pieces">
+          {CUSTOM_PIECES.filter(piece => products.some(product => product.id === piece.key && product.published)).map((p) => (
+            <Link key={p.key} href={p.href} aria-label={p.name}><img src={p.image} alt="" loading="lazy" /></Link>
+          ))}
+        </div>
+        <div className="home-custom-foot">
+          <Link href="/custom-made" className="btn white">create yours</Link>
+          <p>choose your own colour, size, stone or have a name engraved on the piece. each creation is made to order, especially for you.</p>
+        </div>
+      </section>
+
+      <section className="page home-discover">
+        <p className="home-imagined">a few things we&apos;ve already imagined.</p>
+        <p className="home-discover-title">discover our jewelry</p>
+        <div className="home-cards">
+          {CARDS.map(([slug, name, img]) => {
+ const product = products.find(item => item.id === slug && item.published);
+ if (!product) return null;
+ const artwork = editorialImage(product) !== product.image ? img : product.image;
+ return (
+            <Link key={slug} href={`/products/${slug}`} className="home-card">
+              <img src={artwork} alt={product.name} loading="lazy" />
+              <span>{product.name}</span>
+            </Link>
+          ); })}
+        </div>
+        <p className="home-handmade">handcrafted with love and intentions based in bangkok thailand</p>
+      </section>
+    </div></main>
+  );
 }
