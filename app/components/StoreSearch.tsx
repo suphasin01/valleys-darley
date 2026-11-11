@@ -5,7 +5,7 @@ import type { CmsProduct } from '../lib/cms';
 import { editorialImage } from '../lib/editorial-images';
 import { cmsPriceLabel } from '../lib/supplied-catalog';
 
-export function StoreSearch() {
+export function StoreSearch({className = ''}:{className?:string} = {}) {
   const dialog = useRef<HTMLDialogElement>(null);
   const [query,setQuery] = useState(''), [products,setProducts] = useState<CmsProduct[]>([]), [status,setStatus] = useState<'idle'|'loading'|'ready'|'error'>('idle');
   useEffect(()=>{
@@ -33,7 +33,7 @@ export function StoreSearch() {
   }
   const results=query.trim() ? products.filter(product=>product.published && `${product.name} ${product.description}`.toLowerCase().includes(query.trim().toLowerCase())).slice(0,12) : [];
   return <>
-    <button type="button" onClick={open} className="store-search-trigger" aria-haspopup="dialog" aria-controls="store-search">search</button>
+    <button type="button" onClick={open} className={className} aria-label="Search jewelry" title="Search" aria-haspopup="dialog" aria-controls="store-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></svg></button>
     <dialog id="store-search" ref={dialog} className="store-search-dialog" onClick={event=>{if(event.target===event.currentTarget)dialog.current?.close();}} aria-labelledby="store-search-title">
       <div className="store-search-inner"><div className="flex items-center justify-between gap-6"><h2 id="store-search-title">Search our jewelry</h2><button type="button" onClick={()=>dialog.current?.close()} className="min-h-11 px-3" aria-label="Close search">close ×</button></div>
       <label className="sr-only" htmlFor="store-search-query">Product name</label><input id="store-search-query" autoFocus type="search" value={query} onChange={event=>setQuery(event.target.value)} placeholder="What are you looking for?" maxLength={100}/>

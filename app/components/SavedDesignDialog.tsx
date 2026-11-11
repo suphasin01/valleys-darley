@@ -1,7 +1,7 @@
 'use client';
 
 import { forwardRef, useEffect, useId, useImperativeHandle, useRef } from 'react';
-import { BrandLogo } from './Header';
+import { BrandLogo } from './BrandLogo';
 
 type Artwork = { front: string; reverse: string; reverseLabel: string };
 type Props = { name: string; specifications: string[][]; note: string; artwork: Artwork | null };

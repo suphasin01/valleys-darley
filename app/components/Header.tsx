@@ -6,11 +6,9 @@ import { useEffect, useRef, useState } from "react";
 import { copy, type Locale } from "../lib/i18n";
 import { readCart, requestCartOpen } from '../lib/cart-storage';
 import { StoreSearch } from './StoreSearch';
+import styles from './Header.module.css';
+import { BrandLogo } from './BrandLogo';
 import { shopMenuLinks, toggleMenuSection, type MenuSection } from '../lib/store-menu';
-
-export function BrandLogo({ className = "" }: { className?: string }) {
-  return <span className={`brand-script supplied-brand inline-block whitespace-nowrap ${className}`}>Valley&apos;s Darling</span>;
-}
 
 export function Header({ locale }: { locale: Locale }) {
   const [cartCount, setCartCount] = useState(0);
@@ -42,20 +40,20 @@ export function Header({ locale }: { locale: Locale }) {
 
   return (
     <>
-      <header className="editorial-page supplied-header sticky top-0 z-50 border-b border-black/60 bg-white text-black">
-        <div className="supplied-header-inner">
-          <div className="supplied-header-left">
-          <button ref={menuButton} type="button" onClick={() => { setMenuSection(null); setIsOpen(true); }} aria-label={t.menu} aria-expanded={isOpen} aria-controls="store-navigation" className="grid h-11 min-w-11 place-items-center rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 xl:ml-7 xl:justify-items-start">
-            <span className="relative block h-3.5 w-5 border-y border-current before:absolute before:left-0 before:top-1/2 before:h-px before:w-3 before:-translate-y-1/2 before:bg-current xl:hidden" />
-            <span className="hidden text-[clamp(1rem,2.5vw,2.25rem)] font-medium xl:block">{locale === 'th' ? 'เมนู' : 'menu'}</span>
+      <header className={styles.header}>
+        <div className={styles.inner}>
+          <div className={styles.left}>
+          <button ref={menuButton} type="button" onClick={() => { setMenuSection(null); setIsOpen(true); }} aria-label={t.menu} aria-expanded={isOpen} aria-controls="store-navigation" className={styles.control}>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+            <span className={styles.label}>Menu</span>
           </button>
-          <StoreSearch />
+          <StoreSearch className={styles.control}/>
           </div>
-          <Link href={isAdmin ? "/admin" : "/"} className="supplied-header-brand min-w-0" aria-label={isAdmin ? "Admin home" : "Valley's Darling home"}>
-            <BrandLogo className="text-[16px] min-[375px]:text-[20px] sm:text-[25px] md:text-[clamp(2rem,4.44vw,4rem)]" />
+          <Link href={isAdmin ? "/admin" : "/"} className={styles.brand} aria-label={isAdmin ? "Admin home" : "Valley's Darling home"}>
+            <BrandLogo className={styles.wordmark} />
           </Link>
-          <div className="supplied-header-right"><Link href="/account">{locale === 'th' ? 'บัญชี' : 'account'}</Link><Link href="/cart" aria-label={`Shopping bag (${cartCount} items)`} aria-haspopup="dialog" aria-controls="store-shopping-bag" onClick={event => { if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return; if (requestCartOpen()) event.preventDefault(); }} className="supplied-cart-button">
-            <span>cart ({cartCount})</span>
+          <div className={styles.right}><Link href="/account" className={styles.control} aria-label="My account"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 21v-2a7 7 0 0 1 14 0v2"/></svg><span className={styles.label}>Account</span></Link><Link href="/cart" aria-label={`Shopping bag (${cartCount} items)`} aria-haspopup="dialog" aria-controls="store-shopping-bag" onClick={event => { if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return; if (requestCartOpen()) event.preventDefault(); }} className={styles.control}>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l1 13H4L5 8Z"/><path d="M8 9V6a4 4 0 0 1 8 0v3"/></svg><span className={styles.label}>Bag</span>{cartCount > 0 && <span className={styles.count} aria-hidden="true">{cartCount}</span>}
           </Link></div>
         </div>
       </header>
@@ -69,7 +67,7 @@ export function Header({ locale }: { locale: Locale }) {
         if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
       }} className={`editorial-page store-navigation fixed inset-0 z-[80] text-black transition-opacity duration-300 ${isOpen ? "visible opacity-100" : "invisible opacity-0"}`}>
         <button type="button" onClick={() => setIsOpen(false)} aria-label={t.closeMenu} className="absolute inset-0 h-full w-full bg-black/25" />
-        <div className={`store-navigation-panel absolute bottom-0 left-0 flex flex-col overflow-y-auto bg-[#f1e9eb] transition-transform duration-300 ${isOpen ? "translate-x-0" : "-translate-x-full"}`}>
+        <div className={`${styles.menuPanel} store-navigation-panel absolute bottom-0 left-0 flex flex-col overflow-y-auto bg-[#f1e9eb] transition-transform duration-300 ${isOpen ? "translate-x-0" : "-translate-x-full"}`}>
           <nav aria-label="Main navigation" className="py-10 text-2xl leading-[1.5]">
             <button type="button" aria-expanded={menuSection === 'shop'} aria-controls="shop-navigation" onClick={() => setMenuSection(current => toggleMenuSection(current, 'shop'))} className={`block min-h-11 w-full border-y px-10 py-1.5 text-left hover:bg-white focus-visible:bg-white ${menuSection === 'shop' ? 'border-black/50 bg-white font-semibold' : 'border-transparent'}`}>{t.shop}</button>
             <div id="shop-navigation" hidden={menuSection !== 'shop'}>{shopMenuLinks.map(([label, href]) => <Link key={label} href={href} onClick={() => setIsOpen(false)} className="block min-h-10 px-10 py-1 text-lg hover:bg-white focus-visible:bg-white">{label}</Link>)}</div>

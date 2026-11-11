@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { BrandLogo } from './Header';
+import { BrandLogo } from './BrandLogo';
 import { editorialImage } from '../lib/editorial-images';
 import type { resolveCart } from '../lib/cart';
 

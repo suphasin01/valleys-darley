@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useId, useRef } from 'react';
-import { BrandLogo } from './Header';
+import { BrandLogo } from './BrandLogo';
 
 export type ReceiptData = {
   number: string; date: string; customer: string; address: string; currency: string;
