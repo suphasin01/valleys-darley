@@ -29,8 +29,9 @@ export function CustomStudio({pieceKey}:{pieceKey:string}) {
     const loaded=()=>{
       observer?.disconnect();
       const doc=node.contentDocument;if(!doc)return;
-      const fit=()=>setHeight(Math.max(600,Math.min(5000,doc.body.scrollHeight)));
-      observer=new ResizeObserver(fit);observer.observe(doc.body);fit();
+      const content=doc.querySelector<HTMLElement>('.wrap')||doc.body;
+      const fit=()=>setHeight(Math.max(600,Math.min(6000,Math.ceil(content.getBoundingClientRect().height+content.offsetTop+24))));
+      observer=new ResizeObserver(fit);observer.observe(content);fit();
       node.contentWindow?.postMessage({type:'vd-currency',price:'Quote required',prices:null},window.location.origin);
     };
     node.addEventListener('load',loaded);return ()=>{node.removeEventListener('load',loaded);observer?.disconnect();};

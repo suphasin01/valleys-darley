@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Pinyon_Script, Cormorant_SC, Noto_Serif_Thai } from 
 import "./globals.css";
 import "./supplied-ui.css";
 import "./storefront-adapters.css";
+import "./storefront-mobile.css";
 import { Header } from "./components/Header";
 import { SuppliedFooter } from "./components/SuppliedFooter";
 import { StorefrontOnly } from "./components/StorefrontOnly";
